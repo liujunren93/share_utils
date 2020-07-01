@@ -19,3 +19,11 @@ type Base struct {
 	DeletedAt *time.Time `sql:"index"`
 }
 
+type ModelError struct {
+	Code  int //500 系统异常 501 sql异常，以及其他
+	Error error
+}
+
+func (Base) NewError(code int, err error) *ModelError {
+	return &ModelError{Code: code, Error: err}
+}
