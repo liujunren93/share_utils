@@ -16,11 +16,6 @@ type Base struct {
 	ID        uint `gorm:"primary_key"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
-	DeletedAt uint `sql:"index"`
+	DeletedAt *time.Time `sql:"index"`
 }
 
-func (b Base) BeforeFind(scope *gorm.Scope) (err error)  {
-	fmt.Println(1111)
-	scope.SetColumn("DeletedAt","!=0")
-	return nil
-}
