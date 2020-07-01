@@ -20,7 +20,7 @@ type Base struct {
 }
 
 func (b Base) BeforeFind(scope *gorm.Scope) (err error)  {
-
+	fmt.Println(1111)
 	scope.SetColumn("DeletedAt","!=0")
 	return nil
 }
