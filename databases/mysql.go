@@ -20,10 +20,10 @@ type Base struct {
 }
 
 type ModelError struct {
-	Code  int //500 系统异常 501 sql异常，以及其他
-	Error error
+	Code int //500 系统异常 501 sql异常，以及其他
+	Msg  interface{}
 }
 
-func (Base) NewError(code int, err error) *ModelError {
-	return &ModelError{Code: code, Error: err}
+func (Base) NewError(code int, err interface{}) *ModelError {
+	return &ModelError{Code: code, Msg: err}
 }
