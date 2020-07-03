@@ -1,7 +1,7 @@
 package helper
 
 // 响应
-type response struct {
+type HttpResponse struct {
 	Code int32       `json:"code"`
 	Msg  string      `json:"msg"`
 	Data interface{} `json:"data"`
@@ -13,19 +13,19 @@ const (
 	DataErr           = 5001
 )
 
-func (response) ResSuccess(msg string, data interface{}) *response {
+func (HttpResponse) ResSuccess(msg string, data interface{}) *HttpResponse {
 	if msg == "" {
 		msg = "ok"
 	}
 	return newResponse(200, msg, data)
 }
 
-func (response) Res5xxErr(code int32, msg string, data interface{}) *response {
+func (HttpResponse) Res5xxErr(code int32, msg string, data interface{}) *HttpResponse {
 	return newResponse(code, msg, data)
 }
 
-func newResponse(code int32, msg string, data interface{}) *response {
-	return &response{
+func newResponse(code int32, msg string, data interface{}) *HttpResponse {
+	return &HttpResponse{
 		Code: code,
 		Msg:  msg,
 		Data: data,
