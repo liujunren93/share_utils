@@ -8,9 +8,9 @@ type HttpResponse struct {
 }
 
 const (
-	BindingErr        = 4001 //数据错误
-	InternalServerErr = 5000
-	DataErr           = 5001
+	BindingErr        int32 = 4001 //数据错误
+	InternalServerErr int32 = 5000
+	DataErr           int32 = 5001
 )
 
 func (HttpResponse) ResSuccess(msg string, data interface{}) *HttpResponse {
