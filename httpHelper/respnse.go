@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-type option interface {
+type Option interface {
 	getStatus() (int32, string)
 }
 
@@ -65,7 +65,7 @@ func (e OtherError) getStatus() (int32, string) {
 	return 0, string(e)
 }
 
-func (HttpResponse) Response(o option, w http.ResponseWriter, others ...interface{}) error {
+func (HttpResponse) Response(o Option, w http.ResponseWriter, others ...interface{}) error {
 	status, msg := o.getStatus()
 	if status == 0 && others[0] != nil {
 		log.Logger.Fatal("you must give an  error code ")
