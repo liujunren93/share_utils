@@ -3,6 +3,7 @@ package httpHelper
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/shareChina/utils/log"
 	"net/http"
 )
@@ -66,6 +67,7 @@ func (e OtherError) getStatus() (int32, string) {
 }
 //others[0] status,others[1] data
 func (HttpResponse) Response(o Option, w http.ResponseWriter, others ...interface{}) error {
+	fmt.Println(others)
 	status, msg := o.getStatus()
 	if status == 0 && others[0] != nil {
 		log.Logger.Fatal("you must give an  error code ")
