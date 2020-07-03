@@ -64,7 +64,7 @@ func (e OtherError) getStatus() (int32, string) {
 	}
 	return 0, string(e)
 }
-
+//others[0] status,others[1] data
 func (HttpResponse) Response(o Option, w http.ResponseWriter, others ...interface{}) error {
 	status, msg := o.getStatus()
 	if status == 0 && others[0] != nil {
@@ -72,7 +72,7 @@ func (HttpResponse) Response(o Option, w http.ResponseWriter, others ...interfac
 		return errors.New("you must give an  error code ")
 	}
 	if others[0] != nil {
-		status = others[0].(int32)
+		status = int32(others[0].(int))
 	}
 	response := newResponse(status, msg, others[1])
 	marshal, err := json.Marshal(response)
