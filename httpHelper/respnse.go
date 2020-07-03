@@ -23,7 +23,7 @@ type Success string
 
 // 数据校验不通过
 func (e Success) getStatus() (int32, string) {
-	if e != "" {
+	if e == "" {
 		e = "ok"
 	}
 	return 200, string(e)
@@ -32,7 +32,7 @@ func (e Success) getStatus() (int32, string) {
 type BindingError string
 
 func (e BindingError) getStatus() (int32, string) {
-	if e != "" {
+	if e == "" {
 		e = "Data verification failed"
 	}
 	return 4001, string(e)
@@ -41,7 +41,7 @@ func (e BindingError) getStatus() (int32, string) {
 type InternalServerError string
 
 func (e InternalServerError) getStatus() (int32, string) {
-	if e != "" {
+	if e == "" {
 		e = "Internal server error"
 	}
 	return 5000, string(e)
@@ -50,7 +50,7 @@ func (e InternalServerError) getStatus() (int32, string) {
 type DataError string
 
 func (e DataError) getStatus() (int32, string) {
-	if e != "" {
+	if e == "" {
 		e = "Data error"
 	}
 	return 5001, string(e)
