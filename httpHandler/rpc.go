@@ -1,11 +1,13 @@
 package httpHandler
 
 import (
-	"errors"
+	"context"
+	"encoding/json"
+	"github.com/micro/go-micro/v2/errors"
+
 	"github.com/micro/go-micro/v2/client"
 	"github.com/micro/go-micro/v2/config/cmd"
-	"net/http"
-	"strconv"
+	"time"
 )
 
 type rpcRequest struct {
@@ -13,6 +15,7 @@ type rpcRequest struct {
 	endpoint string
 	method   string
 	address  string
+	timeout  int
 	request  interface{}
 }
 
@@ -38,13 +41,18 @@ func NewRPCRequest(service, endpoint, method, address string, request interface{
 	}, nil
 }
 
-func (r *rpcRequest) RPC(req *http.Request) {
+func (r *rpcRequest) RPC(ctx context.Context) (json.RawMessage, error) {
 	request := (*cmd.DefaultOptions().Client).NewRequest(r.service, r.endpoint, r.request, client.WithContentType("application/json"))
-	timeout, _ := strconv.Atoi(req.Header.Get("Timeout"))
+
 	var opts []client.CallOption
 	if len(r.address) > 0 {
 		opts = append(opts, client.WithAddress(r.address))
 	}
-	err = (*cmd.DefaultOptions().Client).Call(ctx, req, &response, opts...)
+	if r.timeout > 0 {
+		opts = append(opts, client.WithRequestTimeout(time.Duration(r.timeout)*time.Second))
+	}
+	var response json.RawMessage
+	err := (*cmd.DefaultOptions().Client).Call(ctx, request, &response, opts...)
 
+	return response, err
 }
