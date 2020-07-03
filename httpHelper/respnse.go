@@ -1,9 +1,10 @@
 package httpHelper
 
 import (
+	"encoding/json"
 	"errors"
 	"github.com/shareChina/utils/log"
-	"os"
+	"net/http"
 )
 
 type option interface {
@@ -64,16 +65,20 @@ func (e OtherError) getStatus() (int32, string) {
 	return 0, string(e)
 }
 
-func (HttpResponse) Response(o option, others ...interface{}) (*HttpResponse, error) {
+func (HttpResponse) Response(o option, w http.ResponseWriter, others ...interface{}) error {
 	status, msg := o.getStatus()
 	if status == 0 && others[0] != nil {
 		log.Logger.Fatal("you must give an  error code ")
-		return nil, errors.New("you must give an  error code ")
+		return errors.New("you must give an  error code ")
 	}
 	if others[0] != nil {
 		status = others[0].(int32)
 	}
-	return newResponse(status, msg, others[1]), nil
+	response := newResponse(status, msg, others[1])
+	marshal, err := json.Marshal(response)
+	w.WriteHeader(200)
+	w.Write(marshal)
+	return err
 
 }
 
