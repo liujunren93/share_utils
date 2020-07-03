@@ -3,7 +3,7 @@ package httpHandler
 import (
 	"context"
 	"encoding/json"
-	"github.com/micro/go-micro/v2/errors"
+	"errors"
 
 	"github.com/micro/go-micro/v2/client"
 	"github.com/micro/go-micro/v2/config/cmd"
