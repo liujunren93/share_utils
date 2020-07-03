@@ -20,7 +20,7 @@ type Base struct {
 }
 
 type ModelError struct {
-	Code int32 //5000 系统异常 5001 sql异常，其余原样输出
+	Code int32 //4004 资源不存在,5000 系统异常 5001 sql异常，其余原样输出
 	Msg  string
 }
 
