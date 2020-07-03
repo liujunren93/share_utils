@@ -20,7 +20,7 @@ func (HttpResponse) ResSuccess(msg string, data interface{}) *HttpResponse {
 	return newResponse(200, msg, data)
 }
 
-func (HttpResponse) Res5xxErr(code int32, msg string, data interface{}) *HttpResponse {
+func (HttpResponse) ResError(code int32, msg string, data interface{}) *HttpResponse {
 	return newResponse(code, msg, data)
 }
 
