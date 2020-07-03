@@ -1,5 +1,11 @@
 package httpHelper
 
+import (
+	"errors"
+	"github.com/shareChina/utils/log"
+	"os"
+)
+
 type option interface {
 	getStatus() (int32, string)
 }
@@ -11,12 +17,22 @@ type HttpResponse struct {
 	Data interface{} `json:"data"`
 }
 
+// success
+type Success string
+
 // 数据校验不通过
+func (e Success) getStatus() (int32, string) {
+	if e != "" {
+		e = "ok"
+	}
+	return 200, string(e)
+}
+
 type BindingError string
 
 func (e BindingError) getStatus() (int32, string) {
 	if e != "" {
-		e = "数据校验不通过"
+		e = "Data verification failed"
 	}
 	return 4001, string(e)
 }
@@ -25,7 +41,7 @@ type InternalServerError string
 
 func (e InternalServerError) getStatus() (int32, string) {
 	if e != "" {
-		e = "Internal Server Error"
+		e = "Internal server error"
 	}
 	return 5000, string(e)
 }
@@ -34,31 +50,31 @@ type DataError string
 
 func (e DataError) getStatus() (int32, string) {
 	if e != "" {
-		e = "服务器数据错误"
+		e = "Data error"
 	}
-	return 5000, string(e)
+	return 5001, string(e)
 }
 
 type OtherError string
 
 func (e OtherError) getStatus() (int32, string) {
 	if e != "" {
-		e = "未知错误"
+		e = "Unknown mistake"
 	}
-	return 5000, string(e)
+	return 0, string(e)
 }
 
-func (HttpResponse) ResSuccess(o option, data interface{}) *HttpResponse {
+func (HttpResponse) Response(o option, others ...interface{}) (*HttpResponse, error) {
 	status, msg := o.getStatus()
-	return newResponse(status, msg, data)
-}
-
-func (HttpResponse) ResError(o option, others ...interface{}) *HttpResponse {
-	status, msg := o.getStatus()
+	if status == 0 && others[0] != nil {
+		log.Logger.Fatal("you must give an  error code ")
+		return nil, errors.New("you must give an  error code ")
+	}
 	if others[0] != nil {
 		status = others[0].(int32)
 	}
-	return newResponse(status, msg, others[1])
+	return newResponse(status, msg, others[1]), nil
+
 }
 
 func newResponse(code int32, msg string, data interface{}) *HttpResponse {
