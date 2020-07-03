@@ -73,10 +73,15 @@ func (HttpResponse) Response(o Option, w http.ResponseWriter, others ...interfac
 		log.Logger.Fatal("you must give an  error code ")
 		return errors.New("you must give an  error code ")
 	}
+	var data interface{}
 	if len(others) > 0 && others[0] != nil {
 		status = int32(others[0].(int))
 	}
-	response := newResponse(status, msg, others[1])
+	if len(others) > 1 && others[1] != nil {
+		data=others[1]
+	}
+
+	response := newResponse(status, msg, data)
 	marshal, err := json.Marshal(response)
 	w.WriteHeader(200)
 	w.Write(marshal)
