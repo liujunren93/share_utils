@@ -4,9 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-
 	"github.com/micro/go-micro/v2/client"
 	"github.com/micro/go-micro/v2/config/cmd"
+	"github.com/shareChina/utils/httpHelper"
 	"time"
 )
 
@@ -17,6 +17,12 @@ type rpcRequest struct {
 	address  string
 	timeout  int
 	request  interface{}
+}
+
+type result struct {
+	Code int32             `json:"code"`
+	Msg  httpHelper.Option `json:"msg"`
+	Data interface{}       `json:"data"`
 }
 
 func NewRPCRequest(service, endpoint, method, address string, request interface{}) (*rpcRequest, error) {
@@ -41,7 +47,8 @@ func NewRPCRequest(service, endpoint, method, address string, request interface{
 	}, nil
 }
 
-func (r *rpcRequest) RPC(ctx context.Context) (json.RawMessage, error) {
+func (r *rpcRequest) RPC(ctx context.Context) (res *result, err error) {
+
 	request := (*cmd.DefaultOptions().Client).NewRequest(r.service, r.endpoint, r.request, client.WithContentType("application/json"))
 
 	var opts []client.CallOption
@@ -52,7 +59,15 @@ func (r *rpcRequest) RPC(ctx context.Context) (json.RawMessage, error) {
 		opts = append(opts, client.WithRequestTimeout(time.Duration(r.timeout)*time.Second))
 	}
 	var response json.RawMessage
-	err := (*cmd.DefaultOptions().Client).Call(ctx, request, &response, opts...)
+	err = (*cmd.DefaultOptions().Client).Call(ctx, request, &response, opts...)
+	if err != nil {
+		return
+	}
+	marshalJSON, err := response.MarshalJSON()
+	if err != nil {
+		return
+	}
+	err = json.Unmarshal(marshalJSON, res)
 
-	return response, err
+	return
 }
