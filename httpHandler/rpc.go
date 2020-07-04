@@ -25,6 +25,10 @@ type RpcResponse struct {
 	Data interface{} `json:"data"`
 }
 
+func (r RpcResponse) getStatus() (int32, string) {
+	return r.Code, r.Msg
+}
+
 func NewRPCRequest(service, endpoint, method, address string, request interface{}) (*rpcRequest, error) {
 	if service == "" {
 		return nil, errors.New("service cannot be empty")
@@ -68,7 +72,7 @@ func (r *rpcRequest) RPC(ctx context.Context) (res *RpcResponse, err error) {
 		return
 	}
 
-	fmt.Println(string(marshalJSON), err )
+	fmt.Println(string(marshalJSON), err)
 	err = json.Unmarshal(marshalJSON, &res)
 
 	return
