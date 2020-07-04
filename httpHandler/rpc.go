@@ -19,7 +19,7 @@ type rpcRequest struct {
 	request  interface{}
 }
 
-type result struct {
+type RpcResult struct {
 	Code int32             `json:"code"`
 	Msg  httpHelper.Option `json:"msg"`
 	Data interface{}       `json:"data"`
@@ -47,7 +47,7 @@ func NewRPCRequest(service, endpoint, method, address string, request interface{
 	}, nil
 }
 
-func (r *rpcRequest) RPC(ctx context.Context) (res *result, err error) {
+func (r *rpcRequest) RPC(ctx context.Context) (res *RpcResult, err error) {
 
 	request := (*cmd.DefaultOptions().Client).NewRequest(r.service, r.endpoint, r.request, client.WithContentType("application/json"))
 
