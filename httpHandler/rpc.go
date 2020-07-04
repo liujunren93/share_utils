@@ -4,9 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/micro/go-micro/v2/client"
 	"github.com/micro/go-micro/v2/config/cmd"
-	"github.com/shareChina/utils/httpHelper"
 	"time"
 )
 
@@ -20,9 +20,9 @@ type rpcRequest struct {
 }
 
 type RpcResponse struct {
-	Code int32             `json:"code"`
-	Msg  httpHelper.Option `json:"msg"`
-	Data interface{}       `json:"data"`
+	Code int32       `json:"code"`
+	Msg  string      `json:"msg"`
+	Data interface{} `json:"data"`
 }
 
 func NewRPCRequest(service, endpoint, method, address string, request interface{}) (*rpcRequest, error) {
@@ -67,6 +67,7 @@ func (r *rpcRequest) RPC(ctx context.Context) (res *RpcResponse, err error) {
 	if err != nil {
 		return
 	}
+	fmt.Println(marshalJSON, err )
 	err = json.Unmarshal(marshalJSON, res)
 
 	return

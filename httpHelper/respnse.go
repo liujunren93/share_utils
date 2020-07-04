@@ -19,7 +19,13 @@ type HttpResponse struct {
 }
 
 // success
-type Success string
+type (
+	Success             string
+	BindingError        string
+	InternalServerError string
+	DataError           string
+	OtherError          string
+)
 
 // 数据校验不通过
 func (e Success) getStatus() (int32, string) {
@@ -29,16 +35,12 @@ func (e Success) getStatus() (int32, string) {
 	return 200, string(e)
 }
 
-type BindingError string
-
 func (e BindingError) getStatus() (int32, string) {
 	if e == "" {
 		e = "Data verification failed"
 	}
 	return 4001, string(e)
 }
-
-type InternalServerError string
 
 func (e InternalServerError) getStatus() (int32, string) {
 	if e == "" {
@@ -47,16 +49,12 @@ func (e InternalServerError) getStatus() (int32, string) {
 	return 5000, string(e)
 }
 
-type DataError string
-
 func (e DataError) getStatus() (int32, string) {
 	if e == "" {
 		e = "Data error"
 	}
 	return 5001, string(e)
 }
-
-type OtherError string
 
 func (e OtherError) getStatus() (int32, string) {
 	if e != "" {
@@ -78,7 +76,7 @@ func (HttpResponse) Response(o Option, w http.ResponseWriter, others ...interfac
 		status = int32(others[0].(int))
 	}
 	if len(others) > 1 && others[1] != nil {
-		data=others[1]
+		data = others[1]
 	}
 
 	response := newResponse(status, msg, data)
