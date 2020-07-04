@@ -8,7 +8,7 @@ import (
 )
 
 type Option interface {
-	getStatus() (int32, string)
+	GetStatus() (int32, string)
 }
 
 // 响应
@@ -35,28 +35,28 @@ func (e Success) getStatus() (int32, string) {
 	return 200, string(e)
 }
 
-func (e BindingError) getStatus() (int32, string) {
+func (e BindingError) GetStatus() (int32, string) {
 	if e == "" {
 		e = "Data verification failed"
 	}
 	return 4001, string(e)
 }
 
-func (e InternalServerError) getStatus() (int32, string) {
+func (e InternalServerError) GetStatus() (int32, string) {
 	if e == "" {
 		e = "Internal server error"
 	}
 	return 5000, string(e)
 }
 
-func (e DataError) getStatus() (int32, string) {
+func (e DataError) GetStatus() (int32, string) {
 	if e == "" {
 		e = "Data error"
 	}
 	return 5001, string(e)
 }
 
-func (e OtherError) getStatus() (int32, string) {
+func (e OtherError) GetStatus() (int32, string) {
 	if e != "" {
 		e = "Unknown mistake"
 	}
@@ -66,7 +66,7 @@ func (e OtherError) getStatus() (int32, string) {
 //others[0] status,others[1] data
 func (HttpResponse) Response(o Option, w http.ResponseWriter, others ...interface{}) error {
 
-	status, msg := o.getStatus()
+	status, msg := o.GetStatus()
 	if status == 0 && len(others) == 0 && others[0] != nil {
 		log.Logger.Fatal("you must give an  error code ")
 		return errors.New("you must give an  error code ")

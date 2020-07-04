@@ -25,7 +25,7 @@ type RpcResponse struct {
 	Data interface{} `json:"data"`
 }
 
-func (r RpcResponse) getStatus() (int32, string) {
+func (r RpcResponse) GetStatus() (int32, string) {
 	return r.Code, r.Msg
 }
 
