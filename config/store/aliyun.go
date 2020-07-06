@@ -11,8 +11,6 @@ type aliyunConf struct {
 	accessKey string
 	secretKey string
 	endpoint  string
-	dataId    string
-	group     string
 	content   string
 }
 
@@ -20,11 +18,8 @@ var (
 	client config_client.IConfigClient
 )
 
-func NewStore(accessKey, secretKey, namespaceId, endpoint, dataId, group string) (aliyunConf, error) {
-	aliyun := aliyunConf{
-		dataId: dataId,
-		group:  group,
-	}
+func NewAliyunConf(accessKey, secretKey, namespaceId, endpoint string) (aliyunConf, error) {
+	aliyun := aliyunConf{}
 	err := initClient(accessKey, secretKey, namespaceId, endpoint)
 	return aliyun, err
 }
@@ -45,30 +40,29 @@ func initClient(accessKey, secretKey, namespaceId, endpoint string) error {
 	return err
 }
 
-//
-func (a aliyunConf) PublishConfig(content interface{}) (bool, error) {
+//options  0:DataId,1:Group;2:Content
+func (a aliyunConf) PublishConfig(options ...interface{}) (bool, error) {
 	return client.PublishConfig(vo.ConfigParam{
-		DataId:  a.dataId,
-		Group:   a.group,
-		Content: content.(string),
+		DataId:  options[0].(string),
+		Group:   options[1].(string),
+		Content: (options[2]).(string),
 	})
 }
 
 //
-func (a aliyunConf) GetConfig() (string, error) {
-
+func (a aliyunConf) GetConfig(options ...string) (interface{}, error) {
 	return client.GetConfig(vo.ConfigParam{
-		DataId: a.dataId,
-		Group:  a.group,
+		DataId: options[0],
+		Group:  options[1],
 	})
 
 }
 
 //
-func (a aliyunConf) ListenConfig(f func(string)) error {
+func (a aliyunConf) ListenConfig(f func(string), options ...string) error {
 	err := client.ListenConfig(vo.ConfigParam{
-		DataId: a.dataId,
-		Group:  a.group,
+		DataId: options[0],
+		Group:  options[1],
 		OnChange: func(namespace, group, dataId, data string) {
 			f(data)
 		},
@@ -77,9 +71,9 @@ func (a aliyunConf) ListenConfig(f func(string)) error {
 }
 
 //
-func (a aliyunConf) DeleteConfig() (bool, error) {
+func (a aliyunConf) DeleteConfig(options ...string) (bool, error) {
 	return client.DeleteConfig(vo.ConfigParam{
-		DataId: a.dataId,
-		Group:  a.group,
+		DataId: options[0],
+		Group:  options[1],
 	})
 }

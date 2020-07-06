@@ -50,7 +50,7 @@ func NewRPCRequest(service, endpoint, method, address string, request interface{
 		request:  request,
 	}, nil
 }
-
+// 调用微服务
 func (r *rpcRequest) RPC(ctx context.Context) (res *RpcResponse, err error) {
 
 	request := (*cmd.DefaultOptions().Client).NewRequest(r.service, r.endpoint, r.request, client.WithContentType("application/json"))

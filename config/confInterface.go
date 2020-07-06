@@ -1,8 +1,12 @@
 package config
 
 type ConfInterface interface {
-	PublishConfig(interface{}) (bool, error)
-	GetConfig() (string, error)
-	ListenConfig(func(string)) error
-	DeleteConfig() (bool, error)
+	PublishConfig(...interface{}) (bool, error)
+	GetConfig(...string) (interface{}, error)
+	ListenConfig(func(string),...string) error
+	DeleteConfig(...string) (bool, error)
+}
+
+type OptionInterface interface {
+	GetOption() string
 }

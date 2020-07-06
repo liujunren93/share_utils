@@ -1,6 +1,6 @@
 package config
 
-func GetConfig(confInterface ConfInterface) (string, error) {
+func GetConfig(confInterface ConfInterface) (interface{}, error) {
 	return confInterface.GetConfig()
 }
 
