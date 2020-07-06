@@ -18,7 +18,7 @@ var (
 	client config_client.IConfigClient
 )
 
-func NewAliyunConf(accessKey, secretKey, namespaceId, endpoint string) (aliyunConf, error) {
+func NewAliyunStore(accessKey, secretKey, namespaceId, endpoint string) (aliyunConf, error) {
 	aliyun := aliyunConf{}
 	err := initClient(accessKey, secretKey, namespaceId, endpoint)
 	return aliyun, err

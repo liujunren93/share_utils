@@ -34,7 +34,7 @@ func (g goConf) DeleteConfig(options...string) (bool, error) {
 	panic("implement me")
 }
 
-func NewGoConf(s source.Source) (gf goConf, err error) {
+func NewGoConfStore(s source.Source) (gf goConf, err error) {
 
 	newConfig, err := config.NewConfig()
 	if err != nil {
