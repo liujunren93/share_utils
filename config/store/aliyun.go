@@ -49,7 +49,7 @@ func (a *aliyunConf) PublishConfig(options ...interface{}) (bool, error) {
 	})
 }
 
-//
+//options  0:DataId,1:Group;
 func (a *aliyunConf) GetConfig(options ...string) (interface{}, error) {
 	return client.GetConfig(vo.ConfigParam{
 		DataId: options[0],
@@ -58,7 +58,7 @@ func (a *aliyunConf) GetConfig(options ...string) (interface{}, error) {
 
 }
 
-//
+//options  0:DataId,1:Group;
 func (a *aliyunConf) ListenConfig(f func(string), options ...string) error {
 	err := client.ListenConfig(vo.ConfigParam{
 		DataId: options[0],
@@ -70,7 +70,7 @@ func (a *aliyunConf) ListenConfig(f func(string), options ...string) error {
 	return err
 }
 
-//
+//options  0:DataId,1:Group;
 func (a *aliyunConf) DeleteConfig(options ...string) (bool, error) {
 	return client.DeleteConfig(vo.ConfigParam{
 		DataId: options[0],

@@ -16,7 +16,9 @@ func (g goConf) PublishConfig(conf ...interface{}) (bool, error) {
 }
 
 func (g goConf) GetConfig(options ...string) (interface{}, error) {
-	return g.Conf.Map(), nil
+	get := g.Conf.Get(options...)
+	return get.Bytes(), nil
+	//return g.Conf.Map(), nil
 }
 
 func (g goConf) ListenConfig(f func(string), options ...string) error {
