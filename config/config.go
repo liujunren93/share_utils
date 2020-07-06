@@ -1,18 +1,18 @@
 package config
 
-func GetConfig(confInterface ConfInterface) (interface{}, error) {
-	return confInterface.GetConfig()
+func GetConfig(confInterface ConfInterface,options...string) (interface{}, error) {
+	return confInterface.GetConfig(options...)
 }
 
-func ListenConfig(confInterface ConfInterface, f func(data string)) error {
-	return confInterface.ListenConfig(f)
+func ListenConfig(confInterface ConfInterface, f func(data string),options...string) error {
+	return confInterface.ListenConfig(f,options...)
 }
 
-func DeleteConfig(confInterface ConfInterface) (bool, error) {
-	return confInterface.DeleteConfig()
+func DeleteConfig(confInterface ConfInterface,options...string) (bool, error) {
+	return confInterface.DeleteConfig(options...)
 }
 
 
-func PublishConfig(confInterface ConfInterface,conf interface{}) (bool, error) {
-	return confInterface.PublishConfig(conf)
+func PublishConfig(confInterface ConfInterface,options...interface{}) (bool, error) {
+	return confInterface.PublishConfig(options...)
 }

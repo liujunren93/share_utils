@@ -18,10 +18,10 @@ var (
 	client config_client.IConfigClient
 )
 
-func NewAliyunStore(accessKey, secretKey, namespaceId, endpoint string) (aliyunConf, error) {
+func NewAliyunStore(accessKey, secretKey, namespaceId, endpoint string) (*aliyunConf, error) {
 	aliyun := aliyunConf{}
 	err := initClient(accessKey, secretKey, namespaceId, endpoint)
-	return aliyun, err
+	return &aliyun, err
 }
 
 func initClient(accessKey, secretKey, namespaceId, endpoint string) error {
@@ -41,7 +41,7 @@ func initClient(accessKey, secretKey, namespaceId, endpoint string) error {
 }
 
 //options  0:DataId,1:Group;2:Content
-func (a aliyunConf) PublishConfig(options ...interface{}) (bool, error) {
+func (a *aliyunConf) PublishConfig(options ...interface{}) (bool, error) {
 	return client.PublishConfig(vo.ConfigParam{
 		DataId:  options[0].(string),
 		Group:   options[1].(string),
@@ -50,7 +50,7 @@ func (a aliyunConf) PublishConfig(options ...interface{}) (bool, error) {
 }
 
 //
-func (a aliyunConf) GetConfig(options ...string) (interface{}, error) {
+func (a *aliyunConf) GetConfig(options ...string) (interface{}, error) {
 	return client.GetConfig(vo.ConfigParam{
 		DataId: options[0],
 		Group:  options[1],
@@ -59,7 +59,7 @@ func (a aliyunConf) GetConfig(options ...string) (interface{}, error) {
 }
 
 //
-func (a aliyunConf) ListenConfig(f func(string), options ...string) error {
+func (a *aliyunConf) ListenConfig(f func(string), options ...string) error {
 	err := client.ListenConfig(vo.ConfigParam{
 		DataId: options[0],
 		Group:  options[1],
@@ -71,7 +71,7 @@ func (a aliyunConf) ListenConfig(f func(string), options ...string) error {
 }
 
 //
-func (a aliyunConf) DeleteConfig(options ...string) (bool, error) {
+func (a *aliyunConf) DeleteConfig(options ...string) (bool, error) {
 	return client.DeleteConfig(vo.ConfigParam{
 		DataId: options[0],
 		Group:  options[1],
