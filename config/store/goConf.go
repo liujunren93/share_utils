@@ -6,7 +6,7 @@ import (
 )
 
 type goConf struct {
-	conf   config.Config
+	conf config.Config
 }
 
 func (g goConf) PublishConfig(conf ...interface{}) (bool, error) {
@@ -20,7 +20,7 @@ func (g goConf) GetConfig(options ...string) (interface{}, error) {
 	//return g.Conf.Map(), nil
 }
 
-func (g goConf) ListenConfig(f func(string), options ...string) error {
+func (g goConf) ListenConfig(f func(string), options ...string) {
 	watch, _ := g.conf.Watch(options...)
 	for {
 		next, err := watch.Next()
@@ -28,7 +28,7 @@ func (g goConf) ListenConfig(f func(string), options ...string) error {
 			f(string(next.Bytes()))
 		}
 	}
-	return nil
+
 }
 
 func (g goConf) DeleteConfig(options ...string) (bool, error) {
@@ -44,6 +44,6 @@ func NewGoConfStore(s source.Source) (*goConf, error) {
 
 	newConfig.Load(s)
 	return &goConf{
-		conf:   newConfig,
+		conf: newConfig,
 	}, nil
 }

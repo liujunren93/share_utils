@@ -59,18 +59,18 @@ func (a *aliyunConf) GetConfig(options ...string) (interface{}, error) {
 }
 
 //options  0:DataId,1:Group;
-func (a *aliyunConf) ListenConfig(f func(string), options ...string) error {
-	err := client.ListenConfig(vo.ConfigParam{
+func (a *aliyunConf) ListenConfig(f func(string), options ...string) {
+	client.ListenConfig(vo.ConfigParam{
 		DataId: options[0],
 		Group:  options[1],
 		OnChange: func(namespace, group, dataId, data string) {
 			f(data)
 		},
 	})
-	return err
+
 }
 
-//options  0:DataId,1:Group;
+//
 func (a *aliyunConf) DeleteConfig(options ...string) (bool, error) {
 	return client.DeleteConfig(vo.ConfigParam{
 		DataId: options[0],
