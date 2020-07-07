@@ -25,7 +25,7 @@ func (g goConf) ListenConfig(f func(interface{}), options ...string) {
 	for {
 		next, err := watch.Next()
 		if err == nil {
-			f(string(next.Bytes()))
+			f(next.Bytes())
 		}
 	}
 
