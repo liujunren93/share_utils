@@ -8,7 +8,8 @@ import (
 )
 
 type Option interface {
-	GetStatus() (int32, string)
+	GetCode() int32
+	GetMsg() string
 }
 
 // 响应
@@ -27,46 +28,70 @@ type (
 	OtherError          string
 )
 
-// 数据校验不通过
-func (e Success) getStatus() (int32, string) {
+// success
+func (e Success) GetCode() int32 {
+	return 200
+}
+
+func (e Success) GetMsg() string {
 	if e == "" {
 		e = "ok"
 	}
-	return 200, string(e)
+	return string(e)
 }
 
-func (e BindingError) GetStatus() (int32, string) {
+// binding err
+func (e BindingError) GetCode() int32 {
+	return 4001
+}
+
+func (e BindingError) GetMsg() string {
 	if e == "" {
 		e = "Data verification failed"
 	}
-	return 4001, string(e)
+	return string(e)
 }
 
-func (e InternalServerError) GetStatus() (int32, string) {
+// Internal server error
+func (e InternalServerError) GetCode() int32 {
+	return 5000
+}
+
+func (e InternalServerError) GetMsg() string {
 	if e == "" {
 		e = "Internal server error"
 	}
-	return 5000, string(e)
+	return string(e)
 }
 
-func (e DataError) GetStatus() (int32, string) {
+// Data error
+func (e DataError) GetCode() int32 {
+	return 5001
+}
+
+func (e DataError) GetMsg() string {
 	if e == "" {
 		e = "Data error"
 	}
-	return 5001, string(e)
+	return string(e)
 }
 
-func (e OtherError) GetStatus() (int32, string) {
-	if e != "" {
+// Unknown mistake
+func (e OtherError) GetCode() int32 {
+	return 0
+}
+
+func (e OtherError) GetMsg() string {
+	if e == "" {
 		e = "Unknown mistake"
 	}
-	return 0, string(e)
+	return string(e)
 }
 
 //others[0] status,others[1] data
 func (HttpResponse) Response(o Option, w http.ResponseWriter, others ...interface{}) error {
 
-	status, msg := o.GetStatus()
+	status, msg := o.GetCode(), o.GetMsg()
 	if status == 0 && len(others) == 0 && others[0] != nil {
 		log.Logger.Fatal("you must give an  error code ")
 		return errors.New("you must give an  error code ")

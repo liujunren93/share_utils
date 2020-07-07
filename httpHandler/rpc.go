@@ -25,10 +25,13 @@ type RpcResponse struct {
 	Data interface{} `json:"data"`
 }
 
-func (r RpcResponse) GetStatus() (int32, string) {
-	return r.Code, r.Msg
+func (r *RpcResponse) GetCode() int32 {
+	return r.Code
 }
 
+func (r *RpcResponse) GetMsg() string {
+	return r.Msg
+}
 func NewRPCRequest(service, endpoint, method, address string, request interface{}) (*rpcRequest, error) {
 	if service == "" {
 		return nil, errors.New("service cannot be empty")
@@ -50,6 +53,7 @@ func NewRPCRequest(service, endpoint, method, address string, request interface{
 		request:  request,
 	}, nil
 }
+
 // 调用微服务
 func (r *rpcRequest) RPC(ctx context.Context) (res *RpcResponse, err error) {
 
