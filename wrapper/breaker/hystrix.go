@@ -17,9 +17,19 @@ func (c *clientWrapper) Call(ctx context.Context, req client.Request, rsp interf
 	}, nil)
 }
 
-func NewClientWrapper() client.Wrapper {
-	hystrix.DefaultMaxConcurrent = 3
-	hystrix.DefaultTimeout = 2
+func NewClientWrapper(maxConcurrent, Timeout int) client.Wrapper {
+	if maxConcurrent == 0 {
+		hystrix.DefaultMaxConcurrent = 10
+	} else {
+		hystrix.DefaultMaxConcurrent = maxConcurrent
+	}
+	if Timeout == 0 {
+		hystrix.DefaultTimeout = 1000
+	}else{
+		hystrix.DefaultTimeout = Timeout
+	}
+
+
 	return func(c client.Client) client.Client {
 		return &clientWrapper{c}
 	}
