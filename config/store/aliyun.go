@@ -59,7 +59,7 @@ func (a *aliyunConf) GetConfig(options ...string) (interface{}, error) {
 }
 
 //options  0:DataId,1:Group;
-func (a *aliyunConf) ListenConfig(f func(string), options ...string) {
+func (a *aliyunConf) ListenConfig(f func(interface{}), options ...string) {
 	client.ListenConfig(vo.ConfigParam{
 		DataId: options[0],
 		Group:  options[1],

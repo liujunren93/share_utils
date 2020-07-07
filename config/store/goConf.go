@@ -20,7 +20,7 @@ func (g goConf) GetConfig(options ...string) (interface{}, error) {
 	//return g.Conf.Map(), nil
 }
 
-func (g goConf) ListenConfig(f func(string), options ...string) {
+func (g goConf) ListenConfig(f func(interface{}), options ...string) {
 	watch, _ := g.conf.Watch(options...)
 	for {
 		next, err := watch.Next()

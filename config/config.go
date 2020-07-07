@@ -4,7 +4,7 @@ func GetConfig(confInterface ConfInterface, options ...string) (interface{}, err
 	return confInterface.GetConfig(options...)
 }
 
-func ListenConfig(confInterface ConfInterface, f func(data string), options ...string) {
+func ListenConfig(confInterface ConfInterface, f func(data interface{}), options ...string) {
 	go confInterface.ListenConfig(f, options...)
 
 }
