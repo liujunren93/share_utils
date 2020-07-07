@@ -22,10 +22,11 @@ type Base struct {
 type ModelError struct {
 	Code int32 //4004 资源不存在,5000 系统异常 5001 sql异常，其余原样输出
 	Msg  string
+	err  error
 }
 
-func (Base) NewError(code int32, err string) *ModelError {
-	return &ModelError{Code: code, Msg: err}
+func (Base) NewError(code int32, errStr string, err error) *ModelError {
+	return &ModelError{Code: code, Msg: errStr, err: err}
 }
 
 func (m ModelError) GetMsg() string {
