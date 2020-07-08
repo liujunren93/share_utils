@@ -6,8 +6,9 @@ import (
 )
 
 type Option interface {
-	getCode() int32
-	getMsg() string
+	GetCode() int32
+	GetMsg() string
+	GetData() interface{}
 }
 
 // 响应
@@ -40,19 +41,19 @@ var (
 	}
 )
 
-func (r httpResponse) getCode() int32 {
+func (r httpResponse) GetCode() int32 {
 	return int32(r.Code)
 }
 
-func (r httpResponse) getMsg() string {
+func (r httpResponse) GetMsg() string {
 	return r.Msg
 }
 
 //others[0] status,others[1] data
 func Response(o Option, w http.ResponseWriter, data interface{}) error {
 	resData := httpResponse{
-		Code: o.getCode(),
-		Msg:  o.getMsg(),
+		Code: o.GetCode(),
+		Msg:  o.GetMsg(),
 		Data: data,
 	}
 	marshal, err := json.Marshal(resData)
