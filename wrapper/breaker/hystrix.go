@@ -2,6 +2,7 @@ package breaker
 
 import (
 	"context"
+	"fmt"
 	"github.com/afex/hystrix-go/hystrix"
 	"github.com/micro/go-micro/v2/client"
 )
@@ -18,6 +19,7 @@ func (c *clientWrapper) Call(ctx context.Context, req client.Request, rsp interf
 }
 
 func NewClientWrapper(maxConcurrent, Timeout int) client.Wrapper {
+	fmt.Println(111111)
 	if maxConcurrent == 0 {
 		hystrix.DefaultMaxConcurrent = 10
 	} else {
