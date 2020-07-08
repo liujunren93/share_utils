@@ -8,7 +8,6 @@ import (
 type Option interface {
 	GetCode() int32
 	GetMsg() string
-	GetData() interface{}
 }
 
 // 响应
