@@ -6,61 +6,56 @@ import (
 )
 
 type Option interface {
-	GetCode() int32
-	GetMsg() string
-	GetData() interface{}
+	getCode() int32
+	getMsg() string
 }
 
 // 响应
-type HttpResponse struct {
+type httpResponse struct {
 	Code int32       `json:"code"`
 	Msg  string      `json:"msg"`
 	Data interface{} `json:"data"`
 }
 
 var (
-	Success = HttpResponse{
+	Success = httpResponse{
 		Code: 200,
 		Msg:  "ok",
-		Data: nil,
 	}
-	BindingError = HttpResponse{
+	BindingError = httpResponse{
 		Code: 4001,
 		Msg:  "Data verification failed",
-		Data: nil,
 	}
-	InternalServerError = HttpResponse{
+	InternalServerError = httpResponse{
 		Code: 5000,
 		Msg:  "Internal server error",
-		Data: nil,
 	}
-	DataError = HttpResponse{
+	DataError = httpResponse{
 		Code: 5001,
 		Msg:  "Data error",
-		Data: nil,
 	}
-	OtherError = HttpResponse{
+	OtherError = httpResponse{
 		Code: 0,
 		Msg:  "",
-		Data: nil,
 	}
 )
 
-func (r HttpResponse) GetCode() int32 {
+func (r httpResponse) getCode() int32 {
 	return int32(r.Code)
 }
 
-func (r HttpResponse) GetMsg() string {
+func (r httpResponse) getMsg() string {
 	return r.Msg
-}
-func (r HttpResponse) GetData() interface{} {
-	return r.Data
 }
 
 //others[0] status,others[1] data
-func (HttpResponse) Response(o Option, w http.ResponseWriter, others ...interface{}) error {
-
-	marshal, err := json.Marshal(o)
+func Response(o Option, w http.ResponseWriter, data interface{}) error {
+	resData := httpResponse{
+		Code: o.getCode(),
+		Msg:  o.getMsg(),
+		Data: data,
+	}
+	marshal, err := json.Marshal(resData)
 	w.WriteHeader(200)
 	w.Write(marshal)
 	return err
