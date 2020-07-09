@@ -25,9 +25,9 @@ type ModelError struct {
 }
 
 var (
-	DataErr             = ModelError{Code: 5001, Msg: "data error"}
-	InternalServerError = ModelError{Code: 5000, Msg: "Internal Server Error"}
-	NotFound            = ModelError{Code: 4004, Msg: "数据不存在"}
+	DataErr             = &ModelError{Code: 5001, Msg: "data error"}
+	InternalServerError = &ModelError{Code: 5000, Msg: "Internal Server Error"}
+	NotFound            = &ModelError{Code: 4004, Msg: "数据不存在"}
 )
 
 func (m ModelError) Error() string {
