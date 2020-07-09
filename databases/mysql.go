@@ -24,6 +24,11 @@ type ModelError struct {
 	Msg  string
 }
 
+var (
+	DataErr             = ModelError{Msg: "data error", Code: 5001}
+	InternalServerError = ModelError{Code: 5000, Msg: "Internal Server Error"}
+)
+
 func (m ModelError) Error() string {
 	return m.Msg
 }
@@ -32,13 +37,4 @@ func (Base) NewError(code int32, err string) *ModelError {
 	return &ModelError{Code: code, Msg: err}
 }
 
-func (m ModelError) GetMsg() string {
-	switch m.Code {
-	case 5000:
-		return "Internal Server Error"
-	case 5001:
-		return "data error"
-	default:
-		return m.Msg
-	}
-}
+
