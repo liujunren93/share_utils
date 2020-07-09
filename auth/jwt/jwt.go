@@ -11,15 +11,15 @@ type Claims struct {
 	jwt.StandardClaims
 }
 
-func CreateToken(data interface{}, jwtSecret string) string {
-
+func CreateToken(data interface{}, jwtSecret string, ExpiresTime int64) string {
 	claims := Claims{
 		data: data,
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Unix() + 3600*24*30,
+			ExpiresAt: time.Now().Unix() + ExpiresTime,
 			IssuedAt:  time.Now().Unix(),
 		},
 	}
+
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	signedString, er := token.SignedString([]byte(jwtSecret))
 	if er != nil {
@@ -40,6 +40,7 @@ func CheckToken(tokenString, JwtSecret string) (*Claims, bool) {
 	if claims, ok := token.Claims.(*Claims); ok && token.Valid {
 		return claims, true
 	}
+
 	return nil, false
 }
 
