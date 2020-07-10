@@ -63,13 +63,17 @@ func Response(o Option, w http.ResponseWriter, data interface{}) error {
 	w.Write(marshal)
 	return err
 }
+
 //通过反射 设置data
-func RpcResponse(a Option, data interface{}) error {
+func RpcResponse(a Option, code int32, msg string, data interface{}) error {
 	of := reflect.ValueOf(a)
 	if of.Kind() != reflect.Ptr && !of.Elem().CanSet() {
 		return errors.New("filed")
 	}
-	name := of.Elem().FieldByName("Data")
-	name.Set(reflect.ValueOf(data))
+	elem := of.Elem()
+	Data := elem.FieldByName("Data")
+	Data.Set(reflect.ValueOf(data))
+	elem.FieldByName("Code").SetInt(int64(code))
+	elem.FieldByName("Msg").SetString(msg)
 	return nil
 }
