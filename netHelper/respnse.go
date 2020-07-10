@@ -1,4 +1,4 @@
-package httpHelper
+package netHelper
 
 import (
 	"encoding/json"
