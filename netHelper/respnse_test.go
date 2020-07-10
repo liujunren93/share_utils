@@ -1,8 +1,6 @@
 package netHelper
 
 import (
-	"fmt"
-	"reflect"
 	"testing"
 )
 
@@ -20,7 +18,7 @@ func (User) getname() {
 
 }
 func TestRpcResponse(t *testing.T) {
-	a := 1
+	RpcResponse(&Success,200,"sss",nil)
 
 
 }
