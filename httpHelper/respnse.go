@@ -2,7 +2,9 @@ package httpHelper
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
+	"reflect"
 )
 
 type Option interface {
@@ -11,46 +13,47 @@ type Option interface {
 }
 
 // 响应
-type httpResponse struct {
+type HttpResponse struct {
 	Code int32       `json:"code"`
 	Msg  string      `json:"msg"`
 	Data interface{} `json:"data"`
 }
 
 var (
-	Success = httpResponse{
+	Success = HttpResponse{
 		Code: 200,
 		Msg:  "ok",
+		Data: 1,
 	}
-	BindingError = httpResponse{
+	BindingError = HttpResponse{
 		Code: 4001,
 		Msg:  "Data verification failed",
 	}
-	InternalServerError = httpResponse{
+	InternalServerError = HttpResponse{
 		Code: 5000,
 		Msg:  "Internal server error",
 	}
-	DataError = httpResponse{
+	DataError = HttpResponse{
 		Code: 5001,
 		Msg:  "Data error",
 	}
-	OtherError = httpResponse{
+	OtherError = HttpResponse{
 		Code: 0,
 		Msg:  "",
 	}
 )
 
-func (r httpResponse) GetCode() int32 {
+func (r HttpResponse) GetCode() int32 {
 	return int32(r.Code)
 }
 
-func (r httpResponse) GetMsg() string {
+func (r HttpResponse) GetMsg() string {
 	return r.Msg
 }
 
 //others[0] status,others[1] data
 func Response(o Option, w http.ResponseWriter, data interface{}) error {
-	resData := httpResponse{
+	resData := HttpResponse{
 		Code: o.GetCode(),
 		Msg:  o.GetMsg(),
 		Data: data,
@@ -59,5 +62,14 @@ func Response(o Option, w http.ResponseWriter, data interface{}) error {
 	w.WriteHeader(200)
 	w.Write(marshal)
 	return err
-
+}
+//通过反射 设置data
+func RpcResponse(a Option, data interface{}) error {
+	of := reflect.ValueOf(a)
+	if of.Kind() != reflect.Ptr && !of.Elem().CanSet() {
+		return errors.New("filed")
+	}
+	name := of.Elem().FieldByName("Data")
+	name.Set(reflect.ValueOf(data))
+	return nil
 }
