@@ -52,11 +52,15 @@ func (r HttpResponse) GetMsg() string {
 }
 
 //others[0] status,others[1] data
-func Response(o Option, w http.ResponseWriter, data interface{}) error {
+func Response(o Option, w http.ResponseWriter, msg string, data interface{}) error {
+
 	resData := HttpResponse{
 		Code: o.GetCode(),
 		Msg:  o.GetMsg(),
 		Data: data,
+	}
+	if msg == "" {
+		resData.Msg = msg
 	}
 	marshal, err := json.Marshal(resData)
 	w.WriteHeader(200)
