@@ -59,7 +59,7 @@ func Response(o Option, w http.ResponseWriter, msg string, data interface{}) err
 		Msg:  o.GetMsg(),
 		Data: data,
 	}
-	if msg == "" {
+	if msg != "" {
 		resData.Msg = msg
 	}
 	marshal, err := json.Marshal(resData)
