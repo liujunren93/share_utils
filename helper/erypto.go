@@ -12,3 +12,5 @@ func Sha1Str(str string) string {
 
 	return fmt.Sprintf("%x", hash.Sum(nil))
 }
+
+
