@@ -29,7 +29,8 @@ func (e *microConf) PublishConfig(...interface{}) (bool, error) {
 func (e *microConf) GetConfig(options ...string) (interface{}, error) {
 	fmt.Println(options)
 	get := e.conf.Get(options...)
-
+	m := e.conf.Map()
+	fmt.Println(m)
 	return get.Bytes(), nil
 }
 
