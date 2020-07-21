@@ -11,7 +11,6 @@ type etcdConf struct {
 
 func NewEtcdStore() (*etcdConf, error) {
 	newConfig, err := config.NewConfig()
-
 	if err != nil {
 		return nil, err
 	}
