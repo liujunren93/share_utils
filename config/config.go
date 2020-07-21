@@ -3,7 +3,6 @@ package config
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"reflect"
 )
 
@@ -30,7 +29,7 @@ func GetConfig(confInterface ConfInterface, resData interface{}, options ...stri
 	default:
 		return TypeErr
 	}
-	fmt.Println(string(NewConf))
+
 	return json.Unmarshal(NewConf, resData)
 
 }

@@ -3,17 +3,20 @@ package store
 import (
 	"fmt"
 	"github.com/micro/go-micro/v2/config"
+	"github.com/micro/go-micro/v2/config/source"
 )
 
 type etcdConf struct {
 	conf config.Config
 }
 
-func NewEtcdStore() (*etcdConf, error) {
+func NewEtcdStore(source source.Source) (*etcdConf, error) {
 	newConfig, err := config.NewConfig()
 	if err != nil {
 		return nil, err
 	}
+
+	newConfig.Load(source)
 	return &etcdConf{
 		conf: newConfig,
 	}, nil
@@ -24,8 +27,9 @@ func (e *etcdConf) PublishConfig(...interface{}) (bool, error) {
 }
 
 func (e *etcdConf) GetConfig(options ...string) (interface{}, error) {
+	fmt.Println(options)
 	get := e.conf.Get(options...)
-	fmt.Println(get)
+
 	return get.Bytes(), nil
 }
 
