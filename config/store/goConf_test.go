@@ -12,9 +12,7 @@ type authStr struct {
 }
 
 func TestNewGoConf(t *testing.T) {
-
 	source := etcd.NewSource(etcd.WithAddress())
-
 	//var name  authStr
 	store, _ := NewEtcdStore(source)
 
