@@ -8,23 +8,10 @@ import (
 )
 
 type aliyunConf struct {
-	accessKey string
-	secretKey string
-	endpoint  string
-	content   string
-}
-
-var (
 	client config_client.IConfigClient
-)
+}
 
 func NewAliyunStore(accessKey, secretKey, namespaceId, endpoint string) (*aliyunConf, error) {
-	aliyun := aliyunConf{}
-	err := initClient(accessKey, secretKey, namespaceId, endpoint)
-	return &aliyun, err
-}
-
-func initClient(accessKey, secretKey, namespaceId, endpoint string) error {
 	clientConfig := constant.ClientConfig{
 		Endpoint:       endpoint + ":8080",
 		NamespaceId:    namespaceId,
@@ -33,16 +20,19 @@ func initClient(accessKey, secretKey, namespaceId, endpoint string) error {
 		TimeoutMs:      5 * 1000,
 		ListenInterval: 30 * 1000,
 	}
-	var err error
-	client, err = clients.CreateConfigClient(map[string]interface{}{
+
+	// Initialize client.
+	configClient, err := clients.CreateConfigClient(map[string]interface{}{
 		"clientConfig": clientConfig,
 	})
-	return err
+
+	return &aliyunConf{client: configClient}, err
 }
 
 //options  0:DataId,1:Group;2:Content
 func (a *aliyunConf) PublishConfig(options ...interface{}) (bool, error) {
-	return client.PublishConfig(vo.ConfigParam{
+
+	return a.client.PublishConfig(vo.ConfigParam{
 		DataId:  options[0].(string),
 		Group:   options[1].(string),
 		Content: (options[2]).(string),
@@ -51,16 +41,20 @@ func (a *aliyunConf) PublishConfig(options ...interface{}) (bool, error) {
 
 //options  0:DataId,1:Group;
 func (a *aliyunConf) GetConfig(options ...string) (interface{}, error) {
-	return client.GetConfig(vo.ConfigParam{
-		DataId: options[0],
-		Group:  options[1],
-	})
+
+	var dataId = "mysql"
+	var group = "test"
+
+	// Get plain content from ACM.
+	return a.client.GetConfig(vo.ConfigParam{
+		DataId: dataId,
+		Group:  group})
 
 }
 
 //options  0:DataId,1:Group;
 func (a *aliyunConf) ListenConfig(f func(interface{}), options ...string) {
-	client.ListenConfig(vo.ConfigParam{
+	a.client.ListenConfig(vo.ConfigParam{
 		DataId: options[0],
 		Group:  options[1],
 		OnChange: func(namespace, group, dataId, data string) {
@@ -72,7 +66,7 @@ func (a *aliyunConf) ListenConfig(f func(interface{}), options ...string) {
 
 //
 func (a *aliyunConf) DeleteConfig(options ...string) (bool, error) {
-	return client.DeleteConfig(vo.ConfigParam{
+	return a.client.DeleteConfig(vo.ConfigParam{
 		DataId: options[0],
 		Group:  options[1],
 	})
