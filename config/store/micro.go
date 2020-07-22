@@ -1,7 +1,6 @@
 package store
 
 import (
-	"fmt"
 	"github.com/micro/go-micro/v2/config"
 	"github.com/micro/go-micro/v2/config/source"
 )
@@ -27,15 +26,15 @@ func (e *microConf) PublishConfig(...interface{}) (bool, error) {
 }
 
 func (e *microConf) GetConfig(options ...string) (interface{}, error) {
-	fmt.Println(options)
+
 	get := e.conf.Get(options...)
-	m := e.conf.Map()
-	fmt.Println(m)
+
 	return get.Bytes(), nil
 }
 
 func (e *microConf) ListenConfig(f func(interface{}), options ...string) {
 	watch, _ := e.conf.Watch(options...)
+
 	for {
 		next, err := watch.Next()
 		if err == nil {

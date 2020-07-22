@@ -2,22 +2,33 @@ package store
 
 import (
 	"fmt"
-	"github.com/micro/go-micro/v2/config/source/etcd"
+	"github.com/micro/go-micro/v2/config/source/file"
+	"github.com/shareChina/utils/config"
 	"testing"
+	"time"
 )
 
-type authStr struct {
-	AccessKey string `json:"access_key"`
-	SecretKey string `json:"secret_key"`
+type app struct {
+	ServerName    string `json:"service_name"`
+	ServerVersion string `json:"server_version"`
+	ServerAddress string `json:"server_address"`
+	//RunMode         string `json:"run_mode"`
+	RegistryAddress string `json:"registry_address"`
 }
 
-func TestNewGoConf(t *testing.T) {
-	source := etcd.NewSource(etcd.WithAddress())
-	//var name  authStr
-	store, _ := NewEtcdStore(source)
+var AppConf *app
 
-	getConfig, err2 := store.GetConfig("micro", "config", "acm", "auth")
-	fmt.Println(getConfig, err2)
-	//err := config.GetConfig(store, &name, "micro", "config", "acm", "auth")
-	//fmt.Println(err,name)
+func TestNewGoConf(t *testing.T) {
+
+	newSource := file.NewSource(
+		file.WithPath("./init.yml"),
+	)
+	//AppConf.RunMode = *runMode
+	microStore, err := NewMicroStore(newSource)
+	config.ListenConfig(microStore, func(i interface{}) {
+		fmt.Println(i)
+	})
+
+	fmt.Println(AppConf,err)
+	time.Sleep(time.Hour)
 }

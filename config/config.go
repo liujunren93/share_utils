@@ -34,9 +34,9 @@ func GetConfig(confInterface ConfInterface, resData interface{}, options ...stri
 
 }
 
-func ListenConfig(confInterface ConfInterface, f func(data interface{}), options ...string) {
-	go confInterface.ListenConfig(f, options...)
-
+func ListenConfig(confInterface ConfInterface, f func(interface{}), options ...string) error {
+	confInterface.ListenConfig(f)
+	return nil
 }
 
 func DeleteConfig(confInterface ConfInterface, options ...string) (bool, error) {
