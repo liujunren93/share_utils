@@ -26,15 +26,12 @@ func (e *microConf) PublishConfig(...interface{}) (bool, error) {
 }
 
 func (e *microConf) GetConfig(options ...string) (interface{}, error) {
-
 	get := e.conf.Get(options...)
-
 	return get.Bytes(), nil
 }
 
 func (e *microConf) ListenConfig(f func(interface{}), options ...string) {
 	watch, _ := e.conf.Watch(options...)
-
 	for {
 		next, err := watch.Next()
 		if err == nil {
