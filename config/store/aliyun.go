@@ -42,13 +42,12 @@ func (a *aliyunConf) PublishConfig(options ...interface{}) (bool, error) {
 //options  0:DataId,1:Group;
 func (a *aliyunConf) GetConfig(options ...string) (interface{}, error) {
 
-	var dataId = "mysql"
-	var group = "test"
-
 	// Get plain content from ACM.
 	return a.client.GetConfig(vo.ConfigParam{
-		DataId: dataId,
-		Group:  group})
+		DataId: options[0],
+		Group:  options[1],
+	},
+	)
 
 }
 
