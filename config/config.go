@@ -34,7 +34,8 @@ func GetConfig(confInterface ConfInterface, resData interface{}, options ...stri
 }
 
 func ListenConfig(confInterface ConfInterface, f func(interface{}), options ...string) {
-	go confInterface.ListenConfig(f, options...)
+	fmt.Println(123232)
+	confInterface.ListenConfig(f, options...)
 
 }
 
