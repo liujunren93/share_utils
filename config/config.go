@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/ghodss/yaml"
 	"reflect"
+	"fmt"
 )
 
 var TypeErr = errors.New("Type mismatch")
