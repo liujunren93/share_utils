@@ -17,7 +17,7 @@ func NewAliyunStore(accessKey, secretKey, namespaceId, endpoint string) (*aliyun
 		NamespaceId:    namespaceId,
 		AccessKey:      accessKey,
 		SecretKey:      secretKey,
-		TimeoutMs:      5 * 1000,
+		TimeoutMs:      500 * 1000,
 		ListenInterval: 30 * 1000,
 		LogDir: "./logs",
 		CacheDir: "./cache",
