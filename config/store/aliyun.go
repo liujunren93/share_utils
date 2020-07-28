@@ -19,6 +19,8 @@ func NewAliyunStore(accessKey, secretKey, namespaceId, endpoint string) (*aliyun
 		SecretKey:      secretKey,
 		TimeoutMs:      5 * 1000,
 		ListenInterval: 30 * 1000,
+		LogDir: "./logs",
+		CacheDir: "./cache",
 	}
 	// Initialize client.
 	configClient, err := clients.CreateConfigClient(map[string]interface{}{
