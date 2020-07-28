@@ -22,12 +22,12 @@ func GetConfig(confInterface ConfInterface, resData interface{}, options ...stri
 	}
 	var NewConf []byte
 	switch config.(type) {
-	case []byte:
-		NewConf = config.([]byte)
-	case string:
-		NewConf = []byte(config.(string))
-	default:
-		return TypeErr
+		case []byte:
+			NewConf = config.([]byte)
+		case string:
+			NewConf = []byte(config.(string))
+		default:
+			return TypeErr
 	}
 	return yaml.Unmarshal(NewConf, resData)
 
