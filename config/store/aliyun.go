@@ -20,7 +20,6 @@ func NewAliyunStore(accessKey, secretKey, namespaceId, endpoint string) (*aliyun
 		TimeoutMs:      5 * 1000,
 		ListenInterval: 30 * 1000,
 	}
-
 	// Initialize client.
 	configClient, err := clients.CreateConfigClient(map[string]interface{}{
 		"clientConfig": clientConfig,

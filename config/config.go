@@ -4,7 +4,6 @@ import (
 	"errors"
 	"github.com/ghodss/yaml"
 	"reflect"
-	"fmt"
 )
 
 var TypeErr = errors.New("Type mismatch")
@@ -35,7 +34,7 @@ func GetConfig(confInterface ConfInterface, resData interface{}, options ...stri
 }
 
 func ListenConfig(confInterface ConfInterface, f func(interface{}), options ...string) {
-	fmt.Println(123232)
+
 	confInterface.ListenConfig(f, options...)
 
 }
