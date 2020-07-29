@@ -25,14 +25,18 @@ var (
 		Msg:  "ok",
 		Data: 1,
 	}
+
+	//请求参数不匹配
 	BindingError = HttpResponse{
-		Code: 4001,
+		Code: 4000,
 		Msg:  "Data verification failed",
 	}
+	//
 	InternalServerError = HttpResponse{
 		Code: 5000,
 		Msg:  "Internal server error",
 	}
+	//数据错误
 	DataError = HttpResponse{
 		Code: 5001,
 		Msg:  "Data error",
