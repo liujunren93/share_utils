@@ -7,7 +7,7 @@ import (
 	"reflect"
 )
 
-type Option interface {
+type Return interface {
 	GetCode() int32
 	GetMsg() string
 }
@@ -21,29 +21,7 @@ type HttpResponse struct {
 	Data interface{} `json:"data"`
 }
 
-var (
-	Success = HttpResponse{
-		Code: 200,
-		Msg:  "ok",
-		Data: 1,
-	}
-	BindingError = HttpResponse{
-		Code: 4001,
-		Msg:  "Data verification failed",
-	}
-	InternalServerError = HttpResponse{
-		Code: 5000,
-		Msg:  "Internal server error",
-	}
-	DataError = HttpResponse{
-		Code: 5001,
-		Msg:  "Data error",
-	}
-	OtherError = HttpResponse{
-		Code: 0,
-		Msg:  "",
-	}
-)
+
 
 func (r HttpResponse) GetCode() int32 {
 	return int32(r.Code)
@@ -54,11 +32,11 @@ func (r HttpResponse) GetMsg() string {
 }
 
 //others[0] status,others[1] data
-func Response(o Option, w http.ResponseWriter, msg string, data interface{}) error {
+func Response(r Return, w http.ResponseWriter, msg string, data interface{}) error {
 
 	resData := HttpResponse{
-		Code: o.GetCode(),
-		Msg:  o.GetMsg(),
+		Code: r.GetCode(),
+		Msg:  r.GetMsg(),
 		Data: data,
 	}
 	if msg != "" {
@@ -71,9 +49,9 @@ func Response(o Option, w http.ResponseWriter, msg string, data interface{}) err
 }
 
 //通过反射 设置data
-func RpcResponse(a Option, code int32, msg string, data interface{}) error {
+func RpcResponse(r Return, code int32, msg string, data interface{}) error {
 
-	of := reflect.ValueOf(a)
+	of := reflect.ValueOf(r)
 	if of.Kind() != reflect.Ptr && !of.Elem().CanSet() {
 		return errors.New("filed")
 	}
