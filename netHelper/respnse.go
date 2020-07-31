@@ -23,13 +23,6 @@ type HttpResponse struct {
 
 
 
-func (r HttpResponse) GetCode() int32 {
-	return int32(r.Code)
-}
-
-func (r HttpResponse) GetMsg() string {
-	return r.Msg
-}
 
 //others[0] status,others[1] data
 func Response(r Return, w http.ResponseWriter, msg string, data interface{}) error {

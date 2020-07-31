@@ -1,22 +1,22 @@
 package netHelper
 
-type fixedCode int32
+type Status int32
 
-func (f fixedCode) GetCode() int32 {
+func (f Status) GetCode() int32 {
 	return int32(f)
 }
 
 const (
-	StatusOK                  fixedCode = 200
-	StatusBadRequest          fixedCode = 400
-	StatusUnauthorized        fixedCode = 4001
-	StatusForbidden           fixedCode = 4003
-	StatusNotFound            fixedCode = 4004
-	StatusInternalServerError fixedCode = 5000
-	statusDataError           fixedCode = 5001
+	StatusOK                  Status = 200
+	StatusBadRequest          Status = 400
+	StatusUnauthorized        Status = 4001
+	StatusForbidden           Status = 4003
+	StatusNotFound            Status = 4004
+	StatusInternalServerError Status = 5000
+	statusDataError           Status = 5001
 )
 
-func (f fixedCode) GetMsg() (msg string) {
+func (f Status) GetMsg() (msg string) {
 
 	switch f {
 	case StatusOK:
@@ -33,6 +33,8 @@ func (f fixedCode) GetMsg() (msg string) {
 		msg = "Status Internal Server Error"
 	case statusDataError:
 		msg = "status Data Error"
+	default:
+
 	}
 	return
 }
