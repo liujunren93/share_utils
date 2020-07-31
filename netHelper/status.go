@@ -8,7 +8,7 @@ func (f Status) GetCode() int32 {
 
 const (
 	StatusOK                  Status = 200
-	StatusBadRequest          Status = 400
+	StatusBadRequest          Status = 4000
 	StatusUnauthorized        Status = 4001
 	StatusForbidden           Status = 4003
 	StatusNotFound            Status = 4004
