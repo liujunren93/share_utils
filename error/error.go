@@ -1,6 +1,6 @@
 package error
 
 type DataError interface {
-	Code()int32
+	GetCode()int32
 	error
 }
