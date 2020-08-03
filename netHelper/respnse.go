@@ -36,7 +36,6 @@ func Response(r Return, w http.ResponseWriter, msg string, data interface{}) err
 	w.Write(marshal)
 	return err
 }
-
 //通过反射 设置data rpc response
 func RpcResponse(r Return, code helper.Status, msg string, data interface{}) error {
 	of := reflect.ValueOf(r)
