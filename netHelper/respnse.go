@@ -3,7 +3,6 @@ package netHelper
 import (
 	"encoding/json"
 	"errors"
-	"github.com/shareChina/utils/helper"
 	"net/http"
 	"reflect"
 )
@@ -37,7 +36,7 @@ func Response(r Return, w http.ResponseWriter, msg string, data interface{}) err
 	return err
 }
 //通过反射 设置data rpc response
-func RpcResponse(r Return, code helper.Status, msg string, data interface{}) error {
+func RpcResponse(r Return, code Return, msg string, data interface{}) error {
 	of := reflect.ValueOf(r)
 	if of.Kind() != reflect.Ptr && !of.Elem().CanSet() {
 		return errors.New("filed")
@@ -49,7 +48,7 @@ func RpcResponse(r Return, code helper.Status, msg string, data interface{}) err
 		Data.Set(reflect.ValueOf(data))
 	}
 
-	elem.FieldByName("Code").SetInt(int64(code))
+	elem.FieldByName("Code").SetInt(int64(code.GetCode()))
 	elem.FieldByName("Msg").SetString(msg)
 	return nil
 }

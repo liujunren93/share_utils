@@ -8,6 +8,10 @@ type dataError struct {
 	Msg  string
 }
 
+func (m dataError) GetMsg() string {
+	return m.Msg
+}
+
 func (m dataError) GetCode() int32 {
 	return int32(m.Code)
 }
@@ -17,5 +21,5 @@ func (m dataError) Error() string {
 }
 //database
 func NewError(code helper.Status, err string) dataError {
-	return &dataError{Code: code, Msg: err}
+	return dataError{Code: code, Msg: err}
 }
