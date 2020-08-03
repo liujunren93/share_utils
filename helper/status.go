@@ -31,7 +31,7 @@ func (f Status) GetMsg() (msg string) {
 		msg = "Status Not Found"
 	case StatusInternalServerError:
 		msg = "Status Internal Server Error"
-	case statusDataError:
+	case StatusDataError:
 		msg = "status Data Error"
 	default:
 
