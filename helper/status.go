@@ -1,9 +1,6 @@
 package helper
 
 type Status int32
-
-
-
 func (f Status) Error() string {
 	return f.GetMsg()
 }
@@ -11,7 +8,6 @@ func (f Status) Error() string {
 func (f Status) GetCode() int32 {
 	return int32(f)
 }
-
 const (
 	StatusOK                  Status = 200//success
 	StatusBadRequest          Status = 4000 //数据绑定错误
