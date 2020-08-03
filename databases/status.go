@@ -12,8 +12,8 @@ type ModelError struct {
 func (m ModelError) Error() string {
 	return m.Msg
 }
-
-func (Base) NewError(code helper.Status, err string) *ModelError {
+//database
+func  NewError(code helper.Status, err string) *ModelError {
 	return &ModelError{Code: code, Msg: err}
 }
 
