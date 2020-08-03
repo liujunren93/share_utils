@@ -3,6 +3,7 @@ package netHelper
 import (
 	"encoding/json"
 	"errors"
+	"github.com/shareChina/utils/helper"
 	"net/http"
 	"reflect"
 )
@@ -42,7 +43,7 @@ func Response(r Return, w http.ResponseWriter, msg string, data interface{}) err
 }
 
 //通过反射 设置data
-func RpcResponse(r Return, code Status, msg string, data interface{}) error {
+func RpcResponse(r Return, code helper.Status, msg string, data interface{}) error {
 
 	of := reflect.ValueOf(r)
 	if of.Kind() != reflect.Ptr && !of.Elem().CanSet() {

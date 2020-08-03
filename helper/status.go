@@ -1,4 +1,4 @@
-package netHelper
+package helper
 
 type Status int32
 
