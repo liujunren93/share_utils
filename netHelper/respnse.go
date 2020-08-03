@@ -21,13 +21,8 @@ type HttpResponse struct {
 	Msg  string      `json:"msg"`
 	Data interface{} `json:"data"`
 }
-
-
-
-
 //
 func Response(r Return, w http.ResponseWriter, msg string, data interface{}) error {
-
 	resData := HttpResponse{
 		Code: r.GetCode(),
 		Msg:  r.GetMsg(),
