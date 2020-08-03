@@ -25,7 +25,7 @@ type HttpResponse struct {
 
 
 
-//others[0] status,others[1] data
+//
 func Response(r Return, w http.ResponseWriter, msg string, data interface{}) error {
 
 	resData := HttpResponse{
@@ -44,7 +44,6 @@ func Response(r Return, w http.ResponseWriter, msg string, data interface{}) err
 
 //通过反射 设置data
 func RpcResponse(r Return, code helper.Status, msg string, data interface{}) error {
-
 	of := reflect.ValueOf(r)
 	if of.Kind() != reflect.Ptr && !of.Elem().CanSet() {
 		return errors.New("filed")
@@ -52,7 +51,6 @@ func RpcResponse(r Return, code helper.Status, msg string, data interface{}) err
 	elem := of.Elem()
 	Data := elem.FieldByName("Data")
 	dataOf := reflect.ValueOf(data)
-
 	if dataOf.IsValid() {
 		Data.Set(reflect.ValueOf(data))
 	}
