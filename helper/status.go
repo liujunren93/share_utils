@@ -7,12 +7,12 @@ func (f Status) GetCode() int32 {
 }
 
 const (
-	StatusOK                  Status = 200
-	StatusBadRequest          Status = 4000
-	StatusUnauthorized        Status = 4001
-	StatusForbidden           Status = 4003
-	StatusNotFound            Status = 4004
-	StatusInternalServerError Status = 5000
+	StatusOK                  Status = 200//success
+	StatusBadRequest          Status = 4000 //数据绑定错误
+	StatusUnauthorized        Status = 4001 //账户类错误
+	StatusForbidden           Status = 4003 //权限
+	StatusNotFound            Status = 4004 //
+	StatusInternalServerError Status = 5000 //服务器未知错误
 	StatusDataError           Status = 5001 //database err
 )
 
