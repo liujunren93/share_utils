@@ -19,21 +19,21 @@ const (
 func (f Status) GetMsg() (msg string) {
 
 	switch f {
-	case StatusOK:
-		msg = "ok"
-	case StatusBadRequest:
-		msg = "Request Data Error"
-	case StatusUnauthorized:
-		msg = "Status Unauthorized"
-	case StatusForbidden:
-		msg = "Status Forbidden"
-	case StatusNotFound:
-		msg = "Status Not Found"
-	case StatusInternalServerError:
-		msg = "Status Internal Server Error"
-	case StatusDataError:
-		msg = "status Data Error"
-	default:
+		case StatusOK:
+			msg = "ok"
+		case StatusBadRequest:
+			msg = "Request Data Error"
+		case StatusUnauthorized:
+			msg = "Status Unauthorized"
+		case StatusForbidden:
+			msg = "Status Forbidden"
+		case StatusNotFound:
+			msg = "Status Not Found"
+		case StatusInternalServerError:
+			msg = "Status Internal Server Error"
+		case StatusDataError:
+			msg = "status Data Error"
+		default:
 
 	}
 	return
