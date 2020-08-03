@@ -48,6 +48,7 @@ func RpcResponse(r Return, code helper.Status, msg string, data interface{}) err
 	if dataOf.IsValid() {
 		Data.Set(reflect.ValueOf(data))
 	}
+
 	elem.FieldByName("Code").SetInt(int64(code))
 	elem.FieldByName("Msg").SetString(msg)
 	return nil
