@@ -8,14 +8,14 @@ type dataError struct {
 	Msg  string
 }
 
-func (m *dataError) GetCode() int32 {
+func (m dataError) GetCode() int32 {
 	return int32(m.Code)
 }
 
-func (m *dataError) Error() string {
+func (m dataError) Error() string {
 	return m.Msg
 }
 //database
-func NewError(code helper.Status, err string) *dataError {
+func NewError(code helper.Status, err string) dataError {
 	return &dataError{Code: code, Msg: err}
 }
