@@ -13,7 +13,7 @@ const (
 	StatusForbidden           Status = 4003
 	StatusNotFound            Status = 4004
 	StatusInternalServerError Status = 5000
-	StatusDataError           Status = 5001
+	StatusDataError           Status = 5001 //database err
 )
 
 func (f Status) GetMsg() (msg string) {
