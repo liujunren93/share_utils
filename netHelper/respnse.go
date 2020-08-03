@@ -9,7 +9,7 @@ import (
 )
 
 type Return interface {
-	GetCode() int32
+	Code() int32
 	GetMsg() string
 }
 
