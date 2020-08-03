@@ -21,7 +21,7 @@ type HttpResponse struct {
 	Msg  string      `json:"msg"`
 	Data interface{} `json:"data"`
 }
-//
+//web response
 func Response(r Return, w http.ResponseWriter, msg string, data interface{}) error {
 	resData := HttpResponse{
 		Code: r.GetCode(),
@@ -37,7 +37,7 @@ func Response(r Return, w http.ResponseWriter, msg string, data interface{}) err
 	return err
 }
 
-//通过反射 设置data
+//通过反射 设置data rpc response
 func RpcResponse(r Return, code helper.Status, msg string, data interface{}) error {
 	of := reflect.ValueOf(r)
 	if of.Kind() != reflect.Ptr && !of.Elem().CanSet() {
