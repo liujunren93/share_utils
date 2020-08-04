@@ -7,31 +7,35 @@ import (
 	"github.com/nacos-group/nacos-sdk-go/vo"
 )
 
-type aliyunConf struct {
+type AcmConf struct {
 	client config_client.IConfigClient
 }
 
-func NewAliyunStore(accessKey, secretKey, namespaceId, endpoint string) (*aliyunConf, error) {
+func NewAliyunStore(accessKey, secretKey, namespaceId, endpoint, logDir, cacheDir string) (*AcmConf, error) {
 	clientConfig := constant.ClientConfig{
-		Endpoint:       endpoint + ":8080",
+		Endpoint:       endpoint,
 		NamespaceId:    namespaceId,
 		AccessKey:      accessKey,
 		SecretKey:      secretKey,
 		TimeoutMs:      500 * 1000,
 		ListenInterval: 60 * 1000,
-		LogDir: "./logs",
-		CacheDir: "./cache",
+	}
+	if  logDir==""{
+		clientConfig.LogDir=logDir
+	}
+	if  cacheDir==""{
+		clientConfig.CacheDir=cacheDir
 	}
 	// Initialize client.
 	configClient, err := clients.CreateConfigClient(map[string]interface{}{
 		"clientConfig": clientConfig,
 	})
 
-	return &aliyunConf{client: configClient}, err
+	return &AcmConf{client: configClient}, err
 }
 
 //options  0:DataId,1:Group;2:Content
-func (a *aliyunConf) PublishConfig(options ...interface{}) (bool, error) {
+func (a *AcmConf) PublishConfig(options ...interface{}) (bool, error) {
 
 	return a.client.PublishConfig(vo.ConfigParam{
 		DataId:  options[0].(string),
@@ -41,7 +45,7 @@ func (a *aliyunConf) PublishConfig(options ...interface{}) (bool, error) {
 }
 
 //options  0:DataId,1:Group;
-func (a *aliyunConf) GetConfig(options ...string) (interface{}, error) {
+func (a *AcmConf) GetConfig(options ...string) (interface{}, error) {
 
 	// Get plain content from ACM.
 	return a.client.GetConfig(vo.ConfigParam{
@@ -53,7 +57,7 @@ func (a *aliyunConf) GetConfig(options ...string) (interface{}, error) {
 }
 
 //options  0:DataId,1:Group;
-func (a *aliyunConf) ListenConfig(f func(interface{}), options ...string) {
+func (a *AcmConf) ListenConfig(f func(interface{}), options ...string) {
 	a.client.ListenConfig(vo.ConfigParam{
 		DataId: options[0],
 		Group:  options[1],
@@ -65,7 +69,7 @@ func (a *aliyunConf) ListenConfig(f func(interface{}), options ...string) {
 }
 
 //
-func (a *aliyunConf) DeleteConfig(options ...string) (bool, error) {
+func (a *AcmConf) DeleteConfig(options ...string) (bool, error) {
 	return a.client.DeleteConfig(vo.ConfigParam{
 		DataId: options[0],
 		Group:  options[1],
