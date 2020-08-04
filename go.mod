@@ -17,4 +17,5 @@ require (
 	github.com/sirupsen/logrus v1.6.0
 	github.com/uber/jaeger-client-go v2.25.0+incompatible
 	github.com/uber/jaeger-lib v2.2.0+incompatible // indirect
+	google.golang.org/protobuf v1.22.0
 )
