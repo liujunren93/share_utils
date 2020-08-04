@@ -1,26 +1,16 @@
 package helper
 
 type Status int32
-func (f Status) Error() string {
-	return f.GetMsg()
+func (s Status) Error() string {
+	return s.GetMsg()
 }
 
-func (f Status) GetCode() int32 {
-	return int32(f)
+func (s Status) GetCode() int32 {
+	return int32(s)
 }
-const (
-	StatusOK                  Status = 200//success
-	StatusBadRequest          Status = 4000 //数据绑定错误
-	StatusUnauthorized        Status = 4001 //账户类错误
-	StatusForbidden           Status = 4003 //权限
-	StatusNotFound            Status = 4004 //
-	StatusInternalServerError Status = 5000 //服务器未知错误
-	StatusDataError           Status = 5001 //database err
-)
 
-func (f Status) GetMsg() (msg string) {
-
-	switch f {
+func (s Status) GetMsg() (msg string) {
+	switch s {
 		case StatusOK:
 			msg = "ok"
 		case StatusBadRequest:
@@ -40,3 +30,12 @@ func (f Status) GetMsg() (msg string) {
 	}
 	return
 }
+const (
+	StatusOK                  Status = 200//success
+	StatusBadRequest          Status = 4000 //数据绑定错误
+	StatusUnauthorized        Status = 4001 //账户类错误
+	StatusForbidden           Status = 4003 //权限
+	StatusNotFound            Status = 4004 //
+	StatusInternalServerError Status = 5000 //服务器未知错误
+	StatusDataError           Status = 5001 //database err
+)
