@@ -2,17 +2,19 @@ package auth
 
 import (
 	"context"
+	"github.com/micro/go-micro/v2/metadata"
+
 	"github.com/micro/go-micro/v2/client"
 	"github.com/micro/go-micro/v2/registry"
-	context2 "github.com/shareChina/utils/context"
 )
 
 func NewClientAuthWrapper(token string) client.CallWrapper {
 	return func(cf client.CallFunc) client.CallFunc {
 		return func(ctx context.Context, node *registry.Node, req client.Request, rsp interface{}, opts client.CallOptions) error {
-			todo := context2.NewContext()
-			todo.Header.Store("token", token)
-			return cf(todo, node, req, rsp, opts)
+
+			ctx = metadata.Set(ctx, "Authorization", token)
+
+			return cf(ctx, node, req, rsp, opts)
 		}
 	}
 }
