@@ -56,9 +56,7 @@ func NewRPCRequest(service, endpoint, method, address string, request interface{
 
 // 调用微服务
 func (r *rpcRequest) RPC(ctx context.Context) (res *RpcResponse, err error) {
-
 	request := (*cmd.DefaultOptions().Client).NewRequest(r.service, r.endpoint, r.request, client.WithContentType("application/json"))
-
 	var opts []client.CallOption
 	if len(r.address) > 0 {
 		opts = append(opts, client.WithAddress(r.address))
@@ -75,7 +73,6 @@ func (r *rpcRequest) RPC(ctx context.Context) (res *RpcResponse, err error) {
 	if err != nil {
 		return
 	}
-
 	fmt.Println(string(marshalJSON), err)
 	err = json.Unmarshal(marshalJSON, &res)
 
