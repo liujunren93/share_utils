@@ -11,7 +11,7 @@ type AcmConf struct {
 	client config_client.IConfigClient
 }
 
-func NewAliyunStore(accessKey, secretKey, namespaceId, endpoint, logDir, cacheDir string) (*AcmConf, error) {
+func NewAcmStore(accessKey, secretKey, namespaceId, endpoint, logDir, cacheDir string) (*AcmConf, error) {
 	clientConfig := constant.ClientConfig{
 		Endpoint:       endpoint,
 		NamespaceId:    namespaceId,
