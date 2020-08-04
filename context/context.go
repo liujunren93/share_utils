@@ -9,7 +9,11 @@ type ShContext struct {
 	Header *sync.Map
 }
 
-var Todo =ShContext{Header: &sync.Map{}}
+func NewContext() *ShContext {
+	return &ShContext{
+		Header: &sync.Map{},
+	}
+}
 
 func (*ShContext) Deadline() (deadline time.Time, ok bool) {
 	return
@@ -26,5 +30,3 @@ func (*ShContext) Err() error {
 func (*ShContext) Value(key interface{}) interface{} {
 	return nil
 }
-
-

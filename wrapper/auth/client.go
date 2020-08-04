@@ -10,7 +10,7 @@ import (
 func NewClientAuthWrapper(token string) client.CallWrapper {
 	return func(cf client.CallFunc) client.CallFunc {
 		return func(ctx context.Context, node *registry.Node, req client.Request, rsp interface{}, opts client.CallOptions) error {
-			todo := context2.Todo
+			todo := context2.NewContext()
 			todo.Header.Store("token", token)
 			return cf(todo, node, req, rsp, opts)
 		}
