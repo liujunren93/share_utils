@@ -1,5 +1,10 @@
 package helper
 
+type StatusI interface {
+	GetCode() int32
+	GetMsg() string
+}
+
 type Status int32
 func (s Status) Error() string {
 	return s.GetMsg()
