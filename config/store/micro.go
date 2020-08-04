@@ -3,34 +3,35 @@ package store
 import (
 	"github.com/micro/go-micro/v2/config"
 	"github.com/micro/go-micro/v2/config/source"
+	config2 "github.com/shareChina/utils/config"
 )
 
-type MicroConf struct {
+type microConf struct {
 	conf config.Config
 }
 
-func NewMicroStore(source source.Source) (*MicroConf, error) {
+func NewMicroStore(source source.Source) (config2.ConfI, error) {
 	newConfig, err := config.NewConfig()
 	if err != nil {
 		return nil, err
 	}
 
 	newConfig.Load(source)
-	return &MicroConf{
+	return &microConf{
 		conf: newConfig,
 	}, nil
 }
 
-func (e *MicroConf) PublishConfig(...interface{}) (bool, error) {
+func (e *microConf) PublishConfig(...interface{}) (bool, error) {
 	panic("implement me")
 }
 
-func (e *MicroConf) GetConfig(options ...string) (interface{}, error) {
+func (e *microConf) GetConfig(options ...string) (interface{}, error) {
 	get := e.conf.Get(options...)
 	return get.Bytes(), nil
 }
 
-func (e *MicroConf) ListenConfig(f func(interface{}), options ...string) {
+func (e *microConf) ListenConfig(f func(interface{}), options ...string) {
 	watch, _ := e.conf.Watch(options...)
 	for {
 		next, err := watch.Next()
@@ -41,6 +42,6 @@ func (e *MicroConf) ListenConfig(f func(interface{}), options ...string) {
 
 }
 
-func (e *MicroConf) DeleteConfig(...string) (bool, error) {
+func (e *microConf) DeleteConfig(...string) (bool, error) {
 	panic("implement me")
 }

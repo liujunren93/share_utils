@@ -5,13 +5,14 @@ import (
 	"github.com/nacos-group/nacos-sdk-go/clients/config_client"
 	"github.com/nacos-group/nacos-sdk-go/common/constant"
 	"github.com/nacos-group/nacos-sdk-go/vo"
+	"github.com/shareChina/utils/config"
 )
 
-type AcmConf struct {
+type acmConf struct {
 	client config_client.IConfigClient
 }
 
-func NewAcmStore(accessKey, secretKey, namespaceId, endpoint, logDir, cacheDir string) (*AcmConf, error) {
+func NewAcmStore(accessKey, secretKey, namespaceId, endpoint, logDir, cacheDir string) (config.ConfI, error) {
 	clientConfig := constant.ClientConfig{
 		Endpoint:       endpoint,
 		NamespaceId:    namespaceId,
@@ -31,11 +32,11 @@ func NewAcmStore(accessKey, secretKey, namespaceId, endpoint, logDir, cacheDir s
 		"clientConfig": clientConfig,
 	})
 
-	return &AcmConf{client: configClient}, err
+	return &acmConf{client: configClient}, err
 }
 
 //options  0:DataId,1:Group;2:Content
-func (a *AcmConf) PublishConfig(options ...interface{}) (bool, error) {
+func (a *acmConf) PublishConfig(options ...interface{}) (bool, error) {
 
 	return a.client.PublishConfig(vo.ConfigParam{
 		DataId:  options[0].(string),
@@ -45,7 +46,7 @@ func (a *AcmConf) PublishConfig(options ...interface{}) (bool, error) {
 }
 
 //options  0:DataId,1:Group;
-func (a *AcmConf) GetConfig(options ...string) (interface{}, error) {
+func (a *acmConf) GetConfig(options ...string) (interface{}, error) {
 
 	// Get plain content from ACM.
 	return a.client.GetConfig(vo.ConfigParam{
@@ -57,7 +58,7 @@ func (a *AcmConf) GetConfig(options ...string) (interface{}, error) {
 }
 
 //options  0:DataId,1:Group;
-func (a *AcmConf) ListenConfig(f func(interface{}), options ...string) {
+func (a *acmConf) ListenConfig(f func(interface{}), options ...string) {
 	a.client.ListenConfig(vo.ConfigParam{
 		DataId: options[0],
 		Group:  options[1],
@@ -69,7 +70,7 @@ func (a *AcmConf) ListenConfig(f func(interface{}), options ...string) {
 }
 
 //
-func (a *AcmConf) DeleteConfig(options ...string) (bool, error) {
+func (a *acmConf) DeleteConfig(options ...string) (bool, error) {
 	return a.client.DeleteConfig(vo.ConfigParam{
 		DataId: options[0],
 		Group:  options[1],
