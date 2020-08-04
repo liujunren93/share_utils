@@ -1,14 +1,19 @@
 package auth
 
 import (
+	"context"
 	"fmt"
-	"github.com/shareChina/utils/context"
+	c2 "github.com/shareChina/utils/context"
 	"testing"
 )
 
 func TestNewClientAuthWrapper(t *testing.T) {
-	newContext := context.NewContext()
+	var a context.Context
+	newContext := c2.NewContext()
 	newContext.Header.Store("aaa","asad")
-	load, ok := newContext.Header.Load("aaa")
-	fmt.Println(load,ok)
+	a=newContext
+	//load, ok := newContext.Header.Load("aaa")
+
+	shContext := a.(*c2.ShContext)
+	fmt.Println(shContext.Header.Load("aaa"))
 }
