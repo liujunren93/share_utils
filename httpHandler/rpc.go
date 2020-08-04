@@ -75,6 +75,5 @@ func (r *rpcRequest) RPC(ctx context.Context) (res *RpcResponse, err error) {
 	}
 	fmt.Println(string(marshalJSON), err)
 	err = json.Unmarshal(marshalJSON, &res)
-
 	return
 }
