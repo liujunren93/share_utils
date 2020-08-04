@@ -1,6 +1,6 @@
 package config
 
-type ConfInterface interface {
+type ConfI interface {
 	PublishConfig(...interface{}) (bool, error)
 	GetConfig(...string) (interface{}, error)
 	ListenConfig(func(interface{}), ...string)
