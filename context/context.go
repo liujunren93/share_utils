@@ -9,7 +9,7 @@ type ShContext struct {
 	Header *sync.Map
 }
 
-var Todo =new(ShContext)
+var Todo =ShContext{Header: &sync.Map{}}
 
 func (*ShContext) Deadline() (deadline time.Time, ok bool) {
 	return
