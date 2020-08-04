@@ -30,6 +30,10 @@ func (s Status) GetMsg() (msg string) {
 	}
 	return
 }
+
+//database
+
+
 const (
 	StatusOK                  Status = 200//success
 	StatusBadRequest          Status = 4000 //数据绑定错误
