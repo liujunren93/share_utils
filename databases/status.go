@@ -3,23 +3,24 @@ package databases
 import "github.com/shareChina/utils/helper"
 
 //默认数据错误
-type dataStatus struct {
-	Code helper.Status
+type DBStatus struct {
+	Code int32
 	Msg  string
 }
 
-func (m dataStatus) GetCode() int32 {
-	return int32(m.Code)
+func (m DBStatus) GetCode() int32 {
+	return m.Code
 }
 
-func (m dataStatus) GetMsg() string {
+func (m DBStatus) GetMsg() string {
 	return m.Msg
 }
 
-func (m dataStatus) Error() string {
+func (m DBStatus) Error() string {
 	return m.Msg
 }
+
 //database
-func NewError(code helper.Status, err string) dataStatus {
-	return dataStatus{Code: code, Msg: err}
+func NewDBError(code helper.Status, err string) DBStatus {
+	return DBStatus{Code: int32(code), Msg: err}
 }
