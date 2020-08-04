@@ -8,7 +8,7 @@ import (
 
 var TypeErr = errors.New("Type mismatch")
 
-func GetConfig(confInterface ConfInterface, resData interface{}, options ...string) error {
+func GetConfig(confInterface ConfI, resData interface{}, options ...string) error {
 
 	of := reflect.TypeOf(resData)
 	if of.Kind() != reflect.Ptr {
@@ -33,16 +33,16 @@ func GetConfig(confInterface ConfInterface, resData interface{}, options ...stri
 
 }
 
-func ListenConfig(confInterface ConfInterface, f func(interface{}), options ...string) {
+func ListenConfig(confInterface ConfI, f func(interface{}), options ...string) {
 
 	confInterface.ListenConfig(f, options...)
 
 }
 
-func DeleteConfig(confInterface ConfInterface, options ...string) (bool, error) {
+func DeleteConfig(confInterface ConfI, options ...string) (bool, error) {
 	return confInterface.DeleteConfig(options...)
 }
 
-func PublishConfig(confInterface ConfInterface, options ...interface{}) (bool, error) {
+func PublishConfig(confInterface ConfI, options ...interface{}) (bool, error) {
 	return confInterface.PublishConfig(options...)
 }
