@@ -8,8 +8,6 @@ import (
 	"reflect"
 )
 
-
-
 // 响应
 type HttpResponse struct {
 	Code int32       `json:"code"`
@@ -44,6 +42,9 @@ func RpcResponse(r helper.StatusI, code helper.StatusI, msg string, data interfa
 	dataOf := reflect.ValueOf(data)
 	if dataOf.IsValid() {
 		Data.Set(reflect.ValueOf(data))
+	}
+	if msg == "" {
+		msg = code.GetMsg()
 	}
 	elem.FieldByName("Code").SetInt(int64(code.GetCode()))
 	elem.FieldByName("Msg").SetString(msg)
