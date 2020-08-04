@@ -14,7 +14,7 @@ type dbError struct {
 
 func (d dbError) Code() helper.Status {
 	if d.code == 0 {
-		return 200
+		return helper.StatusOK
 	}
 	return d.code
 }
