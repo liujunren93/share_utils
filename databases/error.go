@@ -4,7 +4,7 @@ import "github.com/shareChina/utils/helper"
 
 type DBError interface {
 	Code() helper.Status
-	Msg() string
+	Error() string
 }
 
 type dbError struct {
@@ -19,7 +19,7 @@ func (d dbError) Code() helper.Status {
 	return d.code
 }
 
-func (d dbError) Msg() string {
+func (d dbError) Error() string {
 	return d.msg
 }
 
