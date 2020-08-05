@@ -1,54 +1,102 @@
 package jwt
 
 import (
+	"errors"
 	"github.com/dgrijalva/jwt-go"
-	"github.com/shareChina/utils/log"
+	"github.com/shareChina/utils/auth"
 	"time"
 )
 
-type Claims struct {
-	data interface{}
+type jwtAuth struct {
+	options auth.TokenOptions
+}
+
+func NewAuth() auth.Auth {
+	return new(jwtAuth)
+}
+
+type jwtClaims struct {
+	Data interface{}
+	Type int8 //1:token 2:refresh token
 	jwt.StandardClaims
 }
 
-func CreateToken(data interface{}, jwtSecret string, ExpiresTime int64) string {
-	claims := Claims{
-		data: data,
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Unix() + ExpiresTime,
-			IssuedAt:  time.Now().Unix(),
-		},
-	}
+func (j *jwtAuth) Inspect(tokenStr string) (interface{}, error) {
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	signedString, er := token.SignedString([]byte(jwtSecret))
-	if er != nil {
-		log.Logger.Info(er)
-	}
-	return signedString
-}
+	tk, err := jwt.ParseWithClaims(tokenStr, &jwtClaims{}, func(token *jwt.Token) (interface{}, error) {
 
-func CheckToken(tokenString, JwtSecret string) (*Claims, bool) {
-	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
-
-		return []byte(JwtSecret), nil
+		return []byte(j.options.Secret), nil
 	})
 
 	if err != nil {
-		return nil, false
-	}
-	if claims, ok := token.Claims.(*Claims); ok && token.Valid {
-		return claims, true
+		return nil, err
 	}
 
-	return nil, false
+	if claims, ok := tk.Claims.(*jwtClaims); ok && tk.Valid {
+		return claims, nil
+	}
+
+	return nil, errors.New("token error")
 }
 
-//GetTokenInfo .
-func GetTokenInfo(tokenString string, JwtSecret string) (*Claims, bool) {
-	token, _ := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte(JwtSecret), nil
-	})
-	claims, ok := token.Claims.(*Claims)
-	return claims, ok
+
+// get token, if option.token!="" will refresh token
+func (j *jwtAuth) Token(option ...auth.TokenOption) (*auth.Token, error) {
+	op := auth.NewOption(option...)
+	var token auth.Token
+	j.options = op
+	if op.Secret == "" {
+		return nil, errors.New("secret is empty")
+	}
+	if op.RefreshToken != "" { //刷新token
+		inspect, err := j.Inspect(op.RefreshToken)
+		if err != nil {
+			return nil, err
+		}
+		if jc, ok := inspect.(*jwtClaims); ok {
+			if jc.Type == 1 {
+				return nil, errors.New("cannot refresh token with token")
+			}
+			j.options.Data = jc.Data
+		}
+	}
+	token.Created = time.Now()
+	accessToken, err := j.createToken(1)
+	if err != nil {
+		return nil, err
+	}
+	token.AccessToken = accessToken
+
+	refreshToken, err := j.createToken(2)
+	if err != nil {
+		return nil, err
+	}
+	token.RefreshToken = refreshToken
+
+	token.Expiry = token.Created.Add(j.options.Expiry)
+	return &token, nil
+}
+
+//create token
+//tkType token type （token=1，refresh=2）
+func (j *jwtAuth) createToken(tkType int8) (string, error) {
+	expiry := j.options.Expiry
+
+	if tkType == 2 {
+		expiry += time.Hour * 2
+
+	}
+
+	claims := jwtClaims{
+		Data: j.options.Data,
+		Type: tkType,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(expiry).Local().Unix(),
+			IssuedAt:  time.Now().Unix(),
+		},
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	signedString, err := token.SignedString([]byte(j.options.Secret))
+
+	return signedString, err
 }

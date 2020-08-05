@@ -10,8 +10,9 @@ import (
 func NewHandlerWrapper() server.HandlerWrapper {
 	return func(fn server.HandlerFunc) server.HandlerFunc {
 		return func(ctx context.Context, req server.Request, rsp interface{}) error {
+
 			get, b := metadata.Get(ctx, "Authorization")
-			log.Fatal(	get, b)
+			log.Fatal(get, b)
 			return fn(ctx, req, rsp)
 		}
 	}
