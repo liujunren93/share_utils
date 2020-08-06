@@ -32,9 +32,9 @@ func (s Status) GetMsg() (msg string) {
 	case StatusInternalServerError:
 		msg = "Status Internal Server Error"
 	case StatusDataError:
-		msg = "status Data Error"
+		msg = "Status Data Error"
 	default:
-
+		msg = "Unknown Mistake"
 	}
 	return
 }
