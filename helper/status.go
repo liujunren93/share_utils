@@ -43,11 +43,11 @@ func (s Status) GetMsg() (msg string) {
 
 const (
 	StatusOK                  Status = 200  //success
-	StatusBadRequest          Status = 4000 //数据绑定错误
-	StatusUnauthorized        Status = 4001 //账户类错误
-	StatusForbidden           Status = 4003 //权限
-	StatusNotFound            Status = 4004 //
-	StatusDataDuplication     Status = 4005 // 数据重复
-	StatusInternalServerError Status = 5000 //服务器未知错误
-	StatusDataError           Status = 5001 //database err
+	StatusBadRequest          Status = 400 //数据绑定错误
+	StatusUnauthorized        Status = 401 //账户类错误
+	StatusForbidden           Status = 403 //权限
+	StatusNotFound            Status = 404 //
+	StatusDataDuplication     Status = 405 // 数据重复
+	StatusInternalServerError Status = 500 //服务器未知错误
+	StatusDataError           Status = 501 //database err
 )
