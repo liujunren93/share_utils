@@ -9,7 +9,7 @@ func NewRedis(host, password string, db int) *redis.Client {
 		options := redis.Options{
 			Network:  "tcp",
 			Addr:     host,
-			DB:       5,
+			DB:       db,
 			Password: password,
 		}
 		RedisDB = redis.NewClient(&options)
