@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"github.com/micro/go-micro/v2/client"
 	"github.com/micro/go-micro/v2/config/cmd"
 	"time"
@@ -73,7 +72,7 @@ func (r *rpcRequest) RPC(ctx context.Context) (res *RpcResponse, err error) {
 	if err != nil {
 		return
 	}
-	fmt.Println(string(marshalJSON), err)
+
 	err = json.Unmarshal(marshalJSON, &res)
 	return
 }

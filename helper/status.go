@@ -31,8 +31,6 @@ func (s Status) GetMsg() (msg string) {
 		msg = "Data Duplication"
 	case StatusInternalServerError:
 		msg = "Status Internal Server Error"
-	case StatusDataError:
-		msg = "Status Data Error"
 	default:
 		msg = "Unknown Mistake"
 	}
@@ -42,12 +40,11 @@ func (s Status) GetMsg() (msg string) {
 //database
 
 const (
-	StatusOK                  Status = 200  //success
+	StatusOK                  Status = 200 //success
 	StatusBadRequest          Status = 400 //数据绑定错误
 	StatusUnauthorized        Status = 401 //账户类错误
 	StatusForbidden           Status = 403 //权限
 	StatusNotFound            Status = 404 //
 	StatusDataDuplication     Status = 405 // 数据重复
 	StatusInternalServerError Status = 500 //服务器未知错误
-	StatusDataError           Status = 501 //database err
 )
