@@ -15,15 +15,15 @@ type Base struct {
 }
 
 type Mysql struct {
-	Host            string `json:"host"`
-	User            string `json:"user"`
-	Password        string `json:"password"`
-	Port            int `json:"port"`
-	Database        string `json:"database"`
+	Host            string        `json:"host"`
+	User            string        `json:"user"`
+	Password        string        `json:"password"`
+	Port            int           `json:"port"`
+	Database        string        `json:"database"`
 	ConnMaxLifeTime time.Duration `json:"conn_max_life_time"`
-	MaxIdleConns    int `json:"max_idle_conns"`
-	MaxOpenConns    int `json:"max_open_conns"`
-	LogMode         bool `json:"log_mode"`
+	MaxIdleConns    int           `json:"max_idle_conns"`
+	MaxOpenConns    int           `json:"max_open_conns"`
+	LogMode         bool          `json:"log_mode"`
 }
 
 // NewMysql will create *gorm.DB
