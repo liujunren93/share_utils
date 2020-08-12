@@ -3,7 +3,8 @@ package netHelper
 import (
 	"encoding/json"
 	"errors"
-	"github.com/shareChina/utils/status"
+	"github.com/shareChina/utils/helper"
+
 	"net/http"
 	"reflect"
 )
@@ -16,7 +17,7 @@ type HttpResponse struct {
 }
 
 //web response
-func Response(r status.StatusI, w http.ResponseWriter, msg string, data interface{}) error {
+func Response(r helper.StatusI, w http.ResponseWriter, msg string, data interface{}) error {
 	resData := HttpResponse{
 		Code: r.GetCode(),
 		Msg:  r.GetMsg(),
@@ -32,7 +33,7 @@ func Response(r status.StatusI, w http.ResponseWriter, msg string, data interfac
 }
 
 //通过反射 设置data rpc response
-func RpcResponse(r status.StatusI, code status.StatusI, msg string, data interface{}) error {
+func RpcResponse(r helper.StatusI, code helper.StatusI, msg string, data interface{}) error {
 	of := reflect.ValueOf(r)
 	if of.Kind() != reflect.Ptr && !of.Elem().CanSet() {
 		return errors.New("filed")
