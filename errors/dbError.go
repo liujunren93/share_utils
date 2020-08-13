@@ -35,7 +35,7 @@ func NoData(msg string) Error {
 	}
 }
 
-//数据重复
+//数据重复 420
 func DuplicationData(msg string) Error {
 	if msg == "" {
 		msg = utils.StatusDataDuplication.GetMsg()
@@ -46,7 +46,7 @@ func DuplicationData(msg string) Error {
 	}
 }
 
-//账户类错误
+//账户类错误  401
 func Unauthorized(msg string) Error {
 	if msg == "" {
 		msg = utils.StatusUnauthorized.GetMsg()
@@ -57,8 +57,9 @@ func Unauthorized(msg string) Error {
 	}
 }
 
-//数据权限
+//数据权限 403
 func Forbidden(msg string) Error {
+
 	if msg == "" {
 		msg = utils.StatusForbidden.GetMsg()
 	}
@@ -70,7 +71,7 @@ func Forbidden(msg string) Error {
 
 
 
-//未知错误
+//未知错误 500
 func DataError(msg string) Error {
 	if msg == "" {
 		msg = utils.StatusInternalServerError.GetMsg()
@@ -80,6 +81,16 @@ func DataError(msg string) Error {
 		msg:  msg,
 	}
 
+}
+// 参数错误 400
+func BadRequest(msg string) Error {
+	if msg == "" {
+		msg = utils.StatusBadRequest.GetMsg()
+	}
+	return &error{
+		code: utils.StatusBadRequest,
+		msg:  msg,
+	}
 }
 
 //database
