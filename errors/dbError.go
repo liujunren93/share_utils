@@ -5,8 +5,7 @@ import (
 )
 
 type Error interface {
-	GetCode() int32
-	GetMsg() string
+	utils.StatusI
 }
 
 type error struct {
@@ -43,6 +42,28 @@ func DuplicationData(msg string) Error {
 	}
 	return &error{
 		code: utils.StatusDataDuplication,
+		msg:  msg,
+	}
+}
+
+//账户类错误
+func Unauthorized(msg string) Error {
+	if msg == "" {
+		msg = utils.StatusUnauthorized.GetMsg()
+	}
+	return &error{
+		code: utils.StatusUnauthorized,
+		msg:  msg,
+	}
+}
+
+//数据权限
+func Forbidden(msg string) Error {
+	if msg == "" {
+		msg = utils.StatusForbidden.GetMsg()
+	}
+	return &error{
+		code: utils.StatusForbidden,
 		msg:  msg,
 	}
 }

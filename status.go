@@ -1,5 +1,7 @@
 package utils
 
+import "net/http"
+
 type StatusI interface {
 	GetCode() int32
 	GetMsg() string
@@ -7,31 +9,31 @@ type StatusI interface {
 
 type Status int32
 
-
 func (s Status) GetCode() int32 {
 	return int32(s)
 }
 
 func (s Status) GetMsg() (msg string) {
-	switch s {
-	case StatusOK:
-		msg = "ok"
-	case StatusBadRequest:
-		msg = "Request Data Error"
-	case StatusUnauthorized:
-		msg = "Status Unauthorized"
-	case StatusForbidden:
-		msg = "Status Forbidden"
-	case StatusNotFound:
-		msg = "Status Not Found"
-	case StatusDataDuplication:
-		msg = "Data Duplication"
-	case StatusInternalServerError:
-		msg = "Status Internal Server Error"
-	default:
-		msg = ""
-	}
-	return
+	//switch s {
+	//case StatusOK:
+	//	msg = "ok"
+	//case StatusBadRequest:
+	//	msg = "Request Data Error"
+	//case StatusUnauthorized:
+	//	msg = "Status Unauthorized"
+	//case StatusForbidden:
+	//	msg = "Status Forbidden"
+	//case StatusNotFound:
+	//	msg = "Status Not Found"
+	//case StatusDataDuplication:
+	//	msg = "Data Duplication"
+	//case StatusInternalServerError:
+	//	msg = "Status Internal Server Error"
+	//default:
+	//	msg = ""
+	//}
+	return http.StatusText(int(s.GetCode()))
+
 }
 
 //database
