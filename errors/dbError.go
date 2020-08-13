@@ -1,65 +1,65 @@
 package errors
 
 import (
-	"github.com/shareChina/utils/helper"
+	"github.com/shareChina/utils/netHelper"
 )
 
-type DBError interface {
-	Code() helper.Status
-	Error() string
+type Error interface {
+	netHelper.StatusI
 }
 
-type dbError struct {
-	code helper.Status
+type error struct {
+	code netHelper.Status
 	msg  string
 }
 
-func (d dbError) Code() helper.Status {
+func (d error) GetCode() int32 {
 	if d.code == 0 {
-		return helper.StatusOK
+		return 200
 	}
-	return d.code
+	return int32(d.code)
 }
 
-func (d dbError) Error() string {
+func (d error) GetMsg() string {
 	return d.msg
 }
 
 // 数据不存在
-func NoData(msg string) DBError {
+func NoData(msg string) Error {
 	if msg == "" {
-		msg = "Data Not Found"
+		msg = netHelper.StatusNotFound.GetMsg()
 	}
-	return &dbError{
-		code: 404,
+	return &error{
+		code: netHelper.StatusNotFound,
 		msg:  msg,
 	}
 }
 
 //数据重复
-func DuplicationData(msg string) DBError {
+func DuplicationData(msg string) Error {
 	if msg == "" {
-		msg = "Data Duplication"
+		msg = netHelper.StatusDataDuplication.GetMsg()
 	}
-	return &dbError{
-		code: 503,
+	return &error{
+		code: netHelper.StatusDataDuplication,
 		msg:  msg,
 	}
 }
 
 //未知错误
-func DataError(msg string) DBError {
+func DataError(msg string) Error {
 	if msg == "" {
-		msg = "Internal Server Error"
+		msg = netHelper.StatusInternalServerError.GetMsg()
 	}
-	return &dbError{
-		code: 500,
+	return &error{
+		code: netHelper.StatusInternalServerError,
 		msg:  msg,
 	}
 
 }
 
 //database
-func NewDBError(code helper.Status, err string) DBError {
-	return dbError{code: code, msg: err}
+func New(code netHelper.Status, err string) Error {
+	return error{code: code, msg: err}
 }
+

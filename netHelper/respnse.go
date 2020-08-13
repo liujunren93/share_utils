@@ -3,8 +3,7 @@ package netHelper
 import (
 	"encoding/json"
 	"errors"
-	"github.com/shareChina/utils/helper"
-
+	errors2 "github.com/shareChina/utils/errors"
 	"net/http"
 	"reflect"
 )
@@ -17,10 +16,10 @@ type HttpResponse struct {
 }
 
 //web response
-func Response(r helper.StatusI, w http.ResponseWriter, msg string, data interface{}) error {
+func Response(res StatusI, w http.ResponseWriter, msg string, data interface{}) error {
 	resData := HttpResponse{
-		Code: r.GetCode(),
-		Msg:  r.GetMsg(),
+		Code: res.GetCode(),
+		Msg:  res.GetMsg(),
 		Data: data,
 	}
 	if msg != "" {
@@ -33,8 +32,11 @@ func Response(r helper.StatusI, w http.ResponseWriter, msg string, data interfac
 }
 
 //通过反射 设置data rpc response
-func RpcResponse(r helper.StatusI, code helper.StatusI, msg string, data interface{}) error {
-	of := reflect.ValueOf(r)
+func RpcResponse(res StatusI, err errors2.Error, data interface{}) error {
+	if err == nil {
+		err = StatusOK
+	}
+	of := reflect.ValueOf(res)
 	if of.Kind() != reflect.Ptr && !of.Elem().CanSet() {
 		return errors.New("filed")
 	}
@@ -44,10 +46,7 @@ func RpcResponse(r helper.StatusI, code helper.StatusI, msg string, data interfa
 	if dataOf.IsValid() {
 		Data.Set(reflect.ValueOf(data))
 	}
-	if msg == "" {
-		msg = code.GetMsg()
-	}
-	elem.FieldByName("Code").SetInt(int64(code.GetCode()))
-	elem.FieldByName("Msg").SetString(msg)
+	elem.FieldByName("Code").SetInt(int64(err.GetCode()))
+	elem.FieldByName("Msg").SetString(err.GetMsg())
 	return nil
 }

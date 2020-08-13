@@ -1,4 +1,4 @@
-package helper
+package netHelper
 
 type StatusI interface {
 	GetCode() int32
@@ -7,9 +7,6 @@ type StatusI interface {
 
 type Status int32
 
-func (s Status) Error() string {
-	return s.GetMsg()
-}
 
 func (s Status) GetCode() int32 {
 	return int32(s)
@@ -32,7 +29,7 @@ func (s Status) GetMsg() (msg string) {
 	case StatusInternalServerError:
 		msg = "Status Internal Server Error"
 	default:
-		msg = "Unknown Mistake"
+		msg = ""
 	}
 	return
 }
