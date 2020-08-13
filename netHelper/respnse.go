@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	errors2 "github.com/shareChina/utils/errors"
+	"github.com/shareChina/utils/helper"
 	"net/http"
 	"reflect"
 )
@@ -16,7 +17,7 @@ type HttpResponse struct {
 }
 
 //web response
-func Response(res StatusI, w http.ResponseWriter, msg string, data interface{}) error {
+func Response(res helper.StatusI, w http.ResponseWriter, msg string, data interface{}) error {
 	resData := HttpResponse{
 		Code: res.GetCode(),
 		Msg:  res.GetMsg(),
@@ -32,9 +33,9 @@ func Response(res StatusI, w http.ResponseWriter, msg string, data interface{}) 
 }
 
 //通过反射 设置data rpc response
-func RpcResponse(res StatusI, err errors2.Error, data interface{}) error {
+func RpcResponse(res helper.StatusI, err errors2.Error, data interface{}) error {
 	if err == nil {
-		err = StatusOK
+		err = helper.StatusOK
 	}
 	of := reflect.ValueOf(res)
 	if of.Kind() != reflect.Ptr && !of.Elem().CanSet() {

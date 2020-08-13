@@ -5,7 +5,8 @@ import (
 )
 
 type Error interface {
-	netHelper.StatusI
+	GetCode() int32
+	GetMsg() string
 }
 
 type error struct {

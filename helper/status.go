@@ -1,4 +1,4 @@
-package netHelper
+package helper
 
 type StatusI interface {
 	GetCode() int32
