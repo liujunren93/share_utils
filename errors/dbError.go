@@ -68,6 +68,8 @@ func Forbidden(msg string) Error {
 	}
 }
 
+
+
 //未知错误
 func DataError(msg string) Error {
 	if msg == "" {
