@@ -1,7 +1,7 @@
 package errors
 
 import (
-	"github.com/shareChina/utils/netHelper"
+	"github.com/shareChina/utils"
 )
 
 type Error interface {
@@ -10,7 +10,7 @@ type Error interface {
 }
 
 type error struct {
-	code netHelper.Status
+	code utils.Status
 	msg  string
 }
 
@@ -28,10 +28,10 @@ func (d error) GetMsg() string {
 // 数据不存在
 func NoData(msg string) Error {
 	if msg == "" {
-		msg = netHelper.StatusNotFound.GetMsg()
+		msg = utils.StatusNotFound.GetMsg()
 	}
 	return &error{
-		code: netHelper.StatusNotFound,
+		code: utils.StatusNotFound,
 		msg:  msg,
 	}
 }
@@ -39,10 +39,10 @@ func NoData(msg string) Error {
 //数据重复
 func DuplicationData(msg string) Error {
 	if msg == "" {
-		msg = netHelper.StatusDataDuplication.GetMsg()
+		msg = utils.StatusDataDuplication.GetMsg()
 	}
 	return &error{
-		code: netHelper.StatusDataDuplication,
+		code: utils.StatusDataDuplication,
 		msg:  msg,
 	}
 }
@@ -50,17 +50,17 @@ func DuplicationData(msg string) Error {
 //未知错误
 func DataError(msg string) Error {
 	if msg == "" {
-		msg = netHelper.StatusInternalServerError.GetMsg()
+		msg = utils.StatusInternalServerError.GetMsg()
 	}
 	return &error{
-		code: netHelper.StatusInternalServerError,
+		code: utils.StatusInternalServerError,
 		msg:  msg,
 	}
 
 }
 
 //database
-func New(code netHelper.Status, err string) Error {
+func New(code utils.Status, err string) Error {
 	return error{code: code, msg: err}
 }
 

@@ -1,4 +1,4 @@
-package helper
+package utils
 
 type StatusI interface {
 	GetCode() int32
