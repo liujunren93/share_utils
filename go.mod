@@ -3,6 +3,7 @@ module github.com/shareChina/utils
 go 1.14
 
 require (
+	github.com/Shopify/sarama v1.27.0
 	github.com/afex/hystrix-go v0.0.0-20180502004556-fa1af6a1f4f5
 	github.com/codahale/hdrhistogram v0.0.0-20161010025455-3a0bb77429bd // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
