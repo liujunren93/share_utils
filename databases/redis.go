@@ -4,15 +4,11 @@ import "github.com/go-redis/redis"
 
 var RedisDB *redis.Client
 
-func NewRedis(host, password string, db int) *redis.Client {
+
+func NewRedis(conf *redis.Options) *redis.Client {
 	if RedisDB == nil {
-		options := redis.Options{
-			Network:  "tcp",
-			Addr:     host,
-			DB:       db,
-			Password: password,
-		}
-		RedisDB = redis.NewClient(&options)
+
+		RedisDB = redis.NewClient(conf)
 	}
 	return RedisDB
 }
