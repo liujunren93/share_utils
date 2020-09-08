@@ -2,11 +2,8 @@ package netHelper
 
 import (
 	"encoding/json"
-	"errors"
-	errors2 "github.com/shareChina/utils/errors"
 	"github.com/shareChina/utils"
 	"net/http"
-	"reflect"
 )
 
 // 响应
@@ -32,22 +29,22 @@ func Response(res utils.StatusI, w http.ResponseWriter, msg string, data interfa
 	return err
 }
 
-//通过反射 设置data rpc response
-func RpcResponse(res utils.StatusI, err errors2.Error, data interface{}) error {
-	if err == nil {
-		err = utils.StatusOK
-	}
-	of := reflect.ValueOf(res)
-	if of.Kind() != reflect.Ptr && !of.Elem().CanSet() {
-		return errors.New("filed")
-	}
-	elem := of.Elem()
-	Data := elem.FieldByName("Data")
-	dataOf := reflect.ValueOf(data)
-	if dataOf.IsValid() {
-		Data.Set(reflect.ValueOf(data))
-	}
-	elem.FieldByName("Code").SetInt(int64(err.GetCode()))
-	elem.FieldByName("Msg").SetString(err.GetMsg())
-	return nil
-}
+////通过反射 设置data rpc response
+//func RpcResponse(res utils.StatusI, err errors2.Error, data interface{}) error {
+//	if err == nil {
+//		err = utils.StatusOK
+//	}
+//	of := reflect.ValueOf(res)
+//	if of.Kind() != reflect.Ptr && !of.Elem().CanSet() {
+//		return errors.New("filed")
+//	}
+//	elem := of.Elem()
+//	Data := elem.FieldByName("Data")
+//	dataOf := reflect.ValueOf(data)
+//	if dataOf.IsValid() {
+//		Data.Set(reflect.ValueOf(data))
+//	}
+//	elem.FieldByName("Code").SetInt(int64(err.GetCode()))
+//	elem.FieldByName("Msg").SetString(err.GetMsg())
+//	return nil
+//}

@@ -6,7 +6,12 @@ import (
 	"reflect"
 )
 
-var TypeErr = errors.New("Type mismatch")
+var (
+
+	TypeErr = errors.New("Type mismatch")
+)
+
+
 
 func GetConfig(confInterface ConfI, resData interface{}, options ...string) error {
 
