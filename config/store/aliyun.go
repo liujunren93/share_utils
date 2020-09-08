@@ -17,7 +17,7 @@ type acmConf struct {
 func NewAcmStore(option AcmOptions) (config.ConfI, error) {
 	clientConfig := constant.ClientConfig{
 		Endpoint:       option.Endpoint,
-		NamespaceId:    option.NamespaceId,
+		NamespaceId:    option.NamespaceID,
 		AccessKey:      option.AccessKey,
 		SecretKey:      option.SecretKey,
 		TimeoutMs:      500 * 1000,
