@@ -4,7 +4,7 @@ import "github.com/go-redis/redis"
 
 var RedisDB *redis.Client
 
-type redisConf struct {
+type RedisConf struct {
 	Network  string `json:"network"`
 	Host     string `json:"host"`
 	DB       int    `json:"db"`
