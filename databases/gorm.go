@@ -4,6 +4,7 @@ import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
+	"github.com/shareChina/utils/config/store"
 	"time"
 )
 
@@ -28,6 +29,10 @@ type Mysql struct {
 	MaxIdleConns    int           `json:"max_idle_conns"`
 	MaxOpenConns    int           `json:"max_open_conns"`
 	LogMode         bool          `json:"log_mode"`
+}
+
+func initConfig()  {
+	store.NewAcmStore()
 }
 
 

@@ -1,8 +1,15 @@
 package config
 
 type ConfI interface {
-	PublishConfig(...interface{}) (bool, error)
-	GetConfig(...string) (interface{}, error)
-	ListenConfig(func(interface{}), ...string)
-	DeleteConfig(...string) (bool, error)
+	PublishConfig(DataOptions) (bool, error)
+	GetConfig(DataOptions) (interface{}, error)
+	ListenConfig(DataOptions, func(interface{}))
+	DeleteConfig(DataOptions) (bool, error)
+}
+
+type DataOptions struct {
+	DataId  string
+	Group   string
+	Content string
+	Path    string
 }

@@ -12,56 +12,56 @@ type acmConf struct {
 	client config_client.IConfigClient
 }
 
-func NewAcmStore(accessKey, secretKey, namespaceId, endpoint, logDir, cacheDir string) (config.ConfI, error) {
+
+
+func NewAcmStore(option AcmOptions) (config.ConfI, error) {
 	clientConfig := constant.ClientConfig{
-		Endpoint:       endpoint,
-		NamespaceId:    namespaceId,
-		AccessKey:      accessKey,
-		SecretKey:      secretKey,
+		Endpoint:       option.Endpoint,
+		NamespaceId:    option.NamespaceId,
+		AccessKey:      option.AccessKey,
+		SecretKey:      option.SecretKey,
 		TimeoutMs:      500 * 1000,
 		ListenInterval: 60 * 1000,
+		LogDir:         option.LogDir,
+		CacheDir:       option.CacheDir,
 	}
-	if  logDir==""{
-		clientConfig.LogDir=logDir
-	}
-	if  cacheDir==""{
-		clientConfig.CacheDir=cacheDir
-	}
+	var conf acmConf
 	// Initialize client.
 	configClient, err := clients.CreateConfigClient(map[string]interface{}{
 		"clientConfig": clientConfig,
 	})
-
-	return &acmConf{client: configClient}, err
+	conf.client=configClient
+	return &conf, err
 }
 
+
 //options  0:DataId,1:Group;2:Content
-func (a *acmConf) PublishConfig(options ...interface{}) (bool, error) {
+func (a *acmConf) PublishConfig(options config.DataOptions) (bool, error) {
 
 	return a.client.PublishConfig(vo.ConfigParam{
-		DataId:  options[0].(string),
-		Group:   options[1].(string),
-		Content: (options[2]).(string),
+		DataId:  options.DataId,
+		Group:   options.Group,
+		Content: options.Content,
 	})
 }
 
 //options  0:DataId,1:Group;
-func (a *acmConf) GetConfig(options ...string) (interface{}, error) {
+func (a *acmConf) GetConfig(options config.DataOptions) (interface{}, error) {
 
 	// Get plain content from ACM.
 	return a.client.GetConfig(vo.ConfigParam{
-		DataId: options[0],
-		Group:  options[1],
+		DataId:  options.DataId,
+		Group:   options.Group,
 	},
 	)
 
 }
 
 //options  0:DataId,1:Group;
-func (a *acmConf) ListenConfig(f func(interface{}), options ...string) {
+func (a *acmConf) ListenConfig(options config.DataOptions,f func(interface{})) {
 	a.client.ListenConfig(vo.ConfigParam{
-		DataId: options[0],
-		Group:  options[1],
+		DataId:  options.DataId,
+		Group:   options.Group,
 		OnChange: func(namespace, group, dataId, data string) {
 			f(data)
 		},
@@ -70,9 +70,9 @@ func (a *acmConf) ListenConfig(f func(interface{}), options ...string) {
 }
 
 //
-func (a *acmConf) DeleteConfig(options ...string) (bool, error) {
+func (a *acmConf) DeleteConfig(options config.DataOptions) (bool, error) {
 	return a.client.DeleteConfig(vo.ConfigParam{
-		DataId: options[0],
-		Group:  options[1],
+		DataId:  options.DataId,
+		Group:   options.Group,
 	})
 }
