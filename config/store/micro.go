@@ -1,8 +1,8 @@
 package store
 
 import (
-	"github.com/micro/go-micro/v2/config"
-	"github.com/micro/go-micro/v2/config/source"
+	"github.com/micro/go-micro/v3/config"
+	"github.com/micro/go-micro/v3/config/source"
 	config2 "github.com/shareChina/utils/config"
 )
 
