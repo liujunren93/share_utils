@@ -13,7 +13,7 @@ var (
 
 
 
-func GetConfig(confInterface ConfI, resData interface{}, options DataOptions) error {
+func GetConfig(confInterface ConfI, resData interface{}, options *DataOptions) error {
 
 	of := reflect.TypeOf(resData)
 	if of.Kind() != reflect.Ptr {
@@ -38,16 +38,16 @@ func GetConfig(confInterface ConfI, resData interface{}, options DataOptions) er
 
 }
 
-func ListenConfig(confInterface ConfI, f func(interface{}), options DataOptions) {
+func ListenConfig(confInterface ConfI, f func(interface{}), options *DataOptions) {
 
 	confInterface.ListenConfig( options,f)
 
 }
 
-func DeleteConfig(confInterface ConfI, options DataOptions) (bool, error) {
+func DeleteConfig(confInterface ConfI, options *DataOptions) (bool, error) {
 	return confInterface.DeleteConfig(options)
 }
 
-func PublishConfig(confInterface ConfI, options DataOptions) (bool, error) {
+func PublishConfig(confInterface ConfI, options *DataOptions) (bool, error) {
 	return confInterface.PublishConfig(options)
 }
