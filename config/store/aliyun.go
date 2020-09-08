@@ -14,7 +14,7 @@ type acmConf struct {
 
 
 
-func NewAcmStore(option AcmOptions) (config.ConfI, error) {
+func NewAcmStore(option *AcmOptions) (config.ConfI, error) {
 	clientConfig := constant.ClientConfig{
 		Endpoint:       option.Endpoint,
 		NamespaceId:    option.NamespaceID,
