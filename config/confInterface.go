@@ -1,10 +1,10 @@
 package config
 
 type ConfI interface {
-	PublishConfig(DataOptions) (bool, error)
-	GetConfig(DataOptions) (interface{}, error)
-	ListenConfig(DataOptions, func(interface{}))
-	DeleteConfig(DataOptions) (bool, error)
+	PublishConfig(*DataOptions) (bool, error)
+	GetConfig(*DataOptions) (interface{}, error)
+	ListenConfig(*DataOptions, func(interface{}))
+	DeleteConfig(*DataOptions) (bool, error)
 }
 
 type DataOptions struct {

@@ -22,16 +22,16 @@ func NewMicroStore(source source.Source) (config2.ConfI, error) {
 	}, nil
 }
 
-func (e *microConf) PublishConfig(options config2.DataOptions) (bool, error) {
+func (e *microConf) PublishConfig(options *config2.DataOptions) (bool, error) {
 	panic("implement me")
 }
 
-func (e *microConf) GetConfig(options config2.DataOptions) (interface{}, error) {
+func (e *microConf) GetConfig(options *config2.DataOptions) (interface{}, error) {
 	get := e.conf.Get(options.Path)
 	return get.Bytes(), nil
 }
 
-func (e *microConf) ListenConfig(options config2.DataOptions,f func(interface{})) {
+func (e *microConf) ListenConfig(options *config2.DataOptions,f func(interface{})) {
 	watch, _ := e.conf.Watch(options.Path)
 	for {
 		next, err := watch.Next()
@@ -42,6 +42,6 @@ func (e *microConf) ListenConfig(options config2.DataOptions,f func(interface{})
 
 }
 
-func (e *microConf) DeleteConfig(options config2.DataOptions) (bool, error) {
+func (e *microConf) DeleteConfig(options *config2.DataOptions) (bool, error) {
 	panic("implement me")
 }

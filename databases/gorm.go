@@ -4,7 +4,6 @@ import (
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
-	"github.com/shareChina/utils/config/store"
 	"time"
 )
 
@@ -30,12 +29,6 @@ type Mysql struct {
 	MaxOpenConns    int           `json:"max_open_conns"`
 	LogMode         bool          `json:"log_mode"`
 }
-
-func initConfig()  {
-	store.NewAcmStore()
-}
-
-
 
 
 // NewMysql will create *gorm.DB

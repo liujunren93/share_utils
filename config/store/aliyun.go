@@ -36,7 +36,7 @@ func NewAcmStore(option AcmOptions) (config.ConfI, error) {
 
 
 //options  0:DataId,1:Group;2:Content
-func (a *acmConf) PublishConfig(options config.DataOptions) (bool, error) {
+func (a *acmConf) PublishConfig(options *config.DataOptions) (bool, error) {
 
 	return a.client.PublishConfig(vo.ConfigParam{
 		DataId:  options.DataId,
@@ -46,7 +46,7 @@ func (a *acmConf) PublishConfig(options config.DataOptions) (bool, error) {
 }
 
 //options  0:DataId,1:Group;
-func (a *acmConf) GetConfig(options config.DataOptions) (interface{}, error) {
+func (a *acmConf) GetConfig(options *config.DataOptions) (interface{}, error) {
 
 	// Get plain content from ACM.
 	return a.client.GetConfig(vo.ConfigParam{
@@ -58,7 +58,7 @@ func (a *acmConf) GetConfig(options config.DataOptions) (interface{}, error) {
 }
 
 //options  0:DataId,1:Group;
-func (a *acmConf) ListenConfig(options config.DataOptions,f func(interface{})) {
+func (a *acmConf) ListenConfig(options *config.DataOptions,f func(interface{})) {
 	a.client.ListenConfig(vo.ConfigParam{
 		DataId:  options.DataId,
 		Group:   options.Group,
@@ -70,7 +70,7 @@ func (a *acmConf) ListenConfig(options config.DataOptions,f func(interface{})) {
 }
 
 //
-func (a *acmConf) DeleteConfig(options config.DataOptions) (bool, error) {
+func (a *acmConf) DeleteConfig(options *config.DataOptions) (bool, error) {
 	return a.client.DeleteConfig(vo.ConfigParam{
 		DataId:  options.DataId,
 		Group:   options.Group,
