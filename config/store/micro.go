@@ -27,7 +27,7 @@ func (e *microConf) PublishConfig(options *config2.DataOptions) (bool, error) {
 }
 
 func (e *microConf) GetConfig(options *config2.DataOptions) (interface{}, error) {
-	get := e.conf.Get(options.Path)
+	get := e.conf.Get()
 	return get.Bytes(), nil
 }
 
