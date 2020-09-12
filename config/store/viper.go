@@ -1,6 +1,7 @@
 package store
 
 import (
+	"fmt"
 	"github.com/fsnotify/fsnotify"
 	"github.com/liujunren93/share_utils/config"
 	"github.com/spf13/viper"
@@ -15,11 +16,11 @@ func NewViperStore(o *config.DataOptions) *sViper {
 	var v sViper
 
 	v.viper = viper.New()
-
+fmt.Println(o.Path,o.FileName,o.FileType)
 	v.viper.AddConfigPath(o.Path)
 	v.viper.SetConfigFile(o.FileName)
 	v.viper.SetConfigType(o.FileType)
-	v.viper.Debug()
+	//v.viper.Debug()
 	return &v
 }
 
