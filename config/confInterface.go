@@ -8,10 +8,10 @@ type ConfI interface {
 }
 
 type DataOptions struct {
-	DataId   string
-	Group    string
-	Content  string
-	Path     string
-	FileType string
-	FileName string
+	DataId     string
+	Group      string
+	Content    string
+	Path       string
+	FileType   string
+	ConfigName string
 }

@@ -1,7 +1,6 @@
 package store
 
 import (
-	"fmt"
 	"github.com/fsnotify/fsnotify"
 	"github.com/liujunren93/share_utils/config"
 	"github.com/spf13/viper"
@@ -16,10 +15,9 @@ func NewViperStore(o *config.DataOptions) *sViper {
 	var v sViper
 
 	v.viper = viper.New()
-fmt.Println(o.Path,o.FileName,o.FileType)
 	v.viper.AddConfigPath(o.Path)
-	v.viper.SetConfigFile(o.FileName)
 	v.viper.SetConfigType(o.FileType)
+	v.viper.SetConfigName(o.ConfigName)
 	//v.viper.Debug()
 	return &v
 }
@@ -31,9 +29,9 @@ func (v *sViper) PublishConfig(options *config.DataOptions) (bool, error) {
 
 func (v *sViper) GetConfig(o *config.DataOptions) (interface{}, error) {
 	if o != nil {
-		v.viper.SetConfigFile(o.FileName)
+		v.viper.SetConfigFile(o.ConfigName)
 	}
-
+	//v.viper.AddConfigPath("config")
 	err := v.viper.ReadInConfig()
 	if err != nil {
 		return nil, err
@@ -43,8 +41,8 @@ func (v *sViper) GetConfig(o *config.DataOptions) (interface{}, error) {
 }
 
 func (v *sViper) ListenConfig(o *config.DataOptions, f func(interface{})) {
-	if o != nil && o.FileName != "" {
-		v.viper.SetConfigFile(o.FileName)
+	if o != nil && o.ConfigName != "" {
+		v.viper.SetConfigFile(o.ConfigName)
 	}
 	v.viper.WatchConfig()
 	v.viper.OnConfigChange(func(in fsnotify.Event) {
