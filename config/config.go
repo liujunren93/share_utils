@@ -7,11 +7,8 @@ import (
 )
 
 var (
-
 	TypeErr = errors.New("Type mismatch")
 )
-
-
 
 func GetConfig(confInterface ConfI, resData interface{}, options *DataOptions) error {
 
@@ -27,12 +24,18 @@ func GetConfig(confInterface ConfI, resData interface{}, options *DataOptions) e
 	}
 	var NewConf []byte
 	switch config.(type) {
-		case []byte:
-			NewConf = config.([]byte)
-		case string:
-			NewConf = []byte(config.(string))
-		default:
-			return TypeErr
+	case []byte:
+		NewConf = config.([]byte)
+	case string:
+		NewConf = []byte(config.(string))
+	case map[string]interface{}:
+		NewConf, err = yaml.Marshal(config)
+		if err != nil {
+			return err
+		}
+
+	default:
+		return TypeErr
 	}
 	return yaml.Unmarshal(NewConf, resData)
 
@@ -40,7 +43,7 @@ func GetConfig(confInterface ConfI, resData interface{}, options *DataOptions) e
 
 func ListenConfig(confInterface ConfI, f func(interface{}), options *DataOptions) {
 
-	confInterface.ListenConfig( options,f)
+	confInterface.ListenConfig(options, f)
 
 }
 
