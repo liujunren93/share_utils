@@ -13,10 +13,13 @@ type sViper struct {
 func NewViperStore(o *config.DataOptions) *sViper {
 
 	var v sViper
+
 	v.viper = viper.New()
+
 	v.viper.AddConfigPath(o.Path)
 	v.viper.SetConfigFile(o.FileName)
 	v.viper.SetConfigType(o.FileType)
+	v.viper.Debug()
 	return &v
 }
 
