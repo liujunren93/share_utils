@@ -1,4 +1,4 @@
-module github.com/shareChina/utils
+module github.com/liujunren93/share_utils
 
 go 1.15
 

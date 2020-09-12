@@ -5,7 +5,7 @@ import (
 	"github.com/nacos-group/nacos-sdk-go/clients/config_client"
 	"github.com/nacos-group/nacos-sdk-go/common/constant"
 	"github.com/nacos-group/nacos-sdk-go/vo"
-	"github.com/shareChina/utils/config"
+	"github.com/liujunren93/share_utils/config"
 )
 type AcmOptions struct {
 	AccessKey   string `json:"access_key"`

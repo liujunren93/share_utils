@@ -1,7 +1,7 @@
 package errors
 
 import (
-	"github.com/shareChina/utils"
+	"github.com/liujunren93/share_utils"
 )
 
 type Error interface {

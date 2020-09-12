@@ -2,7 +2,7 @@ package jwt
 
 import (
 	"fmt"
-	auth2 "github.com/shareChina/utils/auth"
+	auth2 "github.com/liujunren93/share_utils/auth"
 	"testing"
 	"time"
 )

@@ -3,7 +3,7 @@ package store
 import (
 	"github.com/micro/go-micro/v3/config"
 	"github.com/micro/go-micro/v3/config/source"
-	config2 "github.com/shareChina/utils/config"
+	config2 "github.com/liujunren93/share_utils/config"
 )
 
 type microConf struct {
