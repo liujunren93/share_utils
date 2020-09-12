@@ -1,0 +1,18 @@
+access_key:
+  "LTAI4G58UvgfoChctGeeiZTS"
+secret_key:
+  "S62Ik50uEKbjLERA3fGa0ZIKVoJWf9"
+service_name:
+  "go.micro.share.service.app"
+namespace_id:
+    "81d9055a-03a5-46a9-8b3c-557146dc7376"
+endpoint:
+  "acm.aliyun.com:8080"
+log_dir:
+  ""
+cache_dir:
+  ""
+
+
+
+
