@@ -5,23 +5,26 @@ import (
 )
 
 type Error interface {
-	utils.StatusI
+	Code()int32
+	Msg()string
+	error
 }
 
-type error struct {
+type myError struct {
 	code utils.Status
 	msg  string
 }
 
-func (d error) GetCode() int32 {
-	if d.code == 0 {
-		return 200
-	}
-	return int32(d.code)
+func (e myError) Code()int32 {
+	return int32(e.code)
 }
 
-func (d error) GetMsg() string {
-	return d.msg
+func (e myError) Msg() string{
+	return e.msg
+}
+
+func (e myError) Error() string {
+	return e.msg
 }
 
 // 数据不存在
@@ -29,7 +32,7 @@ func NoData(msg string) Error {
 	if msg == "" {
 		msg = utils.StatusNotFound.GetMsg()
 	}
-	return &error{
+	return &myError{
 		code: utils.StatusNotFound,
 		msg:  msg,
 	}
@@ -40,7 +43,7 @@ func DuplicationData(msg string) Error {
 	if msg == "" {
 		msg = utils.StatusDataDuplication.GetMsg()
 	}
-	return &error{
+	return &myError{
 		code: utils.StatusDataDuplication,
 		msg:  msg,
 	}
@@ -51,7 +54,7 @@ func Unauthorized(msg string) Error {
 	if msg == "" {
 		msg = utils.StatusUnauthorized.GetMsg()
 	}
-	return &error{
+	return &myError{
 		code: utils.StatusUnauthorized,
 		msg:  msg,
 	}
@@ -63,31 +66,30 @@ func Forbidden(msg string) Error {
 	if msg == "" {
 		msg = utils.StatusForbidden.GetMsg()
 	}
-	return &error{
+	return &myError{
 		code: utils.StatusForbidden,
 		msg:  msg,
 	}
 }
-
-
 
 //未知错误 500
 func DataError(msg string) Error {
 	if msg == "" {
 		msg = utils.StatusInternalServerError.GetMsg()
 	}
-	return &error{
+	return &myError{
 		code: utils.StatusInternalServerError,
 		msg:  msg,
 	}
 
 }
+
 // 参数错误 400
 func BadRequest(msg string) Error {
 	if msg == "" {
 		msg = utils.StatusBadRequest.GetMsg()
 	}
-	return &error{
+	return &myError{
 		code: utils.StatusBadRequest,
 		msg:  msg,
 	}
@@ -95,6 +97,5 @@ func BadRequest(msg string) Error {
 
 //database
 func New(code utils.Status, err string) Error {
-	return error{code: code, msg: err}
+	return myError{code: code, msg: err}
 }
-
