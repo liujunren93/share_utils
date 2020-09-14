@@ -6,7 +6,6 @@ import (
 
 type Error interface {
 	Code()int32
-	Msg()string
 	error
 }
 
@@ -19,9 +18,6 @@ func (e myError) Code()int32 {
 	return int32(e.code)
 }
 
-func (e myError) Msg() string{
-	return e.msg
-}
 
 func (e myError) Error() string {
 	return e.msg
