@@ -18,12 +18,12 @@ type HttpResponse struct {
 	Data interface{}    `json:"data"`
 }
 
-func ResponseError(w http.ResponseWriter, err error, msg string, data interface{}) {
-	if msg == "" {
-		msg = err.Error()
-	}
-	ResponseOK(w, errors.StatusInternalServerError, msg, data)
-}
+//func ResponseError(w http.ResponseWriter, err error, msg string, data interface{}) {
+//	if msg == "" {
+//		msg = err.Error()
+//	}
+//	ResponseOK(w, errors.StatusInternalServerError, msg, data)
+//}
 
 //web response
 func ResponseOK(w http.ResponseWriter, code errors.IStatus, msg string, data interface{}) {
