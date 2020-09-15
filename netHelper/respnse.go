@@ -6,16 +6,30 @@ import (
 	"net/http"
 )
 
+type res interface {
+	GetMsg() int32
+	GetCode() string
+}
+
 // 响应
 type HttpResponse struct {
-	Code errors.Status       `json:"code"`
-	Msg  string      `json:"msg"`
-	Data interface{} `json:"data"`
+	Code errors.IStatus `json:"code"`
+	Msg  string         `json:"msg"`
+	Data interface{}    `json:"data"`
+}
+
+func ResponseError(w http.ResponseWriter, err error, msg string, data interface{}) {
+	if msg == "" {
+		msg = err.Error()
+	}
+	ResponseOK(w, errors.StatusInternalServerError, msg, data)
 }
 
 //web response
-func Response(w http.ResponseWriter,code errors.Status, msg string, data interface{})  {
-	msg = "ok"
+func ResponseOK(w http.ResponseWriter, code errors.IStatus, msg string, data interface{}) {
+	if msg == "" {
+		msg = code.GetMsg()
+	}
 	resData := HttpResponse{
 		Code: code,
 		Msg:  msg,

@@ -1,16 +1,15 @@
 package errors
 
-import "net/http"
+import (
+	"net/http"
+)
+
+type IStatus interface {
+	GetCode() int32
+	GetMsg() (msg string)
+}
 
 type Status int32
-
-func (s Status) Code() int32 {
-	return int32(s)
-}
-
-func (s Status) Error() string {
-	return s.GetMsg()
-}
 
 func (s Status) GetCode() int32 {
 	return int32(s)
