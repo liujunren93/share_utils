@@ -26,7 +26,7 @@ type HttpResponse struct {
 //}
 
 //web response
-func ResponseOK(w http.ResponseWriter, code errors.IStatus, msg string, data interface{}) {
+func Response(w http.ResponseWriter, code errors.IStatus, msg string, data interface{}) {
 	if msg == "" {
 		msg = code.GetMsg()
 	}
