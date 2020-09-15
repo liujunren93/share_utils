@@ -8,20 +8,14 @@ import (
 
 // 响应
 type HttpResponse struct {
-	Code int32       `json:"code"`
+	Code errors.Status       `json:"code"`
 	Msg  string      `json:"msg"`
 	Data interface{} `json:"data"`
 }
 
 //web response
-func Response(err errors.Error, w http.ResponseWriter, msg string, data interface{}) error {
-
-	var code int32 = 200
+func Response(w http.ResponseWriter,code errors.Status, msg string, data interface{})  {
 	msg = "ok"
-	if err != nil {
-		code = err.Code()
-		msg = err.Error()
-	}
 	resData := HttpResponse{
 		Code: code,
 		Msg:  msg,
@@ -33,7 +27,7 @@ func Response(err errors.Error, w http.ResponseWriter, msg string, data interfac
 	marshal, _ := json.Marshal(resData)
 	w.WriteHeader(200)
 	w.Write(marshal)
-	return err
+
 }
 
 ////通过反射 设置data rpc response
