@@ -1,23 +1,18 @@
 package errors
 
-import (
-	"github.com/liujunren93/share_utils"
-)
-
 type Error interface {
-	Code()int32
+	Code() int32
 	error
 }
 
 type myError struct {
-	code utils.Status
+	code Status
 	msg  string
 }
 
-func (e myError) Code()int32 {
+func (e myError) Code() int32 {
 	return int32(e.code)
 }
-
 
 func (e myError) Error() string {
 	return e.msg
@@ -26,10 +21,10 @@ func (e myError) Error() string {
 // 数据不存在
 func NoData(msg string) Error {
 	if msg == "" {
-		msg = utils.StatusNotFound.GetMsg()
+		msg = StatusNotFound.GetMsg()
 	}
 	return &myError{
-		code: utils.StatusNotFound,
+		code: StatusNotFound,
 		msg:  msg,
 	}
 }
@@ -37,10 +32,10 @@ func NoData(msg string) Error {
 //数据重复 420
 func DuplicationData(msg string) Error {
 	if msg == "" {
-		msg = utils.StatusDataDuplication.GetMsg()
+		msg = StatusDataDuplication.GetMsg()
 	}
 	return &myError{
-		code: utils.StatusDataDuplication,
+		code:StatusDataDuplication,
 		msg:  msg,
 	}
 }
@@ -48,10 +43,10 @@ func DuplicationData(msg string) Error {
 //账户类错误  401
 func Unauthorized(msg string) Error {
 	if msg == "" {
-		msg = utils.StatusUnauthorized.GetMsg()
+		msg = StatusUnauthorized.GetMsg()
 	}
 	return &myError{
-		code: utils.StatusUnauthorized,
+		code: StatusUnauthorized,
 		msg:  msg,
 	}
 }
@@ -60,10 +55,10 @@ func Unauthorized(msg string) Error {
 func Forbidden(msg string) Error {
 
 	if msg == "" {
-		msg = utils.StatusForbidden.GetMsg()
+		msg = StatusForbidden.GetMsg()
 	}
 	return &myError{
-		code: utils.StatusForbidden,
+		code:StatusForbidden,
 		msg:  msg,
 	}
 }
@@ -71,10 +66,10 @@ func Forbidden(msg string) Error {
 //未知错误 500
 func DataError(msg string) Error {
 	if msg == "" {
-		msg = utils.StatusInternalServerError.GetMsg()
+		msg = StatusInternalServerError.GetMsg()
 	}
 	return &myError{
-		code: utils.StatusInternalServerError,
+		code: StatusInternalServerError,
 		msg:  msg,
 	}
 
@@ -83,15 +78,15 @@ func DataError(msg string) Error {
 // 参数错误 400
 func BadRequest(msg string) Error {
 	if msg == "" {
-		msg = utils.StatusBadRequest.GetMsg()
+		msg = StatusBadRequest.GetMsg()
 	}
 	return &myError{
-		code: utils.StatusBadRequest,
+		code: StatusBadRequest,
 		msg:  msg,
 	}
 }
 
 //database
-func New(code utils.Status, err string) Error {
+func New(code Status, err string) Error {
 	return myError{code: code, msg: err}
 }

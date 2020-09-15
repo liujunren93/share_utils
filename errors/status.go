@@ -1,20 +1,23 @@
-package utils
+package errors
 
 import "net/http"
 
-type StatusI interface {
-	GetCode() int32
-	GetMsg() string
+type Status int32
+
+func (s Status) Code() int32 {
+	return int32(s)
 }
 
-type Status int32
+func (s Status) Error() string {
+	return s.GetMsg()
+}
 
 func (s Status) GetCode() int32 {
 	return int32(s)
 }
 
 func (s Status) GetMsg() (msg string) {
-	if s.GetCode()==420 {
+	if s.GetCode() == 420 {
 		return "Data Duplication"
 	}
 	return http.StatusText(int(s.GetCode()))
