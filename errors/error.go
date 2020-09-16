@@ -1,5 +1,7 @@
 package errors
 
+import "fmt"
+
 type Error interface {
 	GetCode() int32
 	GetMsg() string
@@ -7,19 +9,19 @@ type Error interface {
 }
 
 type myError struct {
-	Code Status
-	Msg  string
+	code Status
+	msg  string
 }
 
 func (e myError) GetCode() int32 {
-	return int32(e.Code)
+	return int32(e.code)
 }
 func (e myError) GetMsg() string {
-	return e.Msg
+	return e.msg
 }
 
 func (e myError) Error() string {
-	return e.Msg
+	return fmt.Sprintf("code:%d,msg:%s",e.code,e.msg)
 }
 
 // 数据不存在
@@ -28,8 +30,8 @@ func NoData(msg string) Error {
 		msg = StatusNotFound.GetMsg()
 	}
 	return &myError{
-		Code: StatusNotFound,
-		Msg:  msg,
+		code: StatusNotFound,
+		msg:  msg,
 	}
 }
 
@@ -39,8 +41,8 @@ func DuplicationData(msg string) Error {
 		msg = StatusDataDuplication.GetMsg()
 	}
 	return &myError{
-		Code: StatusDataDuplication,
-		Msg:  msg,
+		code: StatusDataDuplication,
+		msg:  msg,
 	}
 }
 
@@ -50,8 +52,8 @@ func Unauthorized(msg string) Error {
 		msg = StatusUnauthorized.GetMsg()
 	}
 	return &myError{
-		Code: StatusUnauthorized,
-		Msg:  msg,
+		code: StatusUnauthorized,
+		msg:  msg,
 	}
 }
 
@@ -62,8 +64,8 @@ func Forbidden(msg string) Error {
 		msg = StatusForbidden.GetMsg()
 	}
 	return &myError{
-		Code: StatusForbidden,
-		Msg:  msg,
+		code: StatusForbidden,
+		msg:  msg,
 	}
 }
 
@@ -73,8 +75,8 @@ func DataError(msg string) Error {
 		msg = StatusInternalServerError.GetMsg()
 	}
 	return &myError{
-		Code: StatusInternalServerError,
-		Msg:  msg,
+		code: StatusInternalServerError,
+		msg:  msg,
 	}
 
 }
@@ -85,12 +87,12 @@ func BadRequest(msg string) Error {
 		msg = StatusBadRequest.GetMsg()
 	}
 	return &myError{
-		Code: StatusBadRequest,
-		Msg:  msg,
+		code: StatusBadRequest,
+		msg:  msg,
 	}
 }
 
 //database
 func New(code Status, err string) Error {
-	return myError{Code: code, Msg: err}
+	return myError{code: code, msg: err}
 }
