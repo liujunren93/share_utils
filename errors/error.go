@@ -1,7 +1,8 @@
 package errors
 
 type Error interface {
-	Code() int32
+	GetCode() int32
+	GetMsg() string
 	error
 }
 
@@ -10,8 +11,11 @@ type myError struct {
 	msg  string
 }
 
-func (e myError) Code() int32 {
+func (e myError) GetCode() int32 {
 	return int32(e.code)
+}
+func (e myError) GetMsg() string {
+	return e.msg
 }
 
 func (e myError) Error() string {
@@ -35,7 +39,7 @@ func DuplicationData(msg string) Error {
 		msg = StatusDataDuplication.GetMsg()
 	}
 	return &myError{
-		code:StatusDataDuplication,
+		code: StatusDataDuplication,
 		msg:  msg,
 	}
 }
@@ -58,7 +62,7 @@ func Forbidden(msg string) Error {
 		msg = StatusForbidden.GetMsg()
 	}
 	return &myError{
-		code:StatusForbidden,
+		code: StatusForbidden,
 		msg:  msg,
 	}
 }

@@ -18,7 +18,7 @@ type HttpResponse struct {
 	Data interface{}    `json:"data"`
 }
 
-//func ResponseError(w http.ResponseWriter, err error, msg string, data interface{}) {
+//func Response5XX(w http.ResponseWriter, err error, msg string, data interface{}) {
 //	if msg == "" {
 //		msg = err.Error()
 //	}
