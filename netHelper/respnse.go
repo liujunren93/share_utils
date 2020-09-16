@@ -28,12 +28,18 @@ type HttpResponse struct {
 //}
 
 //web response
-func Response(w http.ResponseWriter, code errors.IStatus, msg string, data interface{}) {
-	if msg == "" {
-		msg = code.GetMsg()
+func Response(w http.ResponseWriter, code errors.IStatus, err error, data interface{}) {
+	var cod int32
+	var msg string
+	if err != nil {
+		cod=500
+		msg="Internal Server Error"
+	}else   {
+		cod=code.GetCode()
+		msg=code.GetMsg()
 	}
 	resData := HttpResponse{
-		Code: errors.Status(code.GetCode()),
+		Code: errors.Status(cod),
 		Msg:  msg,
 		Data: data,
 	}
