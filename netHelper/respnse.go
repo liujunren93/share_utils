@@ -33,7 +33,7 @@ func Response(w http.ResponseWriter, code errors.IStatus, msg string, data inter
 		msg = code.GetMsg()
 	}
 	resData := HttpResponse{
-		Code: code,
+		Code: errors.Status(code.GetCode()),
 		Msg:  msg,
 		Data: data,
 	}
