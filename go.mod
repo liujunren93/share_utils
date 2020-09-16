@@ -10,7 +10,7 @@ require (
 	github.com/go-redis/redis v6.15.8+incompatible
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/jinzhu/gorm v1.9.15
-	github.com/liujunren93/share v0.0.0-20200916074452-c66bf6af2a06
+	github.com/liujunren93/share v0.0.0-20200916094652-6555adbd5d56
 	github.com/magiconair/properties v1.8.2 // indirect
 	github.com/micro/go-micro/v2 v2.9.1
 	github.com/micro/go-micro/v3 v3.0.0-beta.2

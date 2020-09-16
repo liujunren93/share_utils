@@ -48,12 +48,18 @@ func Response(w http.ResponseWriter, code errors.IStatus, msg string, data inter
 
 ////通过反射 设置data rpc response
 func RpcResponse(res interface{}, err errors.Error, data interface{}) (interface{}, error) {
-	if err.GetCode() == 500 {
-		return res, serrors.InternalServerError(err)
+	var code int32 = 200
+	var msg string = "ok"
+	if err != nil {
+		if err.GetCode() == 500 {
+			return res, serrors.InternalServerError(err)
+		}
+		code = err.GetCode()
+		msg = err.GetMsg()
 	}
 	of := reflect.ValueOf(res)
 	if of.Kind() != reflect.Ptr && !of.Elem().CanSet() {
-		return res, serrors.InternalServerError(err)
+		return res, serrors.InternalServerError(nil)
 	}
 	elem := of.Elem()
 	Data := elem.FieldByName("Data")
@@ -61,7 +67,7 @@ func RpcResponse(res interface{}, err errors.Error, data interface{}) (interface
 	if dataOf.IsValid() {
 		Data.Set(reflect.ValueOf(data))
 	}
-	elem.FieldByName("Code").SetInt(int64(err.GetCode()))
-	elem.FieldByName("Msg").SetString(err.GetMsg())
+	elem.FieldByName("Code").SetInt(int64(code))
+	elem.FieldByName("Msg").SetString(msg)
 	return res, nil
 }
