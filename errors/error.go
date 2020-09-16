@@ -7,19 +7,19 @@ type Error interface {
 }
 
 type myError struct {
-	code Status
-	msg  string
+	Code Status
+	Msg  string
 }
 
 func (e myError) GetCode() int32 {
-	return int32(e.code)
+	return int32(e.Code)
 }
 func (e myError) GetMsg() string {
-	return e.msg
+	return e.Msg
 }
 
 func (e myError) Error() string {
-	return e.msg
+	return e.Msg
 }
 
 // 数据不存在
@@ -28,8 +28,8 @@ func NoData(msg string) Error {
 		msg = StatusNotFound.GetMsg()
 	}
 	return &myError{
-		code: StatusNotFound,
-		msg:  msg,
+		Code: StatusNotFound,
+		Msg:  msg,
 	}
 }
 
@@ -39,8 +39,8 @@ func DuplicationData(msg string) Error {
 		msg = StatusDataDuplication.GetMsg()
 	}
 	return &myError{
-		code: StatusDataDuplication,
-		msg:  msg,
+		Code: StatusDataDuplication,
+		Msg:  msg,
 	}
 }
 
@@ -50,8 +50,8 @@ func Unauthorized(msg string) Error {
 		msg = StatusUnauthorized.GetMsg()
 	}
 	return &myError{
-		code: StatusUnauthorized,
-		msg:  msg,
+		Code: StatusUnauthorized,
+		Msg:  msg,
 	}
 }
 
@@ -62,8 +62,8 @@ func Forbidden(msg string) Error {
 		msg = StatusForbidden.GetMsg()
 	}
 	return &myError{
-		code: StatusForbidden,
-		msg:  msg,
+		Code: StatusForbidden,
+		Msg:  msg,
 	}
 }
 
@@ -73,8 +73,8 @@ func DataError(msg string) Error {
 		msg = StatusInternalServerError.GetMsg()
 	}
 	return &myError{
-		code: StatusInternalServerError,
-		msg:  msg,
+		Code: StatusInternalServerError,
+		Msg:  msg,
 	}
 
 }
@@ -85,12 +85,12 @@ func BadRequest(msg string) Error {
 		msg = StatusBadRequest.GetMsg()
 	}
 	return &myError{
-		code: StatusBadRequest,
-		msg:  msg,
+		Code: StatusBadRequest,
+		Msg:  msg,
 	}
 }
 
 //database
 func New(code Status, err string) Error {
-	return myError{code: code, msg: err}
+	return myError{Code: code, Msg: err}
 }
