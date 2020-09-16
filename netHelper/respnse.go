@@ -29,14 +29,11 @@ type HttpResponse struct {
 
 //web response
 func Response(w http.ResponseWriter, code errors.IStatus, err error, data interface{}) {
-	var cod int32
-	var msg string
+	cod := code.GetCode()
+	msg := code.GetMsg()
+	cod = code.GetCode()
 	if err != nil {
-		cod=500
-		msg="Internal Server Error"
-	}else   {
-		cod=code.GetCode()
-		msg=code.GetMsg()
+		msg = err.Error()
 	}
 	resData := HttpResponse{
 		Code: errors.Status(cod),
