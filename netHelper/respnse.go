@@ -86,6 +86,5 @@ func RpcResponse(res errors.IStatus, err errors.Error, data interface{}) (interf
 	}
 	elem.FieldByName("Code").SetInt(int64(code))
 	elem.FieldByName("Msg").SetString(msg)
-
-	return elem.Interface(), serrors.InternalServerError(nil)
+	return res, nil
 }
