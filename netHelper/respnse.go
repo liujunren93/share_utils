@@ -37,7 +37,7 @@ func Response(w http.ResponseWriter, code errors.IStatus, err error, data interf
 	}
 	fromError, ok := status.FromError(err)
 	if ok {
-		msg=fromError.Message()
+		msg = fromError.Message()
 	}
 	resData := HttpResponse{
 		Code: errors.Status(cod),
@@ -53,8 +53,10 @@ func Response(w http.ResponseWriter, code errors.IStatus, err error, data interf
 
 }
 
+
+
 ////通过反射 设置data rpc response
-func RpcResponse(res interface{}, err errors.Error, data interface{}) (interface{}, error) {
+func RpcResponse(res errors.IStatus, err errors.Error, data interface{}) (errors.IStatus, error) {
 	var code int32 = 200
 	var msg string = "ok"
 	if err != nil {
@@ -64,17 +66,25 @@ func RpcResponse(res interface{}, err errors.Error, data interface{}) (interface
 		code = err.GetCode()
 		msg = err.GetMsg()
 	}
+
 	of := reflect.ValueOf(res)
+
 	if of.Kind() != reflect.Ptr && !of.Elem().CanSet() {
 		return res, serrors.InternalServerError(nil)
+	}
+	if of.IsNil() {
+		of =reflect.New(reflect.TypeOf(res).Elem())
 	}
 	elem := of.Elem()
 	Data := elem.FieldByName("Data")
 	dataOf := reflect.ValueOf(data)
 	if dataOf.IsValid() {
-		Data.Set(reflect.ValueOf(data))
+		Data.Set(dataOf)
 	}
 	elem.FieldByName("Code").SetInt(int64(code))
 	elem.FieldByName("Msg").SetString(msg)
-	return res, nil
+	if iStatus,ok := elem.Interface().(errors.IStatus);ok {
+		return iStatus,nil
+	}
+	return nil, serrors.InternalServerError(nil)
 }
