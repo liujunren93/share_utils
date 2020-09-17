@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/liujunren93/share/serrors"
 	"github.com/liujunren93/share_utils/errors"
+	"google.golang.org/grpc/status"
 	"net/http"
 	"reflect"
 )
@@ -31,9 +32,12 @@ type HttpResponse struct {
 func Response(w http.ResponseWriter, code errors.IStatus, err error, data interface{}) {
 	cod := code.GetCode()
 	msg := code.GetMsg()
-	cod = code.GetCode()
 	if err != nil {
 		msg = err.Error()
+	}
+	fromError, ok := status.FromError(err)
+	if ok {
+		msg=fromError.Message()
 	}
 	resData := HttpResponse{
 		Code: errors.Status(cod),
