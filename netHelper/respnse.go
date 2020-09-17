@@ -39,9 +39,9 @@ func Response(w http.ResponseWriter, sta errors.IStatus, err error, data interfa
 	if err != nil {
 		msg = err.Error()
 	}
-	if fromError, ok := status.FromError(err); ok {
-		code = int32(fromError.Code())
-		msg = fromError.Message()
+	if _, ok := status.FromError(err); ok {
+		code = 500
+		msg = "Internal Server Error"
 	}
 
 	resData := HttpResponse{
