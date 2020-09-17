@@ -36,14 +36,14 @@ func Response(w http.ResponseWriter, sta errors.IStatus, err error, data interfa
 		code = sta.GetCode()
 		msg = sta.GetMsg()
 	}
-	if err != nil {
-		msg = err.Error()
-	}
-	if _, ok := status.FromError(err); ok {
+
+	if _, ok := status.FromError(err);  ok {
 		code = 500
 		msg = "Internal Server Error"
 	}
-
+	if err != nil {
+		msg = err.Error()
+	}
 	resData := HttpResponse{
 		Code: errors.Status(code),
 		Msg:  msg,
