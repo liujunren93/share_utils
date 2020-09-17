@@ -75,9 +75,9 @@ func RpcResponse(res errors.IStatus, err errors.Error, data interface{}) (interf
 	if of.Kind() != reflect.Ptr && !of.Elem().CanSet() {
 		return res, serrors.InternalServerError(nil)
 	}
-	if of.IsNil() {
-		of = reflect.New(reflect.TypeOf(res).Elem())
-	}
+	//if of.IsNil() {
+	//	of = reflect.New(reflect.TypeOf(res).Elem())
+	//}
 	elem := of.Elem()
 	Data := elem.FieldByName("Data")
 	dataOf := reflect.ValueOf(data)
@@ -87,5 +87,5 @@ func RpcResponse(res errors.IStatus, err errors.Error, data interface{}) (interf
 	elem.FieldByName("Code").SetInt(int64(code))
 	elem.FieldByName("Msg").SetString(msg)
 
-	return elem.Interface(), serrors.InternalServerError(nil)
+	return elem, serrors.InternalServerError(nil)
 }
