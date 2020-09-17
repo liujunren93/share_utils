@@ -29,18 +29,23 @@ type HttpResponse struct {
 //}
 
 //web response
-func Response(w http.ResponseWriter, code errors.IStatus, err error, data interface{}) {
-	cod := code.GetCode()
-	msg := code.GetMsg()
+func Response(w http.ResponseWriter, sta errors.IStatus, err error, data interface{}) {
+	var code int32
+	var msg string
+	if sta != nil {
+		code = sta.GetCode()
+		msg = sta.GetMsg()
+	}
 	if err != nil {
 		msg = err.Error()
 	}
-	fromError, ok := status.FromError(err)
-	if ok {
+	if fromError, ok := status.FromError(err); ok {
+		code = int32(fromError.Code())
 		msg = fromError.Message()
 	}
+
 	resData := HttpResponse{
-		Code: errors.Status(cod),
+		Code: errors.Status(code),
 		Msg:  msg,
 		Data: data,
 	}
@@ -52,8 +57,6 @@ func Response(w http.ResponseWriter, code errors.IStatus, err error, data interf
 	w.Write(marshal)
 
 }
-
-
 
 ////通过反射 设置data rpc response
 func RpcResponse(res errors.IStatus, err errors.Error, data interface{}) (interface{}, error) {
@@ -73,7 +76,7 @@ func RpcResponse(res errors.IStatus, err errors.Error, data interface{}) (interf
 		return res, serrors.InternalServerError(nil)
 	}
 	if of.IsNil() {
-		of =reflect.New(reflect.TypeOf(res).Elem())
+		of = reflect.New(reflect.TypeOf(res).Elem())
 	}
 	elem := of.Elem()
 	Data := elem.FieldByName("Data")
