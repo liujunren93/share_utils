@@ -7,14 +7,11 @@ import (
 type IStatus interface {
 	GetCode() int32
 	GetMsg() (msg string)
-	GetData() interface{}
 }
 
 type Status int32
 
-func (s Status) GetData() interface{} {
-	return nil
-}
+
 
 func (s Status) GetCode() int32 {
 	return int32(s)
