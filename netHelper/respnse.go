@@ -56,7 +56,7 @@ func Response(w http.ResponseWriter, code errors.IStatus, err error, data interf
 
 
 ////通过反射 设置data rpc response
-func RpcResponse(res errors.IStatus, err errors.Error, data interface{}) (errors.IStatus, error) {
+func RpcResponse(res errors.IStatus, err errors.Error, data interface{}) (interface{}, error) {
 	var code int32 = 200
 	var msg string = "ok"
 	if err != nil {
@@ -83,8 +83,6 @@ func RpcResponse(res errors.IStatus, err errors.Error, data interface{}) (errors
 	}
 	elem.FieldByName("Code").SetInt(int64(code))
 	elem.FieldByName("Msg").SetString(msg)
-	if iStatus,ok := elem.Interface().(errors.IStatus);ok {
-		return iStatus,nil
-	}
-	return nil, serrors.InternalServerError(nil)
+
+	return elem, serrors.InternalServerError(nil)
 }
