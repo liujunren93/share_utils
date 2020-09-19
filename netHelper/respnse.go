@@ -38,7 +38,10 @@ func Response(w http.ResponseWriter, sta errors.IStatus, err error, data interfa
 	}
 	if data == nil {
 		of := reflect.ValueOf(sta)
-		data=of.FieldByName("Data").Interface()
+		field := of.Elem().FieldByName("Data")
+		if !field.IsZero() {
+			data=field.Interface()
+		}
 	}
 	if _, ok := status.FromError(err); err != nil&& ok {
 		code = 500
