@@ -37,15 +37,16 @@ func Response(w http.ResponseWriter, sta errors.IStatus, err error, data interfa
 		msg = sta.GetMsg()
 	}
 	if data == nil {
-		of := reflect.ValueOf(sta)
-		if !of.Elem().IsZero() {
+		if sta != nil {
+			of := reflect.ValueOf(sta)
+
 			field := of.Elem().FieldByName("Data")
 			if !field.IsZero() {
-				data=field.Interface()
+				data = field.Interface()
 			}
 		}
 	}
-	if _, ok := status.FromError(err); err != nil&& ok {
+	if _, ok := status.FromError(err); err != nil && ok {
 		code = 500
 		msg = "Internal Server Error"
 	}
