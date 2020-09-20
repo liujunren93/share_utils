@@ -80,13 +80,9 @@ func RpcResponse(res errors.IStatus, err errors.Error, data interface{}) error {
 	}
 
 	of := reflect.ValueOf(res)
-
 	if of.Kind() != reflect.Ptr && !of.Elem().CanSet() {
 		return serrors.InternalServerError(nil)
 	}
-	//if of.IsNil() {
-	//	of = reflect.New(reflect.TypeOf(res).Elem())
-	//}
 	elem := of.Elem()
 	Data := elem.FieldByName("Data")
 	dataOf := reflect.ValueOf(data)
