@@ -34,7 +34,7 @@ func Response(w http.ResponseWriter, sta errors.IStatus, err error, data interfa
 		if sta != nil {
 			of := reflect.ValueOf(sta)
 
-			if of.Kind()==reflect.Struct {
+			if of.Kind()==reflect.Ptr {
 				field := of.Elem().FieldByName("Data")
 				if !field.IsZero() {
 					data = field.Interface()
