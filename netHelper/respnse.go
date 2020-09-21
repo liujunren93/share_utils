@@ -21,12 +21,6 @@ type HttpResponse struct {
 	Data interface{}    `json:"data"`
 }
 
-//func Response5XX(w http.ResponseWriter, err error, msg string, data interface{}) {
-//	if msg == "" {
-//		msg = err.Error()
-//	}
-//	ResponseOK(w, errors.StatusInternalServerError, msg, data)
-//}
 
 //web response
 func Response(w http.ResponseWriter, sta errors.IStatus, err error, data interface{}) {
@@ -40,10 +34,13 @@ func Response(w http.ResponseWriter, sta errors.IStatus, err error, data interfa
 		if sta != nil {
 			of := reflect.ValueOf(sta)
 
-			field := of.Elem().FieldByName("Data")
-			if !field.IsZero() {
-				data = field.Interface()
+			if of.Kind()==reflect.Struct {
+				field := of.Elem().FieldByName("Data")
+				if !field.IsZero() {
+					data = field.Interface()
+				}
 			}
+
 		}
 	}
 	if _, ok := status.FromError(err); err != nil && ok {
