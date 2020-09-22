@@ -7,9 +7,9 @@ import (
 )
 
 type UserAgent struct {
-	AccountID string `json:"account_id"`
-	UID       string `json:"uid"`
-	UserType  int    `json:"user_type"` // 1:平台管理员，2：机构内管理员，2：普通用户
+	AccountID uint `json:"account_id"`
+	UID       uint `json:"uid"`
+	UserType  int  `json:"user_type"` // 1:平台管理员，2：机构内管理员，2：普通用户
 
 }
 
