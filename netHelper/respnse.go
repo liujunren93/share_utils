@@ -21,6 +21,7 @@ type HttpResponse struct {
 	Data interface{}    `json:"data"`
 }
 
+//Response
 func Response(w http.ResponseWriter, sta errors.IStatus, err error, data interface{}) {
 	var code int32
 	var msg string
