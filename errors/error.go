@@ -92,6 +92,18 @@ func BadRequest(msg string) Error {
 	}
 }
 
+func Timeout(msg string)Error  {
+	if msg == "" {
+		msg = "time out"
+	}
+	return &myError{
+		code: 408,
+		msg:  msg,
+	}
+}
+
+
+
 //database
 func New(code Status, err string) Error {
 	return myError{code: code, msg: err}
