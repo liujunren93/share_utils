@@ -1,12 +1,13 @@
 package store
 
 import (
+	"github.com/liujunren93/share_utils/config"
 	"github.com/nacos-group/nacos-sdk-go/clients"
 	"github.com/nacos-group/nacos-sdk-go/clients/config_client"
 	"github.com/nacos-group/nacos-sdk-go/common/constant"
 	"github.com/nacos-group/nacos-sdk-go/vo"
-	"github.com/sharelife-china/share_utils/config"
 )
+
 type AcmOptions struct {
 	AccessKey   string `json:"access_key"`
 	SecretKey   string `json:"secret_key"`
@@ -17,12 +18,9 @@ type AcmOptions struct {
 	CacheDir    string `json:"cache_dir"`
 }
 
-
 type acmConf struct {
 	client config_client.IConfigClient
 }
-
-
 
 func NewAcmStore(option *AcmOptions) (config.ConfI, error) {
 	clientConfig := constant.ClientConfig{
@@ -40,10 +38,9 @@ func NewAcmStore(option *AcmOptions) (config.ConfI, error) {
 	configClient, err := clients.CreateConfigClient(map[string]interface{}{
 		"clientConfig": clientConfig,
 	})
-	conf.client=configClient
+	conf.client = configClient
 	return &conf, err
 }
-
 
 //options  0:DataId,1:Group;2:Content
 func (a *acmConf) PublishConfig(options *config.DataOptions) (bool, error) {
@@ -60,18 +57,18 @@ func (a *acmConf) GetConfig(options *config.DataOptions) (interface{}, error) {
 
 	// Get plain content from ACM.
 	return a.client.GetConfig(vo.ConfigParam{
-		DataId:  options.DataId,
-		Group:   options.Group,
+		DataId: options.DataId,
+		Group:  options.Group,
 	},
 	)
 
 }
 
 //options  0:DataId,1:Group;
-func (a *acmConf) ListenConfig(options *config.DataOptions,f func(interface{})) {
+func (a *acmConf) ListenConfig(options *config.DataOptions, f func(interface{})) {
 	a.client.ListenConfig(vo.ConfigParam{
-		DataId:  options.DataId,
-		Group:   options.Group,
+		DataId: options.DataId,
+		Group:  options.Group,
 		OnChange: func(namespace, group, dataId, data string) {
 			f(data)
 		},
@@ -82,7 +79,7 @@ func (a *acmConf) ListenConfig(options *config.DataOptions,f func(interface{})) 
 //
 func (a *acmConf) DeleteConfig(options *config.DataOptions) (bool, error) {
 	return a.client.DeleteConfig(vo.ConfigParam{
-		DataId:  options.DataId,
-		Group:   options.Group,
+		DataId: options.DataId,
+		Group:  options.Group,
 	})
 }
