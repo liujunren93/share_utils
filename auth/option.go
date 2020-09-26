@@ -5,9 +5,9 @@ import (
 )
 
 type TokenOptions struct {
-	// ID for the account
+	// ID for the company
 	ID string
-	// Secret for the account
+	// Secret for the company
 	Secret string
 	// RefreshToken is used to refesh a token
 	RefreshToken string

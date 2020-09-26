@@ -23,8 +23,8 @@ type HttpResponse struct {
 
 //Response
 func Response(w http.ResponseWriter, sta errors.IStatus, err error, data interface{}) {
-	var code int32
-	var msg string
+	var code int32 = 200
+	var msg string = "ok"
 	if sta != nil {
 		code = sta.GetCode()
 		msg = sta.GetMsg()
@@ -44,7 +44,7 @@ func Response(w http.ResponseWriter, sta errors.IStatus, err error, data interfa
 	if e, ok := status.FromError(err); err != nil && ok {
 		if e.Code() == 400 {
 			code = int32(e.Code())
-			msg=e.Message()
+			msg = e.Message()
 		} else {
 			code = 500
 			msg = "Internal Server Error"
