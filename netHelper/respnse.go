@@ -28,7 +28,7 @@ func Response(w http.ResponseWriter, sta errors.IStatus, err error, data interfa
 	if sta != nil {
 		code = sta.GetCode()
 		msg = sta.GetMsg()
-		if data != nil {
+		if data == nil {
 			of := reflect.ValueOf(sta)
 			if of.Kind() == reflect.Ptr {
 				field := of.Elem().FieldByName("Data")
