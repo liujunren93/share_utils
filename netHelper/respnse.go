@@ -26,12 +26,14 @@ func Response(w http.ResponseWriter, sta errors.IStatus, err error, data interfa
 
 	var code int32 = 200
 	var msg string = "ok"
-	of := reflect.ValueOf(sta)
-	if !of.IsValid() {
+
+
+	if sta!=nil{
 		code = sta.GetCode()
 		msg = sta.GetMsg()
 		if data == nil {
-			if of.Kind() == reflect.Ptr {
+			of := reflect.ValueOf(sta)
+			if of.Kind() == reflect.Ptr&&!of.IsNil() {
 				field := of.Elem().FieldByName("Data")
 				if !field.IsZero() {
 					data = field.Interface()
