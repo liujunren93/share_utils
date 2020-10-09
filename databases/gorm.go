@@ -33,7 +33,8 @@ type Mysql struct {
 
 // NewMysql will create *gorm.DB
 func NewMysql(conf *Mysql) (*gorm.DB, error) {
-	open, err := gorm.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Asia%%2FShanghai", conf.User, conf.Password, conf.Host, conf.Port, conf.Database))
+
+	open, err := gorm.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Asia%%2FShanghai&timeout=5s", conf.User, conf.Password, conf.Host, conf.Port, conf.Database))
 	if err != nil {
 		return nil, err
 	}
