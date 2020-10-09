@@ -22,14 +22,15 @@ type HttpResponse struct {
 }
 
 //Response
+//Response
 func Response(w http.ResponseWriter, sta errors.IStatus, err error, data interface{}) {
 	var code int32 = 200
 	var msg string = "ok"
-	if sta != nil {
+	of := reflect.ValueOf(sta)
+	if !of.IsNil() {
 		code = sta.GetCode()
 		msg = sta.GetMsg()
 		if data == nil {
-			of := reflect.ValueOf(sta)
 			if of.Kind() == reflect.Ptr {
 				field := of.Elem().FieldByName("Data")
 				if !field.IsZero() {
@@ -38,6 +39,7 @@ func Response(w http.ResponseWriter, sta errors.IStatus, err error, data interfa
 			}
 		}
 	}
+
 	if err != nil {
 		msg = err.Error()
 	}
