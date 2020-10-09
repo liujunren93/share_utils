@@ -13,7 +13,6 @@ type res interface {
 	GetMsg() int32
 	GetCode() string
 }
-
 // 响应
 type HttpResponse struct {
 	Code errors.IStatus `json:"code"`
@@ -24,10 +23,11 @@ type HttpResponse struct {
 //Response
 //Response
 func Response(w http.ResponseWriter, sta errors.IStatus, err error, data interface{}) {
+
 	var code int32 = 200
 	var msg string = "ok"
 	of := reflect.ValueOf(sta)
-	if !of.IsNil() {
+	if !of.IsValid() {
 		code = sta.GetCode()
 		msg = sta.GetMsg()
 		if data == nil {
@@ -66,7 +66,6 @@ func Response(w http.ResponseWriter, sta errors.IStatus, err error, data interfa
 	w.Write(marshal)
 
 }
-
 //web response
 //func Response1(w http.ResponseWriter, sta errors.IStatus, err error, data interface{}) {
 //	var code int32
