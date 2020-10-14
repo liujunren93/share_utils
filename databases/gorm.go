@@ -1,13 +1,12 @@
 package databases
 
 import (
+	"encoding/json"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 	"time"
 )
-
-
 
 type Base struct {
 	ID        uint `gorm:"primary_key"`
@@ -15,8 +14,6 @@ type Base struct {
 	UpdatedAt time.Time
 	DeletedAt *time.Time `sql:"index"`
 }
-
-
 
 type Mysql struct {
 	Host            string        `json:"host"`
@@ -30,6 +27,10 @@ type Mysql struct {
 	LogMode         bool          `json:"log_mode"`
 }
 
+func (m Mysql) String() string {
+	marshal, _ := json.Marshal(&m)
+	return string(marshal)
+}
 
 // NewMysql will create *gorm.DB
 func NewMysql(conf *Mysql) (*gorm.DB, error) {
