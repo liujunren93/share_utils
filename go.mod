@@ -27,6 +27,7 @@ require (
 	github.com/spf13/viper v1.7.1
 	github.com/uber/jaeger-client-go v2.25.0+incompatible
 	github.com/uber/jaeger-lib v2.2.0+incompatible
+	golang.org/x/crypto v0.0.0-20200709230013-948cd5f35899
 	golang.org/x/sys v0.0.0-20200909081042-eff7692f9009 // indirect
 	google.golang.org/grpc v1.31.0
 	gopkg.in/ini.v1 v1.61.0 // indirect
