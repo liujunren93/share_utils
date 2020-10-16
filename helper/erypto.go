@@ -14,6 +14,7 @@ func Sha1Str(str string) string {
 	return fmt.Sprintf("%x", hash.Sum(nil))
 }
 
+
 func NewPassword(secret, password string, cost int) (string, error) {
 	fromPassword, err := bcrypt.GenerateFromPassword([]byte(secret+password), cost)
 	if err != nil {

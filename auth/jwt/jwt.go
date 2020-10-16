@@ -21,6 +21,7 @@ type jwtClaims struct {
 	jwt.StandardClaims
 }
 
+//Inspect 验证token
 func (j *jwtAuth) Inspect(tokenStr string) (interface{}, error) {
 
 	tk, err := jwt.ParseWithClaims(tokenStr, &jwtClaims{}, func(token *jwt.Token) (interface{}, error) {
@@ -39,8 +40,7 @@ func (j *jwtAuth) Inspect(tokenStr string) (interface{}, error) {
 	return nil, errors.New("token error")
 }
 
-
-// get token, if option.token!="" will refresh token
+//Token get token, if option.token!="" will refresh token
 func (j *jwtAuth) Token(option ...auth.TokenOption) (*auth.Token, error) {
 	op := auth.NewOption(option...)
 	var token auth.Token
@@ -60,7 +60,7 @@ func (j *jwtAuth) Token(option ...auth.TokenOption) (*auth.Token, error) {
 			j.options.Data = jc.Data
 		}
 	}
-	token.Created = time.Now()
+	token.Created = time.Now().Local().Unix()
 	accessToken, err := j.createToken(1)
 	if err != nil {
 		return nil, err
@@ -73,7 +73,7 @@ func (j *jwtAuth) Token(option ...auth.TokenOption) (*auth.Token, error) {
 	}
 	token.RefreshToken = refreshToken
 
-	token.Expiry = token.Created.Add(j.options.Expiry)
+	token.Expiry = token.Created + int64(j.options.Expiry)
 	return &token, nil
 }
 

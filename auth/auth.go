@@ -1,7 +1,5 @@
 package auth
 
-import "time"
-
 type Auth interface {
 	// Token generated using refresh token or credentials
 	Token(...TokenOption) (*Token, error)
@@ -15,7 +13,7 @@ type Token struct {
 	// RefreshToken to be used to generate a new token
 	RefreshToken string `json:"refresh_token"`
 	// Time of token creation
-	Created time.Time `json:"created"`
+	Created int64 `json:"created"`
 	// Time of token expiry
-	Expiry time.Time `json:"expiry"`
+	Expiry int64 `json:"expiry"`
 }

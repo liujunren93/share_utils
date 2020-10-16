@@ -16,7 +16,7 @@ func TestCreateToken(t *testing.T) {
 	//inspect, err := auth.Inspect(token.RefreshToken)
 
 	//fmt.Println(inspect, err )
-	refresh(token.AccessToken)
+	refresh(token.RefreshToken)
 
 }
 
