@@ -1,18 +1,11 @@
 package helper
 
 import (
-	uuid "github.com/satori/go.uuid"
 	"math/rand"
-	"strings"
 	"time"
 )
 
-func GetUuidV3(name string) string {
-	v1, _ := uuid.NewV4()
-	variant := uuid.NewV3(v1, name)
-	all := strings.ReplaceAll(variant.String(), "-", "")
-	return all
-}
+
 
 func RandString(length int) string {
 	baseStr := "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"

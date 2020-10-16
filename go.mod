@@ -9,6 +9,7 @@ require (
 	github.com/ghodss/yaml v1.0.0
 	github.com/go-redis/redis/v8 v8.2.3
 	github.com/go-sql-driver/mysql v1.5.0
+	github.com/google/uuid v1.1.2
 	github.com/jinzhu/gorm v1.9.15
 	github.com/liujunren93/share v0.0.0-20200916094652-6555adbd5d56
 	github.com/magiconair/properties v1.8.2 // indirect
