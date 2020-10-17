@@ -2,7 +2,7 @@ package auth
 
 type Auth interface {
 	// Token generated using refresh token or credentials
-	Token(...TokenOption) (*Token, error)
+	Token(refreshToken string) (*Token, error)
 	Inspect(token string) (interface{}, error)
 }
 

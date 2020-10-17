@@ -11,8 +11,11 @@ type jwtAuth struct {
 	options auth.TokenOptions
 }
 
-func NewAuth() auth.Auth {
-	return new(jwtAuth)
+func NewAuth(option ...auth.TokenOption) auth.Auth {
+	jAuth:= new(jwtAuth)
+	op := auth.NewOption(option...)
+	jAuth.options = op
+	return jAuth
 }
 
 type JwtClaims struct {
@@ -39,16 +42,14 @@ func (j *jwtAuth) Inspect(tokenStr string) (interface{}, error) {
 	return nil, errors.New("token error")
 }
 
-//Token get token, if option.token!="" will refresh token
-func (j *jwtAuth) Token(option ...auth.TokenOption) (*auth.Token, error) {
-	op := auth.NewOption(option...)
+//Token get token, if RefreshToken!="" will refresh token
+func (j *jwtAuth) Token(RefreshToken string) (*auth.Token, error) {
 	var token auth.Token
-	j.options = op
-	if op.Secret == "" {
+	if j.options.Secret == "" {
 		return nil, errors.New("secret is empty")
 	}
-	if op.RefreshToken != "" { //刷新token
-		inspect, err := j.Inspect(op.RefreshToken)
+	if RefreshToken != "" { //刷新token
+		inspect, err := j.Inspect(RefreshToken)
 		if err != nil {
 			return nil, err
 		}

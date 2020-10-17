@@ -9,8 +9,6 @@ type TokenOptions struct {
 	ID string
 	// Secret for the company_cli
 	Secret string
-	// RefreshToken is used to refesh a token
-	RefreshToken string
 	// Expiry is the time the token should live for
 	Expiry time.Duration
 	//data
@@ -19,11 +17,7 @@ type TokenOptions struct {
 
 type TokenOption func(o *TokenOptions)
 
-func WithToken(token string) TokenOption {
-	return func(o *TokenOptions) {
-		o.RefreshToken = token
-	}
-}
+
 
 func WithData(data interface{}) TokenOption {
 	return func(o *TokenOptions) {
