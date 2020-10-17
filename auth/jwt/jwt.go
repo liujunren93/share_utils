@@ -15,7 +15,7 @@ func NewAuth() auth.Auth {
 	return new(jwtAuth)
 }
 
-type jwtClaims struct {
+type JwtClaims struct {
 	Data interface{}
 	Type int8 //1:token 2:refresh token
 	jwt.StandardClaims
@@ -24,8 +24,7 @@ type jwtClaims struct {
 //Inspect 验证token
 func (j *jwtAuth) Inspect(tokenStr string) (interface{}, error) {
 
-	tk, err := jwt.ParseWithClaims(tokenStr, &jwtClaims{}, func(token *jwt.Token) (interface{}, error) {
-
+	tk, err := jwt.ParseWithClaims(tokenStr, &JwtClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(j.options.Secret), nil
 	})
 
@@ -33,7 +32,7 @@ func (j *jwtAuth) Inspect(tokenStr string) (interface{}, error) {
 		return nil, err
 	}
 
-	if claims, ok := tk.Claims.(*jwtClaims); ok && tk.Valid {
+	if claims, ok := tk.Claims.(*JwtClaims); ok && tk.Valid {
 		return claims, nil
 	}
 
@@ -53,7 +52,7 @@ func (j *jwtAuth) Token(option ...auth.TokenOption) (*auth.Token, error) {
 		if err != nil {
 			return nil, err
 		}
-		if jc, ok := inspect.(*jwtClaims); ok {
+		if jc, ok := inspect.(*JwtClaims); ok {
 			if jc.Type == 1 {
 				return nil, errors.New("cannot refresh token with token")
 			}
@@ -87,7 +86,7 @@ func (j *jwtAuth) createToken(tkType int8) (string, error) {
 
 	}
 
-	claims := jwtClaims{
+	claims := JwtClaims{
 		Data: j.options.Data,
 		Type: tkType,
 		StandardClaims: jwt.StandardClaims{
