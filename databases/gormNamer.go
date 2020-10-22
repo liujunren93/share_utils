@@ -15,7 +15,7 @@ var (
 	commonInitialismsReplacer *strings.Replacer
 	commonInitialisms         = []string{"API", "ASCII", "CPU", "CSS", "DNS", "EOF", "GUID", "HTML", "HTTP", "HTTPS", "ID", "IP", "JSON", "LHS", "QPS", "RAM", "RHS", "RPC", "SLA", "SMTP", "SSH", "TLS", "TTL", "UID", "UI", "UUID", "URI", "URL", "UTF8", "VM", "XML", "XSRF", "XSS"}
 	defaultNamingStrategy = NamingStrategy{
-		SingularTable: false,
+		SingularTable: true,
 		TrimStr:       "Model",
 	}
 )

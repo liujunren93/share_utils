@@ -48,8 +48,6 @@ func NewMysql(basConf *Mysql, conf *gorm.Config) (*gorm.DB, error) {
 		SkipInitializeWithVersion: false, // 根据当前 MySQL 版本自动配置
 	}), conf)
 
-
-
 	db, err := open.DB()
 	if err != nil {
 		return nil, err
