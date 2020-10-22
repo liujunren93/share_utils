@@ -35,7 +35,7 @@ type NamingStrategy struct {
 
 // TableName convert string to table name
 func (ns NamingStrategy) TableName(table string) string {
-
+	fmt.Println(table)
 	if ns.TrimStr != "" {
 		index := strings.LastIndex(table,  ns.TrimStr)
 		if index>=0 {
@@ -43,12 +43,11 @@ func (ns NamingStrategy) TableName(table string) string {
 		}
 
 	}
+	fmt.Println(table)
 	if ns.SingularTable {
-
-		fmt.Println(table)
 		return ns.TablePrefix + toDBName(table)
-
 	}
+	fmt.Println(table)
 	return ns.TablePrefix + inflection.Plural(toDBName(table))
 
 }
