@@ -37,10 +37,11 @@ type NamingStrategy struct {
 func (ns NamingStrategy) TableName(table string) string {
 
 	if ns.TrimStr != "" {
-		index := strings.LastIndex("BaseModela_",  ns.TrimStr)
+		index := strings.LastIndex(table,  ns.TrimStr)
 		table = table[:index]
 	}
 	if ns.SingularTable {
+
 		fmt.Println(table)
 		return ns.TablePrefix + toDBName(table)
 
