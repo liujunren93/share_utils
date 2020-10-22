@@ -34,21 +34,26 @@ func (m Mysql) String() string {
 }
 
 // NewMysql will create *gorm.DB
-func NewMysql(conf *Mysql) (*gorm.DB, error) {
-	dsn:=fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Asia%%2FShanghai&timeout=5s", conf.User, conf.Password, conf.Host, conf.Port, conf.Database)
-	open, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+func NewMysql(basConf *Mysql, conf *gorm.Config) (*gorm.DB, error) {
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Asia%%2FShanghai&timeout=5s", basConf.User, basConf.Password, basConf.Host, basConf.Port, basConf.Database)
+	if conf == nil {
+		conf = &gorm.Config{NamingStrategy: NamingStrategy{TrimStr: "_model"}}
+	}
+	open, err := gorm.Open(mysql.Open(dsn), conf)
 	if err != nil {
 		return nil, err
 	}
+
 	db, err := open.DB()
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
-	db.SetConnMaxLifetime(time.Second * conf.ConnMaxLifeTime)
-	db.SetMaxOpenConns(conf.MaxOpenConns)
-	db.SetMaxOpenConns(conf.MaxOpenConns)
-	if conf.LogMode {
-		open=open.Debug()
+	db.SetConnMaxLifetime(time.Second * basConf.ConnMaxLifeTime)
+	db.SetMaxOpenConns(basConf.MaxOpenConns)
+	db.SetMaxOpenConns(basConf.MaxOpenConns)
+	if basConf.LogMode {
+		open = open.Debug()
 	}
+
 	return open, nil
 }
