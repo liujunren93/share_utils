@@ -35,11 +35,13 @@ type NamingStrategy struct {
 
 // TableName convert string to table name
 func (ns NamingStrategy) TableName(table string) string {
-	fmt.Println("table:____________",table)
+
 	if ns.TrimStr != "" {
-		table = strings.Trim(table, ns.TrimStr)
+		index := strings.LastIndex("BaseModela_",  ns.TrimStr)
+		table = table[:index]
 	}
 	if ns.SingularTable {
+		fmt.Println(table)
 		return ns.TablePrefix + toDBName(table)
 
 	}
