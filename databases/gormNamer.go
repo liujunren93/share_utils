@@ -13,6 +13,10 @@ import (
 var (
 	smap                      sync.Map
 	commonInitialismsReplacer *strings.Replacer
+	defaultNamingStrategy = NamingStrategy{
+		SingularTable: false,
+		TrimStr:       "_models",
+	}
 )
 
 type NamingStrategy struct {
