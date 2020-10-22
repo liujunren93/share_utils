@@ -4,7 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/jinzhu/gorm"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 	"time"
 )
 
@@ -34,14 +35,20 @@ func (m Mysql) String() string {
 
 // NewMysql will create *gorm.DB
 func NewMysql(conf *Mysql) (*gorm.DB, error) {
-
-	open, err := gorm.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Asia%%2FShanghai&timeout=5s", conf.User, conf.Password, conf.Host, conf.Port, conf.Database))
+	dsn:=fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Asia%%2FShanghai&timeout=5s", conf.User, conf.Password, conf.Host, conf.Port, conf.Database)
+	open, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		return nil, err
 	}
-	open.DB().SetConnMaxLifetime(time.Second * conf.ConnMaxLifeTime)
-	open.DB().SetMaxOpenConns(conf.MaxOpenConns)
-	open.DB().SetMaxOpenConns(conf.MaxOpenConns)
-	open.LogMode(conf.LogMode)
+	db, err := open.DB()
+	if err != nil {
+		return nil,err
+	}
+	db.SetConnMaxLifetime(time.Second * conf.ConnMaxLifeTime)
+	db.SetMaxOpenConns(conf.MaxOpenConns)
+	db.SetMaxOpenConns(conf.MaxOpenConns)
+	if conf.LogMode {
+		open=open.Debug()
+	}
 	return open, nil
 }

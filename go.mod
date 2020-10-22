@@ -10,7 +10,6 @@ require (
 	github.com/go-redis/redis/v8 v8.2.3
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/google/uuid v1.1.2
-	github.com/jinzhu/gorm v1.9.15
 	github.com/liujunren93/share v0.0.0-20200916094652-6555adbd5d56
 	github.com/magiconair/properties v1.8.2 // indirect
 	github.com/micro/go-micro/v2 v2.9.1
@@ -19,7 +18,6 @@ require (
 	github.com/nacos-group/nacos-sdk-go v0.4.0
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/pelletier/go-toml v1.8.0 // indirect
-	github.com/satori/go.uuid v1.2.1-0.20181028125025-b2ce2384e17b
 	github.com/sirupsen/logrus v1.6.0
 	github.com/spf13/afero v1.3.5 // indirect
 	github.com/spf13/cast v1.3.1 // indirect
@@ -33,4 +31,6 @@ require (
 	google.golang.org/grpc v1.31.0
 	gopkg.in/ini.v1 v1.61.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0-20200601152816-913338de1bd2 // indirect
+	gorm.io/driver/mysql v1.0.2
+	gorm.io/gorm v1.20.2
 )
