@@ -16,7 +16,7 @@ var (
 	commonInitialisms         = []string{"API", "ASCII", "CPU", "CSS", "DNS", "EOF", "GUID", "HTML", "HTTP", "HTTPS", "ID", "IP", "JSON", "LHS", "QPS", "RAM", "RHS", "RPC", "SLA", "SMTP", "SSH", "TLS", "TTL", "UID", "UI", "UUID", "URI", "URL", "UTF8", "VM", "XML", "XSRF", "XSS"}
 	defaultNamingStrategy = NamingStrategy{
 		SingularTable: false,
-		TrimStr:       "_models",
+		TrimStr:       "model",
 	}
 )
 func init() {
@@ -38,7 +38,10 @@ func (ns NamingStrategy) TableName(table string) string {
 
 	if ns.TrimStr != "" {
 		index := strings.LastIndex(table,  ns.TrimStr)
-		table = table[:index]
+		if index>=0 {
+			table = table[:index]
+		}
+
 	}
 	if ns.SingularTable {
 
