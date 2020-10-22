@@ -13,11 +13,19 @@ import (
 var (
 	smap                      sync.Map
 	commonInitialismsReplacer *strings.Replacer
+	commonInitialisms         = []string{"API", "ASCII", "CPU", "CSS", "DNS", "EOF", "GUID", "HTML", "HTTP", "HTTPS", "ID", "IP", "JSON", "LHS", "QPS", "RAM", "RHS", "RPC", "SLA", "SMTP", "SSH", "TLS", "TTL", "UID", "UI", "UUID", "URI", "URL", "UTF8", "VM", "XML", "XSRF", "XSS"}
 	defaultNamingStrategy = NamingStrategy{
 		SingularTable: false,
 		TrimStr:       "_models",
 	}
 )
+func init() {
+	var commonInitialismsForReplacer []string
+	for _, initialism := range commonInitialisms {
+		commonInitialismsForReplacer = append(commonInitialismsForReplacer, initialism, strings.Title(strings.ToLower(initialism)))
+	}
+	commonInitialismsReplacer = strings.NewReplacer(commonInitialismsForReplacer...)
+}
 
 type NamingStrategy struct {
 	TablePrefix   string
