@@ -35,6 +35,7 @@ type NamingStrategy struct {
 
 // TableName convert string to table name
 func (ns NamingStrategy) TableName(table string) string {
+	fmt.Println(table)
 	if ns.TrimStr != "" {
 		table = strings.Trim(table, ns.TrimStr)
 	}
