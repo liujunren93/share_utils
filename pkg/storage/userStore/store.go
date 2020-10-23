@@ -2,7 +2,6 @@ package userStore
 
 import (
 	"context"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
 	"github.com/liujunren93/share_utils/auth"
@@ -45,12 +44,12 @@ func (s userStore) getKey(c *gin.Context) (string, bool) {
 }
 
 //Store 存储登录信息
-func (s userStore) Store(key string, l *LoginInfo) {
+func (s userStore) Store(key string, l *LoginInfo)error {
 	ctxTimeout, _ := context.WithTimeout(context.TODO(), time.Second*3)
 	l.CreateAt = time.Now().Local().Unix()
 	infoStr, _ := encode(l)
 	set := s.Redis.Set(ctxTimeout, storageKeyPrefix+key, infoStr, time.Duration(s.Expire)*time.Second)
-	fmt.Println(set.Err())
+	return set.Err()
 }
 
 //Load 获取用户登录信息
