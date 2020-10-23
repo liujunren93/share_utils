@@ -14,21 +14,21 @@ var (
 	storageKeyPrefix = "rbacUserLoginData_uid"
 )
 
-type userStore struct {
+type UserStore struct {
 	Expire int64  // 保持登录时间
 	Secret string // 提取key密钥
 	Redis  *redis.Client
 }
 
-func NewUserStore(expire int64, secret string, redis *redis.Client) *userStore {
-	return &userStore{
+func NewUserStore(expire int64, secret string, redis *redis.Client) *UserStore {
+	return &UserStore{
 		Expire: expire,
 		Redis:  redis,
 		Secret: secret,
 	}
 }
 
-func (s userStore) getKey(c *gin.Context) (string, bool) {
+func (s *UserStore) getKey(c *gin.Context) (string, bool) {
 	token := c.GetHeader("Authorization")
 	auth := jwt.NewAuth(auth.WithSecret(s.Secret))
 	inspect, err := auth.Inspect(token)
@@ -44,7 +44,7 @@ func (s userStore) getKey(c *gin.Context) (string, bool) {
 }
 
 //Store 存储登录信息
-func (s userStore) Store(key string, l *LoginInfo) error {
+func (s *UserStore) Store(key string, l *LoginInfo) error {
 	ctxTimeout, _ := context.WithTimeout(context.TODO(), time.Second*3)
 	l.CreateAt = time.Now().Local().Unix()
 	infoStr, _ := encode(l)
@@ -53,7 +53,7 @@ func (s userStore) Store(key string, l *LoginInfo) error {
 }
 
 //Load 获取用户登录信息
-func (s userStore) Load(c *gin.Context) (*LoginInfo, bool) {
+func (s *UserStore) Load(c *gin.Context) (*LoginInfo, bool) {
 	key, ok := s.getKey(c)
 	if !ok {
 		return nil, false
@@ -77,14 +77,14 @@ func (s userStore) Load(c *gin.Context) (*LoginInfo, bool) {
 }
 
 //Count 在线用户统计
-func (s userStore) Count() int {
+func (s *UserStore) Count() int {
 	ctxTimeout, _ := context.WithTimeout(context.TODO(), time.Second*3)
 	keys := s.Redis.Keys(ctxTimeout, storageKeyPrefix+"*")
 	return len(keys.Val())
 }
 
 //Del
-func (s userStore) Del(key string) {
+func (s *UserStore) Del(key string) {
 	go func() {
 		ctxTimeout, _ := context.WithTimeout(context.TODO(), time.Second*3)
 		err := s.Redis.Del(ctxTimeout, storageKeyPrefix+key).Err()
