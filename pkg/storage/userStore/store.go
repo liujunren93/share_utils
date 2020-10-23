@@ -17,10 +17,10 @@ var (
 type userStore struct {
 	Expire int64  // 保持登录时间
 	Secret string // 提取key密钥
-	Redis  redis.Client
+	Redis  *redis.Client
 }
 
-func NewUserStore(expire int64, secret string, redis redis.Client) *userStore {
+func NewUserStore(expire int64, secret string, redis *redis.Client) *userStore {
 	return &userStore{
 		Expire: expire,
 		Redis:  redis,
@@ -44,7 +44,7 @@ func (s userStore) getKey(c *gin.Context) (string, bool) {
 }
 
 //Store 存储登录信息
-func (s userStore) Store(key string, l *LoginInfo)error {
+func (s userStore) Store(key string, l *LoginInfo) error {
 	ctxTimeout, _ := context.WithTimeout(context.TODO(), time.Second*3)
 	l.CreateAt = time.Now().Local().Unix()
 	infoStr, _ := encode(l)
