@@ -35,7 +35,7 @@ func Response(w http.ResponseWriter, sta errors.IStatus, err error, data interfa
 			of := reflect.ValueOf(sta)
 			if of.Kind() == reflect.Ptr&&!of.IsNil() {
 				field := of.Elem().FieldByName("Data")
-				if !field.IsValid() {
+				if field.IsValid() {
 					data = field.Interface()
 				}
 			}
