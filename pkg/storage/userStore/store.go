@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-var (
+const (
 	storageKeyPrefix = "rbacUserLoginData_uid"
 )
 
@@ -52,12 +52,8 @@ func (s *UserStore) Store(key string, l *LoginInfo) error {
 	return set.Err()
 }
 
-//Load 获取用户登录信息
-func (s *UserStore) Load(c *gin.Context) (*LoginInfo, bool) {
-	key, ok := s.getKey(c)
-	if !ok {
-		return nil, false
-	}
+//Store 存储登录信息
+func (s *UserStore) LoadByKey(key string)  (*LoginInfo,bool) {
 	ctxTimeout, _ := context.WithTimeout(context.TODO(), time.Second*3)
 	get := s.Redis.Get(ctxTimeout, storageKeyPrefix+key)
 	if get.Err() != nil {
@@ -74,6 +70,16 @@ func (s *UserStore) Load(c *gin.Context) (*LoginInfo, bool) {
 		s.Redis.Expire(ctxTimeout, storageKeyPrefix+key, time.Duration(s.Expire)*time.Second)
 	}()
 	return info, true
+}
+
+//Load 获取用户登录信息
+func (s *UserStore) Load(c *gin.Context) (*LoginInfo, bool) {
+	key, ok := s.getKey(c)
+	if !ok {
+		return nil, false
+	}
+	return s.LoadByKey(key)
+
 }
 
 //Count 在线用户统计
