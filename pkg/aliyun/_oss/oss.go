@@ -34,17 +34,33 @@ func (s *_oss) Upload(objectName, bucketName string, data io.Reader, options ...
 }
 
 //MvFile
-// dest:目标
-// src：原目录
+// destPATH:目标目录
+// srcFile：原文件
 // keepOld:是否保留原文件
-func (s *_oss) MvFile(dest, src, bucketName string, keepOld bool) error {
+func (s *_oss) MvFile(destPATH, bucketName string, srcFiles ...string) error {
 	bucket, err := s.client.Bucket(bucketName)
 	if err != nil {
 		return err
 	}
-	_, err = bucket.CopyObject(src, dest)
+	for _, src := range srcFiles {
+		_, err = bucket.CopyObject(src, destPATH)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
 
-	return err
+func (s *_oss) DeleteObjects(bucketName string, files ...string) (int, error) {
+	bucket, err := s.client.Bucket(bucketName)
+	if err != nil {
+		return 0, err
+	}
+	delRes, err := bucket.DeleteObjects(files)
+	if err != nil {
+		return 0, err
+	}
+	return len(delRes.DeletedObjects), nil
 }
 
 //SignURL
