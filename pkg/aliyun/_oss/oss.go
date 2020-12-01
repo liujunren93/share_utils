@@ -33,6 +33,20 @@ func (s *_oss) Upload(objectName, bucketName string, data io.Reader, options ...
 	return fmt.Sprintf("https://%s.%s/%s", bucketName, s.endpoint, objectName), nil
 }
 
+//MvFile
+// dest:目标
+// src：原目录
+// keepOld:是否保留原文件
+func (s *_oss) MvFile(dest, src, bucketName string, keepOld bool) error {
+	bucket, err := s.client.Bucket(bucketName)
+	if err != nil {
+		return err
+	}
+	_, err = bucket.CopyObject(src, dest)
+
+	return err
+}
+
 //SignURL
 func (s *_oss) SignURL(objectName, bucketName string, expire int64, options ...oss.Option) (string, error) {
 	bucket, err := s.client.Bucket(bucketName)
