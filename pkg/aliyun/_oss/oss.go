@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
 	"io"
+	"strings"
 )
 
 type _oss struct {
@@ -37,13 +38,14 @@ func (s *_oss) Upload(objectName, bucketName string, data io.Reader, options ...
 // destPATH:目标目录
 // srcFile：原文件
 // keepOld:是否保留原文件
-func (s *_oss) MvFile(destPATH, bucketName string, srcFiles ...string) error {
+func (s *_oss) MvFile(bucketName,destPATH ,srcPath string, srcFiles ...string) error {
 	bucket, err := s.client.Bucket(bucketName)
 	if err != nil {
 		return err
 	}
 	for _, src := range srcFiles {
-		_, err = bucket.CopyObject(src, destPATH)
+		newFile := strings.Replace(src, srcPath, destPATH,1)
+		_, err = bucket.CopyObject(src, newFile)
 		if err != nil {
 			return err
 		}
