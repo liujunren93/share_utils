@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
 	"io"
+	"net/url"
 	"strings"
 )
 
@@ -45,9 +46,10 @@ func (s *_oss) MvFile(bucketName,destPATH ,srcPath string, srcFiles ...string) (
 		return nil,err
 	}
 	for _, src := range srcFiles {
-		newFile := strings.Replace(src, srcPath, destPATH,1)
-		result=append(result, newFile)
-		_, err = bucket.CopyObject(src, newFile)
+		srcFilePath, _ := url.Parse(src)
+		newFile := strings.Replace(srcFilePath.Path, srcPath, destPATH,1)
+		result=append(result, srcFilePath.Scheme+"://"+srcFilePath.Host+newFile)
+		_, err := bucket.CopyObject(srcFilePath.Path[1:], newFile[1:])
 		if err != nil {
 			return nil,err
 		}
