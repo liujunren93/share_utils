@@ -59,14 +59,14 @@ func (s *UserStore) Store(key string, l *LoginInfo) error {
 
 // StorePermission 存储权限
 // role =1  root,role=2 运营
-func (s *UserStore) StorePermission(info *LoginInfo, role int, permissions []Permission) error {
+func (s *UserStore) StorePermission(info *LoginInfo, isRoot bool, permissions []Permission) error {
 	marshal, err := json.Marshal(&permissions)
 	if err != nil {
 		return err
 	}
 	ctxTimeout, _ := context.WithTimeout(context.TODO(), time.Second*3)
-	if info==nil{ // 机构
-		if role == 1 { //root
+	if info == nil { // 机构
+		if isRoot { //root
 			return s.Redis.Set(ctxTimeout, rootPermissionKey, string(marshal), 0).Err()
 		} else {
 			return s.Redis.Set(ctxTimeout, operatingPermissionKey, string(marshal), 0).Err()
@@ -79,20 +79,20 @@ func (s *UserStore) StorePermission(info *LoginInfo, role int, permissions []Per
 
 // LoadPermission 获取权限
 // role =1  root,role=2 运营
-func (s *UserStore) LoadPermission(info *LoginInfo, role int) ([]Permission, error) {
+func (s *UserStore) LoadPermission(info *LoginInfo, isRoot bool) ([]Permission, error) {
 	ctxTimeout, _ := context.WithTimeout(context.TODO(), time.Second*3)
 	var data []Permission
 	var key string
 	var expire time.Duration
 	if info.UserType == 2 { // 机构
-		if role == 1 { //root
+		if isRoot { //root
 			key = rootPermissionKey
 		} else {
 			key = operatingPermissionKey
 		}
 
 	} else {
-		expire=time.Duration(s.Expire)*time.Second
+		expire = time.Duration(s.Expire) * time.Second
 		key = fmt.Sprintf("%s_%d", storePermissionPrefix, info.UID)
 	}
 	get := s.Redis.Get(ctxTimeout, key)
