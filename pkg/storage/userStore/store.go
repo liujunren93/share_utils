@@ -96,7 +96,7 @@ func (s *UserStore) LoadPermission(info *LoginInfo) ([]Permission, error) {
 		key = fmt.Sprintf("%s_%d", storePermissionPrefix, info.UID)
 	}
 	get := s.Redis.Get(ctxTimeout, key)
-	if permission, err := get.Bytes(); err != nil {
+	if permission, err := get.Bytes(); err == nil {
 		go func() { // 续命
 			ctxTimeout, _ := context.WithTimeout(context.TODO(), time.Second*3)
 			s.Redis.Expire(ctxTimeout, storeAgentPrefix+key, expire)
