@@ -65,7 +65,7 @@ func (s *UserStore) StorePermission(info *LoginInfo, role int, permissions []Per
 		return err
 	}
 	ctxTimeout, _ := context.WithTimeout(context.TODO(), time.Second*3)
-	if info.UserType == 2 { // 机构
+	if info==nil{ // 机构
 		if role == 1 { //root
 			return s.Redis.Set(ctxTimeout, rootPermissionKey, string(marshal), 0).Err()
 		} else {
