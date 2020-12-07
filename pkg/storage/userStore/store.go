@@ -79,13 +79,13 @@ func (s *UserStore) StorePermission(info *LoginInfo, isRoot bool, permissions []
 
 // LoadPermission 获取权限
 // role =1  root,role=2 运营
-func (s *UserStore) LoadPermission(info *LoginInfo, isRoot bool) ([]Permission, error) {
+func (s *UserStore) LoadPermission(info *LoginInfo) ([]Permission, error) {
 	ctxTimeout, _ := context.WithTimeout(context.TODO(), time.Second*3)
 	var data []Permission
 	var key string
 	var expire time.Duration
 	if info.UserType == 2 { // 机构
-		if isRoot { //root
+		if info.IsRoot { //root
 			key = rootPermissionKey
 		} else {
 			key = operatingPermissionKey
