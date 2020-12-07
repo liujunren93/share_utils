@@ -2,6 +2,8 @@ package userStore
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
 	"github.com/liujunren93/share_utils/auth"
@@ -11,7 +13,10 @@ import (
 )
 
 const (
-	storageKeyPrefix = "rbacUserLoginData_uid"
+	storeAgentPrefix       = "rbacUserLoginData"
+	storePermissionPrefix  = "rbacUserPermission"
+	operatingPermissionKey = "operatingCompanyPermission" //运营权限
+	rootPermissionKey      = "rootCompanyPermission"      //root权限
 )
 
 type UserStore struct {
@@ -48,14 +53,65 @@ func (s *UserStore) Store(key string, l *LoginInfo) error {
 	ctxTimeout, _ := context.WithTimeout(context.TODO(), time.Second*3)
 	l.CreateAt = time.Now().Local().Unix()
 	infoStr, _ := encode(l)
-	set := s.Redis.Set(ctxTimeout, storageKeyPrefix+key, infoStr, time.Duration(s.Expire)*time.Second)
+	set := s.Redis.Set(ctxTimeout, storeAgentPrefix+key, infoStr, time.Duration(s.Expire)*time.Second)
 	return set.Err()
 }
 
-//Store 存储登录信息
-func (s *UserStore) LoadByKey(key string)  (*LoginInfo,bool) {
+// StorePermission 存储权限
+// role =1  root,role=2 运营
+func (s *UserStore) StorePermission(info *LoginInfo, role int, permissions []Permission) error {
+	marshal, err := json.Marshal(&permissions)
+	if err != nil {
+		return err
+	}
 	ctxTimeout, _ := context.WithTimeout(context.TODO(), time.Second*3)
-	get := s.Redis.Get(ctxTimeout, storageKeyPrefix+key)
+	if info.UserType == 2 { // 机构
+		if role == 1 { //root
+			return s.Redis.Set(ctxTimeout, rootPermissionKey, string(marshal), 0).Err()
+		} else {
+			return s.Redis.Set(ctxTimeout, operatingPermissionKey, string(marshal), 0).Err()
+		}
+
+	} else { //后台管理
+		return s.Redis.Set(ctxTimeout, fmt.Sprintf("%s_%d", storePermissionPrefix, info.UID), string(marshal), time.Duration(s.Expire)*time.Second).Err()
+	}
+}
+
+// LoadPermission 获取权限
+// role =1  root,role=2 运营
+func (s *UserStore) LoadPermission(info *LoginInfo, role int) ([]Permission, error) {
+	ctxTimeout, _ := context.WithTimeout(context.TODO(), time.Second*3)
+	var data []Permission
+	var key string
+	var expire time.Duration
+	if info.UserType == 2 { // 机构
+		if role == 1 { //root
+			key = rootPermissionKey
+		} else {
+			key = operatingPermissionKey
+		}
+
+	} else {
+		expire=time.Duration(s.Expire)*time.Second
+		key = fmt.Sprintf("%s_%d", storePermissionPrefix, info.UID)
+	}
+	get := s.Redis.Get(ctxTimeout, key)
+	if permission, err := get.Bytes(); err != nil {
+		go func() { // 续命
+			ctxTimeout, _ := context.WithTimeout(context.TODO(), time.Second*3)
+			s.Redis.Expire(ctxTimeout, storeAgentPrefix+key, expire)
+		}()
+		return data, json.Unmarshal(permission, &data)
+	} else {
+		return nil, err
+	}
+
+}
+
+//Store 存储登录信息
+func (s *UserStore) LoadByKey(key string) (*LoginInfo, bool) {
+	ctxTimeout, _ := context.WithTimeout(context.TODO(), time.Second*3)
+	get := s.Redis.Get(ctxTimeout, storeAgentPrefix+key)
 	if get.Err() != nil {
 		return nil, false
 	}
@@ -64,10 +120,11 @@ func (s *UserStore) LoadByKey(key string)  (*LoginInfo,bool) {
 		log.Logger.Error(err)
 		return nil, false
 	}
+
 	info, err := decode(bytes)
 	go func() { // 续命
 		ctxTimeout, _ := context.WithTimeout(context.TODO(), time.Second*3)
-		s.Redis.Expire(ctxTimeout, storageKeyPrefix+key, time.Duration(s.Expire)*time.Second)
+		s.Redis.Expire(ctxTimeout, storeAgentPrefix+key, time.Duration(s.Expire)*time.Second)
 	}()
 	return info, true
 }
@@ -85,7 +142,7 @@ func (s *UserStore) Load(c *gin.Context) (*LoginInfo, bool) {
 //Count 在线用户统计
 func (s *UserStore) Count() int {
 	ctxTimeout, _ := context.WithTimeout(context.TODO(), time.Second*3)
-	keys := s.Redis.Keys(ctxTimeout, storageKeyPrefix+"*")
+	keys := s.Redis.Keys(ctxTimeout, storeAgentPrefix+"*")
 	return len(keys.Val())
 }
 
@@ -93,7 +150,7 @@ func (s *UserStore) Count() int {
 func (s *UserStore) Del(key string) {
 	go func() {
 		ctxTimeout, _ := context.WithTimeout(context.TODO(), time.Second*3)
-		err := s.Redis.Del(ctxTimeout, storageKeyPrefix+key).Err()
+		err := s.Redis.Del(ctxTimeout, storeAgentPrefix+key).Err()
 		log.Logger.Error(err)
 	}()
 }

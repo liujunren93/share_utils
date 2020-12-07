@@ -11,6 +11,7 @@ type UserAgent struct {
 	AccountID uint `json:"account_id"` // 用户账户id
 	UID       uint `json:"uid"`        // 当前用户ID 服务用户id
 	UserType  int8  `json:"user_type"`  // 1:平台管理员，2：机构内管理员，2：普通用户
+
 }
 
 //获取

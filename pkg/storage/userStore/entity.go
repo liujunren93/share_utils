@@ -6,15 +6,17 @@ import (
 )
 
 type Permission struct {
-	Name string `json:"name"`
-	Code string `json:"code"`
+	Name   string `json:"name"`
+	Code   string `json:"code"`
+	NameEn string `json:"name_en"`
+	Method string `json:"method"`
+	Path   string `json:"path"`
 }
 
 //LoginInfo 用户登录信息
 type LoginInfo struct {
 	metadata.UserAgent
-	Permission []Permission
-	CreateAt   int64 `json:"create_at"`
+	CreateAt int64 `json:"create_at"`
 }
 
 //encode 编码
