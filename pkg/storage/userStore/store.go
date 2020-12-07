@@ -15,8 +15,8 @@ import (
 const (
 	storeAgentPrefix       = "rbacUserLoginData"
 	storePermissionPrefix  = "rbacUserPermission"
-	operatingPermissionKey = "operatingCompanyPermission" //运营权限
-	rootPermissionKey      = "rootCompanyPermission"      //root权限
+	OperatingPermissionKey = "operatingCompanyPermission" //运营权限
+	RootPermissionKey      = "rootCompanyPermission"      //root权限
 )
 
 type UserStore struct {
@@ -67,9 +67,9 @@ func (s *UserStore) StorePermission(info *LoginInfo, isRoot bool, permissions []
 	ctxTimeout, _ := context.WithTimeout(context.TODO(), time.Second*3)
 	if info == nil { // 机构
 		if isRoot { //root
-			return s.Redis.Set(ctxTimeout, rootPermissionKey, string(marshal), 0).Err()
+			return s.Redis.Set(ctxTimeout, RootPermissionKey, string(marshal), 0).Err()
 		} else {
-			return s.Redis.Set(ctxTimeout, operatingPermissionKey, string(marshal), 0).Err()
+			return s.Redis.Set(ctxTimeout, OperatingPermissionKey, string(marshal), 0).Err()
 		}
 
 	} else { //后台管理
@@ -86,9 +86,9 @@ func (s *UserStore) LoadPermission(info *LoginInfo) ([]Permission, error) {
 	var expire time.Duration
 	if info.UserType == 2 { // 机构
 		if info.IsRoot { //root
-			key = rootPermissionKey
+			key = RootPermissionKey
 		} else {
-			key = operatingPermissionKey
+			key = OperatingPermissionKey
 		}
 
 	} else {
@@ -98,8 +98,11 @@ func (s *UserStore) LoadPermission(info *LoginInfo) ([]Permission, error) {
 	get := s.Redis.Get(ctxTimeout, key)
 	if permission, err := get.Bytes(); err == nil {
 		go func() { // 续命
-			ctxTimeout, _ := context.WithTimeout(context.TODO(), time.Second*3)
-			s.Redis.Expire(ctxTimeout, storeAgentPrefix+key, expire)
+			if info.UserType!=2 {
+				ctxTimeout, _ := context.WithTimeout(context.TODO(), time.Second*3)
+				s.Redis.Expire(ctxTimeout, storeAgentPrefix+key, expire)
+			}
+
 		}()
 		return data, json.Unmarshal(permission, &data)
 	} else {
