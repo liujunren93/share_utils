@@ -1,7 +1,9 @@
 module github.com/liujunren93/share_utils
 
 go 1.15
-
+replace (
+	google.golang.org/grpc v1.31.0 => google.golang.org/grpc v1.26.0
+)
 require (
 	github.com/afex/hystrix-go v0.0.0-20180502004556-fa1af6a1f4f5
 	github.com/aliyun/aliyun-oss-go-sdk v2.1.4+incompatible

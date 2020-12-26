@@ -139,7 +139,6 @@ func (s *UserStore) Load(c *gin.Context) (*LoginInfo, bool) {
 		return nil, false
 	}
 	return s.LoadByKey(key)
-
 }
 
 //Count 在线用户统计
