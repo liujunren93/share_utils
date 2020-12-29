@@ -5,8 +5,6 @@ import (
 	"time"
 )
 
-
-
 func RandString(length int) string {
 	baseStr := "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
@@ -23,4 +21,10 @@ func RandInt(max int) int {
 	return r.Intn(max)
 }
 
-
+func RandRange(min, max int) int {
+	if min>max {
+		panic("min must be less than max")
+	}
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	return r.Intn(max-min)+min
+}

@@ -68,7 +68,7 @@ func Response(w http.ResponseWriter, sta errors.IStatus, err error, data interfa
 	w.Write(marshal)
 
 }
-//web response
+//api response
 //func Response1(w http.ResponseWriter, sta errors.IStatus, err error, data interface{}) {
 //	var code int32
 //	var msg string

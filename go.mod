@@ -1,9 +1,7 @@
 module github.com/liujunren93/share_utils
 
 go 1.15
-replace (
-	google.golang.org/grpc v1.31.0 => google.golang.org/grpc v1.26.0
-)
+
 require (
 	github.com/afex/hystrix-go v0.0.0-20180502004556-fa1af6a1f4f5
 	github.com/aliyun/aliyun-oss-go-sdk v2.1.4+incompatible
@@ -15,14 +13,14 @@ require (
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/google/uuid v1.1.2
 	github.com/jinzhu/inflection v1.0.0
-	github.com/liujunren93/share v0.0.0-20200916094652-6555adbd5d56
+	github.com/liujunren93/share v0.0.0-20201226154323-15aeb93e1525
 	github.com/magiconair/properties v1.8.2 // indirect
 	github.com/micro/go-micro/v2 v2.9.1
 	github.com/mitchellh/mapstructure v1.3.3 // indirect
 	github.com/nacos-group/nacos-sdk-go v0.4.0
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/pelletier/go-toml v1.8.0 // indirect
-	github.com/sirupsen/logrus v1.6.0
+	github.com/sirupsen/logrus v1.7.0
 	github.com/spf13/afero v1.3.5 // indirect
 	github.com/spf13/cast v1.3.1 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
