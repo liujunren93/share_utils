@@ -26,5 +26,5 @@ func RandRange(min, max int) int {
 		panic("min must be less than max")
 	}
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	return r.Intn(max-min)+min
+	return r.Intn(max-min+1)+min
 }
