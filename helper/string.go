@@ -2,6 +2,7 @@ package helper
 
 import (
 	"math/rand"
+	"strconv"
 	"time"
 )
 
@@ -27,4 +28,14 @@ func RandRange(min, max int) int {
 	}
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	return r.Intn(max-min+1)+min
+}
+
+//String2Int 字符串转int 忽略错误
+func String2Int(str string) int {
+	integer, err := strconv.Atoi(str)
+	if err != nil {
+		panic(err)
+	}
+	return integer
+
 }
