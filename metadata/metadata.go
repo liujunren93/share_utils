@@ -13,7 +13,7 @@ type UserAgent struct {
 	UserType   int8 `json:"user_type"`   // 1:平台管理员，2：机构内管理员，2：普通用户
 	IsRoot     bool `json:"is_root"`     // 是否是超管
 	ClientType int8 `json:"client_type"` // 1:平台，2：机构后台，2：客户端
-	ClientID   int8 `json:"client_id"`
+	ClientID   int8 `json:"client_id"` // 客户端id
 }
 
 //获取
