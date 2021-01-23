@@ -1,4 +1,4 @@
-package init
+package server
 
 import (
 	"github.com/liujunren93/share/core/registry"
