@@ -1,6 +1,7 @@
 package client
 
 import (
+	"context"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
 	"github.com/liujunren93/share/client"
@@ -24,7 +25,7 @@ var (
 )
 
 type Client struct {
-	Ctx       *gin.Context
+	Ctx       context.Context
 	Redis     *redis.Client
 	UserStore UserStore
 	EtcdAddr  []string
@@ -41,7 +42,6 @@ type UserStore struct {
 }
 
 func (c *Client) GClient(serverName string) (*grpc.ClientConn, error) {
-
 	getClientOnce.Do(func() {
 		newJaeger, _, err := openTrace.NewJaeger(c.OpenTrace.ServerName, c.OpenTrace.OpenTrace)
 		if err != nil {
@@ -55,10 +55,12 @@ func (c *Client) GClient(serverName string) (*grpc.ClientConn, error) {
 	})
 	// agent
 	newUserStore := userStore.NewUserStore(c.UserStore.KeepLoginTime, c.UserStore.Secret, c.Redis)
-	if load, ok := newUserStore.Load(c.Ctx); ok {
-		var agent metadata2.UserAgent
-		agent = load.UserAgent
-		thisClient.AddOptions(client.WithCallWrappers(opentrace.ClientGrpcCallWrap(openTracer), metadata.ClientUACallWrap(&agent)))
+	if ctx, ok:= c.Ctx.(*gin.Context);ok{
+		if load, ok := newUserStore.Load(ctx); ok {
+			var agent metadata2.UserAgent
+			agent = load.UserAgent
+			thisClient.AddOptions(client.WithCallWrappers(opentrace.ClientGrpcCallWrap(openTracer), metadata.ClientUACallWrap(&agent)))
+		}
 	}
 	return thisClient.Client(serverName)
 }
