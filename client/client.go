@@ -1,4 +1,4 @@
-package model
+package client
 
 import (
 	"github.com/gin-gonic/gin"
@@ -23,7 +23,7 @@ var (
 	getClientOnce sync.Once
 )
 
-type Model struct {
+type Client struct {
 	Ctx       *gin.Context
 	Redis     *redis.Client
 	UserStore UserStore
@@ -40,22 +40,22 @@ type UserStore struct {
 	Secret        string
 }
 
-func (m *Model) GClient(serverName string) (*grpc.ClientConn, error) {
+func (c *Client) GClient(serverName string) (*grpc.ClientConn, error) {
 
 	getClientOnce.Do(func() {
-		newJaeger, _, err := openTrace.NewJaeger(m.OpenTrace.ServerName, m.OpenTrace.OpenTrace)
+		newJaeger, _, err := openTrace.NewJaeger(c.OpenTrace.ServerName, c.OpenTrace.OpenTrace)
 		if err != nil {
 			log.Logger.Error(err)
 		}
 		openTracer = newJaeger
 
 		opentracing.SetGlobalTracer(newJaeger)
-		r, err := etcd.NewRegistry(registry.WithAddrs(m.EtcdAddr...))
+		r, err := etcd.NewRegistry(registry.WithAddrs(c.EtcdAddr...))
 		thisClient = client.NewClient(client.WithRegistry(r))
 	})
 	// agent
-	newUserStore := userStore.NewUserStore(m.UserStore.KeepLoginTime, m.UserStore.Secret, m.Redis)
-	if load, ok := newUserStore.Load(m.Ctx); ok {
+	newUserStore := userStore.NewUserStore(c.UserStore.KeepLoginTime, c.UserStore.Secret, c.Redis)
+	if load, ok := newUserStore.Load(c.Ctx); ok {
 		var agent metadata2.UserAgent
 		agent = load.UserAgent
 		thisClient.AddOptions(client.WithCallWrappers(opentrace.ClientGrpcCallWrap(openTracer), metadata.ClientUACallWrap(&agent)))
