@@ -22,7 +22,7 @@ type HttpResponse struct {
 
 //Response
 //Response
-func Response(w http.ResponseWriter, sta errors.IStatus, err error, data interface{}) {
+func Response(w http.ResponseWriter, sta errors.IStatus, err error) {
 
 	var code int32 = 200
 	var msg string = "ok"
