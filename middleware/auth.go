@@ -23,7 +23,5 @@ func Auth() gin.HandlerFunc {
 		}
 		ctx.Set("client", client)
 		ctx.Next()
-
-		//fmt.Println(c. )
 	}
 }
