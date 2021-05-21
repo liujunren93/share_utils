@@ -18,6 +18,7 @@ require (
 	github.com/google/uuid v1.1.2
 	github.com/jinzhu/inflection v1.0.0
 	github.com/liujunren93/share v0.0.0-20210123125154-38f91d2b1a1e
+	github.com/mailru/easyjson v0.7.7
 	github.com/micro/go-micro/v2 v2.9.1
 	github.com/nacos-group/nacos-sdk-go v0.4.0
 	github.com/opentracing/opentracing-go v1.2.0
