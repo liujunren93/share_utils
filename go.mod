@@ -9,6 +9,8 @@ replace github.com/liujunren93/share => /Library/WebServer/Documents/gowork/shar
 require (
 	github.com/HdrHistogram/hdrhistogram-go v1.0.1 // indirect
 	github.com/afex/hystrix-go v0.0.0-20180502004556-fa1af6a1f4f5
+	github.com/aliyun/alibaba-cloud-sdk-go v1.61.18
+	github.com/aliyun/aliyun-oss-go-sdk v2.1.4+incompatible
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fsnotify/fsnotify v1.4.9
 	github.com/ghodss/yaml v1.0.0
