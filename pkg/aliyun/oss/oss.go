@@ -1,4 +1,4 @@
-package _oss
+package oss
 
 import (
 	"fmt"
@@ -14,12 +14,16 @@ type OSS struct {
 }
 
 //NewOSS
-func NewOSS(endpoint, accessKeyId, secret string) (*OSS, error) {
-	client, err := oss.New(endpoint, accessKeyId, secret)
+func NewOSS(endpoint, accessKeyId, secret string,option ...oss.ClientOption) (*OSS, error) {
+	client, err := oss.New(endpoint, accessKeyId, secret,option...)
 	if err != nil {
 		return nil, err
 	}
 	return &OSS{client: client, endpoint: endpoint}, err
+}
+
+func NewOSSBySTS()  {
+	//client, err := oss.New(endpoint, accessKeyId, secret,)
 }
 
 //Upload
