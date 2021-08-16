@@ -2,7 +2,7 @@ package config
 
 import "encoding/json"
 
-type ConfI interface {
+type Confter interface {
 	PublishConfig(*DataOptions) (bool, error)
 	GetConfig(*DataOptions) (interface{}, error)
 	ListenConfig(*DataOptions, func(interface{}))

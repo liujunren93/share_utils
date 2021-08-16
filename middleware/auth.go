@@ -3,8 +3,8 @@ package middleware
 import (
 	"github.com/gin-gonic/gin"
 	client2 "github.com/liujunren93/share_utils/client"
+	"github.com/liujunren93/share_utils/client/netHelper"
 	"github.com/liujunren93/share_utils/errors"
-	"github.com/liujunren93/share_utils/netHelper"
 	"github.com/liujunren93/share_utils/pkg/storage/userStore"
 )
 
