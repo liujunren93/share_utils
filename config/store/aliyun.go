@@ -21,7 +21,7 @@ type acmConf struct {
 	client config_client.IConfigClient
 }
 
-func NewAcmStore(option *AcmOptions) (config.ConfI, error) {
+func NewAcmStore(option *AcmOptions) (config.Confter, error) {
 	clientConfig := constant.ClientConfig{
 		Endpoint:       option.Endpoint,
 		NamespaceId:    option.NamespaceID,
