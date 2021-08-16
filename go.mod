@@ -4,7 +4,6 @@ go 1.15
 
 replace google.golang.org/grpc => google.golang.org/grpc v1.26.0
 
-replace github.com/liujunren93/share => ../share
 
 require (
 	github.com/HdrHistogram/hdrhistogram-go v1.0.1 // indirect

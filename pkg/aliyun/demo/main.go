@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/liujunren93/share_utils/pkg/aliyun/shsts"
+
 	"net/http"
 )
 
@@ -11,7 +12,7 @@ func main() {
 	http.HandleFunc("/api/token", func(w http.ResponseWriter, r *http.Request) {
 		if origin := r.Header.Get("Origin"); origin != "" {
 			fmt.Println(origin)
-			w.Header().Set("Access-Control-Allow-Origin", "http://demo.com:8001")
+			w.Header().Set("Access-Control-Allow-Origin", origin)
 			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 			w.Header().Set("Access-Control-Allow-Credentials", "true")
 			w.Header().Set("Access-Control-Allow-Headers",
