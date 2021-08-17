@@ -4,7 +4,6 @@ go 1.15
 
 replace google.golang.org/grpc => google.golang.org/grpc v1.26.0
 
-
 require (
 	github.com/HdrHistogram/hdrhistogram-go v1.0.1 // indirect
 	github.com/afex/hystrix-go v0.0.0-20180502004556-fa1af6a1f4f5
@@ -33,5 +32,5 @@ require (
 	google.golang.org/grpc v1.31.0
 	gopkg.in/ini.v1 v1.62.0 // indirect
 	gorm.io/driver/mysql v1.0.2
-	gorm.io/gorm v1.20.2
+	gorm.io/gorm v1.21.13
 )

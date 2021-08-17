@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/jinzhu/inflection"
 	"gorm.io/gorm/schema"
+	"regexp"
 	"strings"
 	"sync"
 	"unicode/utf8"
@@ -33,6 +34,21 @@ type NamingStrategy struct {
 	TrimStr       string
 }
 
+func (ns NamingStrategy) SchemaName(table string) string {
+	table = strings.TrimPrefix(table, ns.TablePrefix)
+
+	if ns.SingularTable {
+		return ns.toSchemaName(table)
+	}
+	return ns.toSchemaName(inflection.Singular(table))
+}
+func (ns NamingStrategy) toSchemaName(name string) string {
+	result := strings.Replace(strings.Title(strings.Replace(name, "_", " ", -1)), " ", "", -1)
+	for _, initialism := range commonInitialisms {
+		result = regexp.MustCompile(strings.Title(strings.ToLower(initialism))+"([A-Z]|$|_)").ReplaceAllString(result, initialism+"$1")
+	}
+	return result
+}
 // TableName convert string to table name
 func (ns NamingStrategy) TableName(table string) string {
 
