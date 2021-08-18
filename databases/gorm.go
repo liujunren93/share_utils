@@ -17,15 +17,15 @@ type Base struct {
 }
 
 type Mysql struct {
-	Host            string        `json:"host"`
-	User            string        `json:"user"`
-	Password        string        `json:"password"`
-	Port            int           `json:"port"`
-	Database        string        `json:"database"`
-	ConnMaxLifeTime time.Duration `json:"conn_max_life_time"`
-	MaxIdleConns    int           `json:"max_idle_conns"`
-	MaxOpenConns    int           `json:"max_open_conns"`
-	LogMode         bool          `json:"log_mode"`
+	LogMode         bool   `json:"log_mode"`
+	Host            string `json:"host"`
+	User            string `json:"user"`
+	Password        string `json:"password"`
+	Port            int    `json:"port"`
+	Database        string `json:"database"`
+	ConnMaxLifeTime int    `json:"conn_max_life_time"`
+	MaxIdleConns    int    `json:"max_idle_conns"`
+	MaxOpenConns    int    `json:"max_open_conns"`
 }
 
 func (m Mysql) String() string {
@@ -40,7 +40,7 @@ func NewMysql(basConf *Mysql, conf *gorm.Config) (*gorm.DB, error) {
 		conf = &gorm.Config{NamingStrategy: defaultNamingStrategy}
 	}
 	open, err := gorm.Open(mysql.New(mysql.Config{
-		DSN:                       dsn,    // DSN data source name
+		DSN:                       dsn,   // DSN data source name
 		DefaultStringSize:         256,   // string 类型字段的默认长度
 		DisableDatetimePrecision:  true,  // 禁用 datetime 精度，MySQL 5.6 之前的数据库不支持
 		DontSupportRenameIndex:    true,  // 重命名索引时采用删除并新建的方式，MySQL 5.7 之前的数据库和 MariaDB 不支持重命名索引
@@ -52,8 +52,7 @@ func NewMysql(basConf *Mysql, conf *gorm.Config) (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	db.SetConnMaxLifetime(time.Second * basConf.ConnMaxLifeTime)
-	db.SetMaxOpenConns(basConf.MaxOpenConns)
+	db.SetConnMaxLifetime(time.Duration(basConf.ConnMaxLifeTime) * time.Second)
 	db.SetMaxOpenConns(basConf.MaxOpenConns)
 	if basConf.LogMode {
 		open = open.Debug()
