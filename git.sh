@@ -8,7 +8,7 @@ for (( i = 0; i < 100; i++ )); do
     echo $a
     break
     else
-            echo 11
+            echo 11222
     fi
 
 done
