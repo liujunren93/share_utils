@@ -6,14 +6,20 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
+//type UserAgent struct {
+//	CompanyID  uint `json:"company_id"`  // 机构id
+//	AccountID  uint `json:"account_id"`  // 用户账户id
+//	UID        uint `json:"uid"`         // 当前用户ID 服务用户id
+//	UserType   int8 `json:"user_type"`   // 1:平台管理员，2：机构内管理员，2：普通用户
+//	IsRoot     bool `json:"is_root"`     // 是否是超管
+//	ClientType int8 `json:"client_type"` // 1:平台，2：机构后台，2：客户端
+//	ClientID   int8 `json:"client_id"` // 客户端id
+//}
+
 type UserAgent struct {
-	CompanyID  uint `json:"company_id"`  // 机构id
-	AccountID  uint `json:"account_id"`  // 用户账户id
-	UID        uint `json:"uid"`         // 当前用户ID 服务用户id
-	UserType   int8 `json:"user_type"`   // 1:平台管理员，2：机构内管理员，2：普通用户
-	IsRoot     bool `json:"is_root"`     // 是否是超管
-	ClientType int8 `json:"client_type"` // 1:平台，2：机构后台，2：客户端
-	ClientID   int8 `json:"client_id"` // 客户端id
+	AppID     int   `json:"app_id"` // appid
+	UID       int   `json:"uid"`
+	LoginTime int64 `json:"login_time"` //登录时间
 }
 
 //获取
@@ -33,7 +39,7 @@ func GetAll(ctx context.Context) (metadata.MD, bool) {
 }
 
 func GetUA(ctx context.Context) (*UserAgent, bool) {
-	value, ok := GetValue(ctx, "ua")
+	value, ok := GetValue(ctx, "share_ua")
 	if !ok {
 		return nil, ok
 	}
@@ -49,6 +55,6 @@ func GetUA(ctx context.Context) (*UserAgent, bool) {
 
 func SetUA(ctx context.Context, agent *UserAgent) context.Context {
 	marshal, _ := json.Marshal(agent)
-	pairs := metadata.Pairs("ua", string(marshal))
+	pairs := metadata.Pairs("share_ua", string(marshal))
 	return metadata.NewOutgoingContext(ctx, pairs)
 }
