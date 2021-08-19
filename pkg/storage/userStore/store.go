@@ -2,8 +2,6 @@ package userStore
 
 import (
 	"context"
-	"encoding/json"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
 	"github.com/liujunren93/share_utils/auth"
@@ -13,10 +11,10 @@ import (
 )
 
 const (
-	storeAgentPrefix       = "rbacUserLoginData"
+
+	storeAgentPrefix       = "share:session:map"
 	storePermissionPrefix  = "rbacUserPermission"
-	OperatingPermissionKey = "operatingCompanyPermission" //运营权限
-	RootPermissionKey      = "rootCompanyPermission"      //root权限
+
 )
 
 type UserStore struct {
@@ -59,57 +57,57 @@ func (s *UserStore) Store(key string, l *LoginInfo) error {
 
 // StorePermission 存储权限
 // role =1  root,role=2 运营
-func (s *UserStore) StorePermission(info *LoginInfo, isRoot bool, permissions []Permission) error {
-	marshal, err := json.Marshal(&permissions)
-	if err != nil {
-		return err
-	}
-	ctxTimeout, _ := context.WithTimeout(context.TODO(), time.Second*3)
-	if info == nil { // 机构
-		if isRoot { //root
-			return s.Redis.Set(ctxTimeout, RootPermissionKey, string(marshal), 0).Err()
-		} else {
-			return s.Redis.Set(ctxTimeout, OperatingPermissionKey, string(marshal), 0).Err()
-		}
-
-	} else { //后台管理
-		return s.Redis.Set(ctxTimeout, fmt.Sprintf("%s_%d", storePermissionPrefix, info.UID), string(marshal), time.Duration(s.Expire)*time.Second).Err()
-	}
-}
+//func (s *UserStore) StorePermission(info *LoginInfo, isRoot bool, permissions []Permission) error {
+//	marshal, err := json.Marshal(&permissions)
+//	if err != nil {
+//		return err
+//	}
+//	ctxTimeout, _ := context.WithTimeout(context.TODO(), time.Second*3)
+//	if info == nil { // 机构
+//		if isRoot { //root
+//			return s.Redis.Set(ctxTimeout, RootPermissionKey, string(marshal), 0).Err()
+//		} else {
+//			return s.Redis.Set(ctxTimeout, OperatingPermissionKey, string(marshal), 0).Err()
+//		}
+//
+//	} else { //后台管理
+//		return s.Redis.Set(ctxTimeout, fmt.Sprintf("%s_%d", storePermissionPrefix, info.UID), string(marshal), time.Duration(s.Expire)*time.Second).Err()
+//	}
+//}
 
 // LoadPermission 获取权限
 // role =1  root,role=2 运营
-func (s *UserStore) LoadPermission(info *LoginInfo) ([]Permission, error) {
-	ctxTimeout, _ := context.WithTimeout(context.TODO(), time.Second*3)
-	var data []Permission
-	var key string
-	var expire time.Duration
-	if info.UserType == 2 { // 机构
-		if info.IsRoot { //root
-			key = RootPermissionKey
-		} else {
-			key = OperatingPermissionKey
-		}
-
-	} else {
-		expire = time.Duration(s.Expire) * time.Second
-		key = fmt.Sprintf("%s_%d", storePermissionPrefix, info.UID)
-	}
-	get := s.Redis.Get(ctxTimeout, key)
-	if permission, err := get.Bytes(); err == nil {
-		go func() { // 续命
-			if info.UserType!=2 {
-				ctxTimeout, _ := context.WithTimeout(context.TODO(), time.Second*3)
-				s.Redis.Expire(ctxTimeout, storeAgentPrefix+key, expire)
-			}
-
-		}()
-		return data, json.Unmarshal(permission, &data)
-	} else {
-		return nil, err
-	}
-
-}
+//func (s *UserStore) LoadPermission(info *LoginInfo) ([]Permission, error) {
+//	ctxTimeout, _ := context.WithTimeout(context.TODO(), time.Second*3)
+//	var data []Permission
+//	var key string
+//	var expire time.Duration
+//	if info.UserType == 2 { // 机构
+//		if info.IsRoot { //root
+//			key = RootPermissionKey
+//		} else {
+//			key = OperatingPermissionKey
+//		}
+//
+//	} else {
+//		expire = time.Duration(s.Expire) * time.Second
+//		key = fmt.Sprintf("%s_%d", storePermissionPrefix, info.UID)
+//	}
+//	get := s.Redis.Get(ctxTimeout, key)
+//	if permission, err := get.Bytes(); err == nil {
+//		go func() { // 续命
+//			if info.UserType!=2 {
+//				ctxTimeout, _ := context.WithTimeout(context.TODO(), time.Second*3)
+//				s.Redis.Expire(ctxTimeout, storeAgentPrefix+key, expire)
+//			}
+//
+//		}()
+//		return data, json.Unmarshal(permission, &data)
+//	} else {
+//		return nil, err
+//	}
+//
+//}
 
 //Store 存储登录信息
 func (s *UserStore) LoadByKey(key string) (*LoginInfo, bool) {
