@@ -4,10 +4,7 @@ import (
 	"net/http"
 )
 
-type IStatus interface {
-	GetCode() int32
-	GetMsg() (msg string)
-}
+
 
 type Status int32
 

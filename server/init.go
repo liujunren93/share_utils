@@ -3,7 +3,7 @@ package server
 import (
 	"github.com/liujunren93/share/core/registry"
 	"github.com/liujunren93/share/core/registry/etcd"
-	"github.com/liujunren93/share/plugins/opentrace"
+	"github.com/liujunren93/share/wrapper/opentrace"
 	"github.com/liujunren93/share/server"
 	"github.com/liujunren93/share_utils/wrapper/openTrace"
 	"github.com/opentracing/opentracing-go"
@@ -51,7 +51,7 @@ func (s *Server) initOpts(opts []server.Option) error {
 
 	opentracing.SetGlobalTracer(jaeger)
 	s.opts = append(s.opts, server.WithName(s.ServerName),
-		server.WithHdlrWrappers(opentrace.ServerGrpcWrap(jaeger)))
+		server.WithHdlrWrappers(opentrace.NewServerWrapper(jaeger)))
 	s.opts = append(s.opts, opts...)
 	return nil
 }

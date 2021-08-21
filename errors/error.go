@@ -1,6 +1,8 @@
 package errors
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type Error interface {
 	GetCode() int32
@@ -21,7 +23,7 @@ func (e myError) GetMsg() string {
 }
 
 func (e myError) Error() string {
-	return fmt.Sprintf("code:%d,msg:%s",e.code,e.msg)
+	return fmt.Sprintf("code:%d,msg:%s", e.code, e.msg)
 }
 
 // 数据不存在
@@ -70,15 +72,24 @@ func Forbidden(msg string) Error {
 }
 
 //未知错误 500
-func DataError(msg string) Error {
-	if msg == "" {
-		msg = StatusInternalServerError.GetMsg()
+func InternalError() Error {
+	return &myError{
+		code: StatusInternalServerError,
+		msg:  StatusInternalServerError.GetMsg(),
+	}
+}
+func InternalErrorMsg(err interface{}) Error {
+	var msg string
+	if er, ok := err.(error); ok {
+		msg = er.Error()
+	}
+	if er, ok := err.(string); ok {
+		msg = er
 	}
 	return &myError{
 		code: StatusInternalServerError,
 		msg:  msg,
 	}
-
 }
 
 // 参数错误 400
@@ -92,7 +103,7 @@ func BadRequest(msg string) Error {
 	}
 }
 
-func Timeout(msg string)Error  {
+func Timeout(msg string) Error {
 	if msg == "" {
 		msg = "time out"
 	}
@@ -101,8 +112,6 @@ func Timeout(msg string)Error  {
 		msg:  msg,
 	}
 }
-
-
 
 //database
 func New(code Status, err string) Error {

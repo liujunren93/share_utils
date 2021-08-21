@@ -17,8 +17,8 @@ import (
 //}
 
 type UserAgent struct {
-	AppID     int   `json:"app_id"` // appid
-	UID       int   `json:"uid"`
+	AppID     uint   `json:"app_id"` // appid
+	UID       uint   `json:"uid"`
 	LoginTime int64 `json:"login_time"` //登录时间
 }
 

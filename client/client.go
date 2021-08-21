@@ -7,7 +7,7 @@ import (
 	"github.com/liujunren93/share/client"
 	"github.com/liujunren93/share/core/registry"
 	"github.com/liujunren93/share/core/registry/etcd"
-	"github.com/liujunren93/share/plugins/opentrace"
+	"github.com/liujunren93/share/wrapper/opentrace"
 	"github.com/liujunren93/share_utils/log"
 	metadata2 "github.com/liujunren93/share_utils/metadata"
 	"github.com/liujunren93/share_utils/pkg/storage/userStore"
@@ -30,9 +30,11 @@ type Client struct {
 	UserStore UserStore
 	EtcdAddr  []string
 	OpenTrace OpenTrace
+	Namespace string
+	Balancer  string
 }
 type OpenTrace struct {
-	ServerName string
+	ClientName string //
 	OpenTrace  string
 }
 
@@ -41,26 +43,40 @@ type UserStore struct {
 	Secret        string
 }
 
-func (c *Client) GClient(serverName string) (*grpc.ClientConn, error) {
+func (c *Client) GetGrpcClient(serverName string) (*grpc.ClientConn, error) {
 	getClientOnce.Do(func() {
-		newJaeger, _, err := openTrace.NewJaeger(c.OpenTrace.ServerName, c.OpenTrace.OpenTrace)
-		if err != nil {
-			log.Logger.Error(err)
-		}
-		openTracer = newJaeger
 
-		opentracing.SetGlobalTracer(newJaeger)
+		if len(c.EtcdAddr) == 0 {
+			log.Logger.Panic("register address nil")
+		}
 		r, err := etcd.NewRegistry(registry.WithAddrs(c.EtcdAddr...))
-		thisClient = client.NewClient(client.WithRegistry(r))
+		if err != nil {
+			log.Logger.Error("registry err ", err)
+		}
+		// 获取share 客户端
+		thisClient = client.NewClient(client.WithRegistry(r),client.WithNamespace(c.Namespace))
+		if openTracer != nil {
+			newJaeger, _, err := openTrace.NewJaeger(c.OpenTrace.ClientName, c.OpenTrace.OpenTrace)
+			if err != nil {
+				log.Logger.Error(err)
+				return
+			} else {
+				openTracer = newJaeger
+				opentracing.SetGlobalTracer(newJaeger)
+			}
+			thisClient.AddOptions(client.WithCallWrappers(opentrace.NewClientWrapper(openTracer)))
+		}
 	})
+
 	// agent
 	newUserStore := userStore.NewUserStore(c.UserStore.KeepLoginTime, c.UserStore.Secret, c.Redis)
-	if ctx, ok:= c.Ctx.(*gin.Context);ok{
+	if ctx, ok := c.Ctx.(*gin.Context); ok {
 		if load, ok := newUserStore.Load(ctx); ok {
 			var agent metadata2.UserAgent
 			agent = load.UserAgent
-			thisClient.AddOptions(client.WithCallWrappers(opentrace.ClientGrpcCallWrap(openTracer), metadata.ClientUACallWrap(&agent)))
+			thisClient.AddOptions(client.WithCallWrappers(metadata.ClientUACallWrap(&agent)))
 		}
 	}
+	thisClient.AddOptions(client.WithBalancer(c.Balancer))
 	return thisClient.Client(serverName)
 }
