@@ -1,16 +1,12 @@
 package auth
 
-import (
-	"time"
-)
-
 type TokenOptions struct {
 	// ID for the company_cli
 	ID string
 	// Secret for the company_cli
 	Secret string
 	// Expiry is the time the token should live for
-	Expiry time.Duration
+	Expiry int64
 	//data
 	Data interface{}
 }
@@ -31,7 +27,7 @@ func WithSecret(secret string) TokenOption {
 	}
 }
 
-func WithExpiry(expiry time.Duration) TokenOption {
+func WithExpiry(expiry int64) TokenOption {
 	return func(o *TokenOptions) {
 		o.Expiry = expiry
 	}
@@ -43,7 +39,7 @@ func NewOption(option ...TokenOption) TokenOptions {
 		a(&to)
 	}
 	if to.Expiry == 0 {
-		to.Expiry = time.Hour * 2
+		to.Expiry = 7200
 	}
 	return to
 }

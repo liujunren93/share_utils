@@ -14,7 +14,7 @@ type smsClient struct {
 }
 
 func NewSmsClient(secretID, secretKey string) (cli smsClient, err error) {
-	credential := common.NewCredential("AKIDrY0B5i5B0ZsvgAON5XidHekcFbfT2JK4", "WljQt62h5C2buxiCPM2QXNxFG0Uhdx2q")
+	credential := common.NewCredential(secretID, secretKey)
 	cpf := profile.NewClientProfile()
 	cpf.HttpProfile.ReqMethod = "POST"
 	c, err := sms.NewClient(credential, "ap-guangzhou", cpf)

@@ -63,6 +63,7 @@ func Response(w *gin.Context, res Responser, err error, data interface{}) {
 		resData.Msg = msg
 	}
 	w.JSON(200, resData)
+	w.Abort()
 }
 
 ////通过反射 设置data rpc response

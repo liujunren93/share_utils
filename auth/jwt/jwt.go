@@ -83,7 +83,7 @@ func (j *jwtAuth) createToken(tkType int8) (string, error) {
 	expiry := j.options.Expiry
 
 	if tkType == 2 {
-		expiry += time.Hour * 2
+		expiry += 7200
 
 	}
 
@@ -91,7 +91,7 @@ func (j *jwtAuth) createToken(tkType int8) (string, error) {
 		Data: j.options.Data,
 		Type: tkType,
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(expiry).Local().Unix(),
+			ExpiresAt: time.Now().Add(time.Duration(expiry)*time.Second).Local().Unix(),
 			IssuedAt:  time.Now().Unix(),
 		},
 	}
