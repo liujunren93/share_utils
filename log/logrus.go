@@ -36,6 +36,6 @@ func (s shareFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 		s.TimestampFormat="2006-01-02 15:04:05"
 	}
 	fileName := path.Base( entry.Caller.File)
-	sprintf := fmt.Sprintf("[%s][time:%s,file:%s,func:%s,line:%d]:%v\n\r",entry.Level, entry.Time.Format(s.TimestampFormat),fileName, entry.Caller.Function, entry.Caller.Line, entry.Message)
+	sprintf := fmt.Sprintf("[%s][%s|%s:%d]:%v\n\r",entry.Level, entry.Time.Format(s.TimestampFormat),fileName, entry.Caller.Line, entry.Message)
 	return []byte(sprintf),nil
 }

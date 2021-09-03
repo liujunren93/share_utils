@@ -13,6 +13,7 @@ import (
 
 
 func NewJaeger(serviceName string, jagentHost string) (tracer opentracing.Tracer, closer io.Closer, err error) {
+
 	cfg := config.Configuration{
 		ServiceName: serviceName,
 		Sampler: &config.SamplerConfig{

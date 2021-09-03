@@ -43,8 +43,8 @@ func (s *Server) NewServer(opts ...server.Option) (*server.GrpcServer, error) {
 func (s *Server) initOpts(opts []server.Option) error {
 
 	// 链路
-	jaeger, closer, err := openTrace.NewJaeger(s.ServerName, s.OpenTrace)
-	defer closer.Close()
+	jaeger, _, err := openTrace.NewJaeger(s.ServerName, s.OpenTrace)
+
 	if err != nil {
 		return err
 	}

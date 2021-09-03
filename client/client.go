@@ -8,7 +8,6 @@ import (
 	"github.com/liujunren93/share/core/registry"
 	"github.com/liujunren93/share/core/registry/etcd"
 	"github.com/liujunren93/share/wrapper/opentrace"
-	"github.com/liujunren93/share_utils/auth/jwt"
 	"github.com/liujunren93/share_utils/log"
 	metadata2 "github.com/liujunren93/share_utils/metadata"
 	"github.com/liujunren93/share_utils/wrapper/metadata"
@@ -106,7 +105,7 @@ func (c *Client) GetGrpcClient(serverName string) (*grpc.ClientConn, error) {
 		}
 		// 获取share 客户端
 		thisClient = client.NewClient(client.WithRegistry(r), client.WithNamespace(c.namespace))
-		if openTracer != nil {
+		if len(c.openTrace.OpenTrace)!=0 {
 			newJaeger, _, err := openTrace.NewJaeger(c.openTrace.ClientName, c.openTrace.OpenTrace)
 			if err != nil {
 				log.Logger.Error(err)
@@ -131,13 +130,11 @@ func (c *Client) GetGrpcClient(serverName string) (*grpc.ClientConn, error) {
 	if ctx, ok := c.ctx.(*gin.Context); ok {
 		var agent metadata2.UserAgent
 		if get, exists := ctx.Get("ua"); exists {
-			if data,ok := get.(*jwt.JwtClaims);ok{
-				if m,ok:=data.Data.(map[string]interface{});ok{
-					agent.LoginTime=int64(m["login_time"].(float64))
-					agent.AppID=uint(m["app_id"].(float64))
-					agent.UID=uint(m["uid"].(float64))
-				}
 
+			if m, ok := get.(map[string]interface{}); ok {
+				agent.LoginTime = int64(m["login_time"].(float64))
+				agent.AppID = uint(m["app_id"].(float64))
+				agent.UID = uint(m["uid"].(float64))
 			}
 
 		}
