@@ -25,7 +25,7 @@ type HttpResponse struct {
 func Response(w *gin.Context, res Responser, err error, data interface{}) {
 
 	var code int32 = 200
-	var msg string = "ok"
+	var msg  = "ok"
 
 	if res != nil {
 		code = res.GetCode()
