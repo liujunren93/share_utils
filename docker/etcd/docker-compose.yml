@@ -1,0 +1,77 @@
+version: "3.7"
+services:
+  etcd0:
+    image: liujunren/etcd:latest
+    ports:
+      - 2380:2380
+      - 2379:2379
+    container_name: etcd0
+    networks:
+       etcd_net:
+    restart: always
+    command:
+          --name  etcd0 
+          --data-dir /etcd-data 
+          --listen-client-urls http://0.0.0.0:2379 
+          --advertise-client-urls http://1.117.85.113:2379
+          --listen-peer-urls http://0.0.0.0:2380
+          --initial-advertise-peer-urls http://etcd0:2380
+          --initial-cluster etcd0=http://etcd0:2380,etcd1=http://etcd1:2380,etcd2=http://etcd2:2380
+          --initial-cluster-token etcd-cluster-1
+          --initial-cluster-state new
+          --log-level info 
+          --logger zap 
+          --log-outputs stderr
+  etcd1:
+    image: liujunren/etcd:latest
+    container_name: etcd1
+    ports:
+      - 3380:2380
+      - 3379:2379
+    restart: always
+    networks:
+      etcd_net:
+    command:
+      --name  etcd1 
+      --data-dir /etcd-data 
+      --listen-client-urls http://0.0.0.0:2379 
+      --advertise-client-urls http://1.117.85.113:3379
+      --listen-peer-urls http://0.0.0.0:2380
+      --initial-advertise-peer-urls http://etcd1:2380
+      --initial-cluster etcd0=http://etcd0:2380,etcd1=http://etcd1:2380,etcd2=http://etcd2:2380
+      --initial-cluster-token etcd-cluster-1
+      --initial-cluster-state new 
+      --log-level error
+      --logger zap 
+      --log-outputs stderr
+
+
+#
+  etcd2:
+    image: liujunren/etcd:latest
+    container_name: etcd2
+    ports:
+      - 4380:2380
+      - 4379:2379
+
+    networks:
+       etcd_net:
+    restart: always
+    command:
+      --name  etcd2 
+      --data-dir /etcd-data 
+      --listen-client-urls http://0.0.0.0:2379
+      --advertise-client-urls http://1.117.85.113:4379
+      --listen-peer-urls http://0.0.0.0:2380
+      --initial-advertise-peer-urls http://etcd2:2380
+      --initial-cluster etcd0=http://etcd0:2380,etcd1=http://etcd1:2380,etcd2=http://etcd2:2380
+      --initial-cluster-token etcd-cluster-1
+      --initial-cluster-state new 
+      --log-level info 
+      --logger zap 
+      --log-outputs stderr
+
+networks:
+  etcd_net:
+
+
