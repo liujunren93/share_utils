@@ -39,16 +39,16 @@ func GetConfig(confInterface Configer, resData interface{}, options *DataOptions
 
 }
 
-func ListenConfig(confInterface Confter, f func(interface{}), options *DataOptions) {
+func ListenConfig(confInterface Configer, f func(interface{}), options *DataOptions) {
 
 	confInterface.ListenConfig(options, f)
 
 }
 
-func DeleteConfig(confInterface Confter, options *DataOptions) (bool, error) {
+func DeleteConfig(confInterface Configer, options *DataOptions) (bool, error) {
 	return confInterface.DeleteConfig(options)
 }
 
-func PublishConfig(confInterface Confter, options *DataOptions) (bool, error) {
+func PublishConfig(confInterface Configer, options *DataOptions) (bool, error) {
 	return confInterface.PublishConfig(options)
 }
