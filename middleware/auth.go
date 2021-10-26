@@ -14,14 +14,13 @@ func SetClient(c *client2.Client) {
 	client = c
 }
 
-func Auth() gin.HandlerFunc {
-	return func(ctx *gin.Context) {
+func Auth((ctx *gin.Context) {
 		newUserStore := userStore.NewUserStore(client.UserStore.KeepLoginTime, client.UserStore.Secret, client.Redis)
 		if _, ok := newUserStore.Load(ctx); !ok {
-			netHelper.Response(ctx.Writer, errors.StatusUnauthorized, errors.New(401, "登录信息失效"),nil)
+			netHelper.Response(ctx, errors.StatusUnauthorized, errors.New(401, "登录信息失效"),nil)
 			return
 		}
 		ctx.Set("client", client)
 		ctx.Next()
-	}
+
 }

@@ -7,18 +7,16 @@ import (
 )
 
 var (
-	TypeErr = errors.New("Type mismatch")
+	TypeErr = errors.New("type miss match")
 )
 
-func GetConfig(confInterface Confter, resData interface{}, options *DataOptions) error {
+func GetConfig(confInterface Configer, resData interface{}, options *DataOptions) error {
 
 	of := reflect.TypeOf(resData)
 	if of.Kind() != reflect.Ptr {
 		return errors.New("resData is not ptr")
 	}
-
 	config, err := confInterface.GetConfig(options)
-
 	if err != nil {
 		return err
 	}

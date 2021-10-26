@@ -4,7 +4,6 @@ go 1.16
 
 replace (
 	github.com/liujunren93/share => ../share
-	google.golang.org/grpc => google.golang.org/grpc v1.26.0
 )
 
 require (

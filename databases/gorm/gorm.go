@@ -1,4 +1,4 @@
-package databases
+package gorm
 
 import (
 	"encoding/json"
