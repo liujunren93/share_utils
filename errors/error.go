@@ -38,13 +38,11 @@ func DBNoData(msg string) Error {
 }
 
 //数据重复 420
-func DBDuplication(msg string) Error {
-	if msg == "" {
-		msg = StatusDBDuplication.GetMsg()
-	}
+func DBDuplication(key string) Error {
+
 	return &myError{
 		code: StatusDBDuplication,
-		msg:  msg,
+		msg:  StatusDBDuplication.GetMsg() + " for " + key,
 	}
 }
 
