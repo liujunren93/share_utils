@@ -2,9 +2,9 @@ package auth
 
 import (
 	"context"
+	"fmt"
 	"github.com/micro/go-micro/v2/metadata"
 	"github.com/micro/go-micro/v2/server"
-	"log"
 )
 
 func NewHandlerWrapper() server.HandlerWrapper {
@@ -12,7 +12,8 @@ func NewHandlerWrapper() server.HandlerWrapper {
 		return func(ctx context.Context, req server.Request, rsp interface{}) error {
 
 			get, b := metadata.Get(ctx, "Authorization")
-			log.Fatal(get, b)
+			//todo:
+			fmt.Println(get, b)
 			return fn(ctx, req, rsp)
 		}
 	}

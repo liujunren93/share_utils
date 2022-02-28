@@ -7,7 +7,6 @@ import (
 type Error interface {
 	GetCode() int32
 	GetMsg() string
-	error
 }
 
 type myError struct {
@@ -27,28 +26,28 @@ func (e myError) Error() string {
 }
 
 // 数据不存在
-func NoData(msg string) Error {
+func DBNoData(msg string) Error {
 	if msg == "" {
-		msg = StatusNotFound.GetMsg()
+		msg = StatusDBNotFound.GetMsg()
 	}
 	return &myError{
-		code: StatusNotFound,
+		code: StatusDBNotFound,
 		msg:  msg,
 	}
 }
 
 //数据重复 420
-func DuplicationData(msg string) Error {
+func DBDuplication(msg string) Error {
 	if msg == "" {
-		msg = StatusDataDuplication.GetMsg()
+		msg = StatusDBDuplication.GetMsg()
 	}
 	return &myError{
-		code: StatusDataDuplication,
+		code: StatusDBDuplication,
 		msg:  msg,
 	}
 }
 
-//账户类错误  401
+//账户类错误  4001
 func Unauthorized(msg string) Error {
 	if msg == "" {
 		msg = StatusUnauthorized.GetMsg()
@@ -59,7 +58,7 @@ func Unauthorized(msg string) Error {
 	}
 }
 
-//数据权限 403
+//数据权限 4003
 func Forbidden(msg string) Error {
 
 	if msg == "" {
@@ -71,7 +70,7 @@ func Forbidden(msg string) Error {
 	}
 }
 
-//未知错误 500
+//未知错误 5000
 func InternalError() Error {
 	return &myError{
 		code: StatusInternalServerError,
@@ -92,23 +91,13 @@ func InternalErrorMsg(err interface{}) Error {
 	}
 }
 
-// 参数错误 400
+// 参数错误 4000
 func BadRequest(msg string) Error {
 	if msg == "" {
 		msg = StatusBadRequest.GetMsg()
 	}
 	return &myError{
 		code: StatusBadRequest,
-		msg:  msg,
-	}
-}
-
-func Timeout(msg string) Error {
-	if msg == "" {
-		msg = "time out"
-	}
-	return &myError{
-		code: 408,
 		msg:  msg,
 	}
 }
