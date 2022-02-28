@@ -7,6 +7,7 @@ import (
 type Error interface {
 	GetCode() int32
 	GetMsg() string
+	error
 }
 
 type myError struct {

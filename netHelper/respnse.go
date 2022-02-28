@@ -76,7 +76,7 @@ func RpcResponse(res Responser, err errors.Error, data interface{}) error {
 	var code int32 = 200
 	var msg string = "ok"
 	if err != nil {
-		if err.GetCode() == 500 {
+		if err.GetCode() == 5000 {
 			return serrors.InternalServerError(err)
 		}
 		code = err.GetCode()
