@@ -46,7 +46,7 @@ func DBDuplication(key string) Error {
 	}
 }
 
-func DBInternalErr(key string) Error {
+func DBInternalErr(msg string) Error {
 
 	return &myError{
 		code: StatusDBInternalErr,
