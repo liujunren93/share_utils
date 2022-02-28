@@ -46,6 +46,13 @@ func DBDuplication(key string) Error {
 	}
 }
 
+func DBDuplication(key string) Error {
+
+	return &myError{
+		code: StatusDBDuplication,
+		msg:  StatusDBDuplication.GetMsg() + " for " + key,
+	}
+}
 //账户类错误  4001
 func Unauthorized(msg string) Error {
 	if msg == "" {

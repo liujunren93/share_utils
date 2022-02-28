@@ -22,6 +22,7 @@ const (
 	StatusRequestTimeout      Status = 4008 //
 	StatusInternalServerError Status = 5000 //服务器通用错误 前端不显示
 	// 数据重复 52... DB 错误
+	StatusDBInternalErr      Status = 5200 // 数据库内错误
 	StatusDBDuplication      Status = 5201 // 数据重复
 	StatusDBNotFound         Status = 5202 // 数据不存在
 	StatusDBRowsAffectedZero Status = 5203 // 数据影响条数为0
@@ -35,6 +36,7 @@ var statusText = map[Status]string{
 	StatusNotFound:            "NotFound",
 	StatusRequestTimeout:      "RequestTimeout",
 	StatusInternalServerError: "InternalServerError",
+	StatusDBInternalErr:       "DBInternalServerError",
 	StatusDBDuplication:       "Duplication",
 	StatusDBNotFound:          "DataNotFount",
 	StatusDBRowsAffectedZero:  "NoDataToUpdate",
