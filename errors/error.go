@@ -46,11 +46,11 @@ func DBDuplication(key string) Error {
 	}
 }
 
-func DBDuplication(key string) Error {
+func DBInternalErr(key string) Error {
 
 	return &myError{
-		code: StatusDBDuplication,
-		msg:  StatusDBDuplication.GetMsg() + " for " + key,
+		code: StatusDBInternalErr,
+		msg:  StatusDBInternalErr.GetMsg(),
 	}
 }
 //账户类错误  4001
