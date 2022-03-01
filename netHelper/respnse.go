@@ -20,12 +20,15 @@ type HttpResponse struct {
 	Data interface{}   `json:"data"`
 }
 
+func ResponseOk(ctx *gin.Context, data interface{})  {
+	Response(ctx,errors.StatusOK,nil,data)
+}
 //Response
 //Response
-func Response(w *gin.Context, res Responser, err error, data interface{}) {
+func Response(ctx *gin.Context, res Responser, err error, data interface{}) {
 
 	var code int32 = 200
-	var msg  = "ok"
+	var msg = "ok"
 
 	if res != nil {
 		code = res.GetCode()
@@ -44,12 +47,9 @@ func Response(w *gin.Context, res Responser, err error, data interface{}) {
 	if err != nil {
 		msg = err.Error()
 		if e, ok := status.FromError(err); ok {
-			if e.Code() == 400 {
+			if e.Code() >= 5000 {
 				code = int32(e.Code())
 				msg = e.Message()
-			} else {
-				code = 500
-				msg = "Internal Server Error"
 			}
 		}
 	}
@@ -62,8 +62,8 @@ func Response(w *gin.Context, res Responser, err error, data interface{}) {
 	if msg != "" {
 		resData.Msg = msg
 	}
-	w.JSON(200, resData)
-	w.Abort()
+	ctx.JSON(200, resData)
+	ctx.Abort()
 }
 
 ////通过反射 设置data rpc response

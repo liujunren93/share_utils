@@ -27,57 +27,61 @@ func (e myError) Error() string {
 }
 
 // 数据不存在
-func DBNoData(msg string) Error {
+func NewDBNoData(msg string) Error {
 	if msg == "" {
 		msg = StatusDBNotFound.GetMsg()
 	}
-	return &myError{
+	return myError{
 		code: StatusDBNotFound,
 		msg:  msg,
 	}
 }
 
 //数据重复 420
-func DBDuplication(key string) Error {
+func NewDBDuplication(key string) Error {
 
-	return &myError{
+	return myError{
 		code: StatusDBDuplication,
 		msg:  StatusDBDuplication.GetMsg() + " for " + key,
 	}
 }
 
-func DBInternalErr(msg string) Error {
+func NewDBInternalErr(err error) Error {
 
-	return &myError{
+	m := myError{
 		code: StatusDBInternalErr,
 		msg:  StatusDBInternalErr.GetMsg(),
 	}
+	if err != nil {
+		m.msg=err.Error()
+	}
+	return m
 }
 //账户类错误  4001
-func Unauthorized(msg string) Error {
+func NewUnauthorized(msg string) Error {
 	if msg == "" {
 		msg = StatusUnauthorized.GetMsg()
 	}
-	return &myError{
+	return myError{
 		code: StatusUnauthorized,
 		msg:  msg,
 	}
 }
 
 //数据权限 4003
-func Forbidden(msg string) Error {
+func NewForbidden(msg string) Error {
 
 	if msg == "" {
 		msg = StatusForbidden.GetMsg()
 	}
-	return &myError{
+	return myError{
 		code: StatusForbidden,
 		msg:  msg,
 	}
 }
 
 //未知错误 5000
-func InternalError() Error {
+func NewInternalError() Error {
 	return &myError{
 		code: StatusInternalServerError,
 		msg:  StatusInternalServerError.GetMsg(),
@@ -91,18 +95,18 @@ func InternalErrorMsg(err interface{}) Error {
 	if er, ok := err.(string); ok {
 		msg = er
 	}
-	return &myError{
+	return myError{
 		code: StatusInternalServerError,
 		msg:  msg,
 	}
 }
 
 // 参数错误 4000
-func BadRequest(msg string) Error {
+func NewBadRequest(msg string) Error {
 	if msg == "" {
 		msg = StatusBadRequest.GetMsg()
 	}
-	return &myError{
+	return myError{
 		code: StatusBadRequest,
 		msg:  msg,
 	}
