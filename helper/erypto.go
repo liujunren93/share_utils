@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
+	"net/url"
+	"sort"
 	"strings"
 )
 
@@ -25,9 +27,8 @@ func Md5Str(str string) string {
 	return fmt.Sprintf("%x", hash.Sum(nil))
 }
 
-
 //GetUuidV3 获得
-func GetUuidV3(name string,keepLine bool) string {
+func GetUuidV3(name string, keepLine bool) string {
 	u := uuid.New()
 	uuidv3 := uuid.NewMD5(u, []byte(name))
 	if keepLine {
@@ -47,4 +48,27 @@ func NewPassword(secret, password string, cost int) (string, error) {
 
 func CheckPassword(secret, hashedPassword, password string) error {
 	return bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(secret+password))
+}
+
+func MapEncodeEscape(data map[string]interface{}) string {
+	if data == nil {
+		return ""
+	}
+	var buf strings.Builder
+	keys := make([]string, 0, len(data))
+	for k := range data {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	for _, k := range keys {
+		vs := data[k]
+		keyEscaped := url.QueryEscape(k)
+		if buf.Len() > 0 {
+			buf.WriteByte('&')
+		}
+		buf.WriteString(keyEscaped)
+		buf.WriteByte('=')
+		buf.WriteString(url.QueryEscape(fmt.Sprintf("%v", vs)))
+	}
+	return buf.String()
 }

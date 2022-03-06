@@ -24,11 +24,11 @@ func RandInt(max int) int {
 }
 
 func RandRange(min, max int) int {
-	if min>max {
+	if min > max {
 		panic("min must be less than max")
 	}
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	return r.Intn(max-min+1)+min
+	return r.Intn(max-min+1) + min
 }
 
 //String2Int 字符串转int 忽略错误
