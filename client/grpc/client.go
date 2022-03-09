@@ -93,7 +93,7 @@ type UserStore struct {
 	Secret        string
 }
 
-func (c *Client) GetGrpcClient(serverName string) (*grpc.ClientConn, error) {
+func (c *Client) GetGrpcClient(serverName string) (grpc.ClientConnInterface, error) {
 	getClientOnce.Do(func() {
 
 		if len(c.etcdAddr) == 0 {
@@ -143,3 +143,4 @@ func (c *Client) GetGrpcClient(serverName string) (*grpc.ClientConn, error) {
 	thisClient.AddOptions(client.WithBalancer(c.balancer))
 	return thisClient.Client(serverName)
 }
+

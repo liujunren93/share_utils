@@ -1,11 +1,14 @@
 package netHelper
 
 import (
+	"encoding/json"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/liujunren93/share/serrors"
 	"github.com/liujunren93/share_utils/errors"
 	"google.golang.org/grpc/status"
 	"reflect"
+	"strings"
 )
 
 type Responser interface {
@@ -20,9 +23,10 @@ type HttpResponse struct {
 	Data interface{}   `json:"data"`
 }
 
-func ResponseOk(ctx *gin.Context, data interface{})  {
-	Response(ctx,errors.StatusOK,nil,data)
+func ResponseOk(ctx *gin.Context, data interface{}) {
+	Response(ctx, errors.StatusOK, nil, data)
 }
+
 //Response
 //Response
 func Response(ctx *gin.Context, res Responser, err error, data interface{}) {
@@ -53,7 +57,9 @@ func Response(ctx *gin.Context, res Responser, err error, data interface{}) {
 			}
 		}
 	}
-
+	if s, ok := data.(string); ok {
+		data = strings.ReplaceAll(s, "\"", "")
+	}
 	resData := HttpResponse{
 		Code: errors.Status(code),
 		Msg:  msg,
@@ -70,9 +76,46 @@ func Response(ctx *gin.Context, res Responser, err error, data interface{}) {
 func RpcResponse(res Responser, err errors.Error, data interface{}) error {
 	defer func() {
 		if errr := recover(); errr != nil {
+			fmt.Println(errr)
 			errors.InternalErrorMsg(errr)
 		}
 	}()
+	var code int32 = 200
+	var msg string = "ok"
+	if err != nil {
+		//if err.GetCode() == 5000 {
+		//	err = serrors.InternalServerError(err).(errors.Error)
+		//}
+		code = err.GetCode()
+		msg = err.GetMsg()
+	}
+
+	of := reflect.ValueOf(res)
+	if of.Kind() != reflect.Ptr && !of.Elem().CanSet() {
+		return serrors.InternalServerError(nil)
+	}
+	elem := of.Elem()
+	elem.FieldByName("Code").SetInt(int64(code))
+	elem.FieldByName("Msg").SetString(msg)
+	Data := elem.FieldByName("Data")
+	dataOf := reflect.ValueOf(data)
+	if dataOf.IsValid() {
+		Data.Set(dataOf)
+	}
+
+	return nil
+}
+
+func RpcResponseMarshal(res Responser, err errors.Error, data interface{}) error {
+	defer func() {
+		if errr := recover(); errr != nil {
+			errors.InternalErrorMsg(errr)
+		}
+	}()
+	marshal, errr := json.Marshal(data)
+	if err != nil {
+		return errr
+	}
 	var code int32 = 200
 	var msg string = "ok"
 	if err != nil {
@@ -88,12 +131,13 @@ func RpcResponse(res Responser, err errors.Error, data interface{}) error {
 		return serrors.InternalServerError(nil)
 	}
 	elem := of.Elem()
+	elem.FieldByName("Code").SetInt(int64(code))
+	elem.FieldByName("Msg").SetString(msg)
 	Data := elem.FieldByName("Data")
-	dataOf := reflect.ValueOf(data)
+	dataOf := reflect.ValueOf(string(marshal))
 	if dataOf.IsValid() {
 		Data.Set(dataOf)
 	}
-	elem.FieldByName("Code").SetInt(int64(code))
-	elem.FieldByName("Msg").SetString(msg)
+
 	return nil
 }
