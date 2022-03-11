@@ -42,6 +42,7 @@ func String2Int(str string) int {
 }
 
 func SnakeString(s string) string {
+	s=strings.ReplaceAll(s,"ID","id")
 	data := make([]byte, 0, len(s)*2)
 	j := false
 	num := len(s)
@@ -59,5 +60,6 @@ func SnakeString(s string) string {
 		data = append(data, d)
 	}
 	//ToLower把大写字母统一转小写
+
 	return strings.ToLower(string(data[:]))
 }

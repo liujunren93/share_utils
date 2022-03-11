@@ -8,7 +8,6 @@ import (
 	"github.com/liujunren93/share_utils/errors"
 	"google.golang.org/grpc/status"
 	"reflect"
-	"strings"
 )
 
 type Responser interface {
@@ -58,7 +57,9 @@ func Response(ctx *gin.Context, res Responser, err error, data interface{}) {
 		}
 	}
 	if s, ok := data.(string); ok {
-		data = strings.ReplaceAll(s, "\"", "")
+		var da interface{}
+		json.Unmarshal([]byte(s), &da)
+		data = da
 	}
 	resData := HttpResponse{
 		Code: errors.Status(code),
@@ -68,7 +69,8 @@ func Response(ctx *gin.Context, res Responser, err error, data interface{}) {
 	if msg != "" {
 		resData.Msg = msg
 	}
-	ctx.JSON(200, resData)
+
+	ctx.JSON(200,resData)
 	ctx.Abort()
 }
 
