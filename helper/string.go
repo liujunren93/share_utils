@@ -42,7 +42,7 @@ func String2Int(str string) int {
 }
 
 func SnakeString(s string) string {
-	s=strings.ReplaceAll(s,"ID","id")
+	s = strings.ReplaceAll(s, "ID", "Id")
 	data := make([]byte, 0, len(s)*2)
 	j := false
 	num := len(s)
