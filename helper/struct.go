@@ -26,18 +26,17 @@ func Struct2MapSnakeNoZero(src interface{}) map[string]interface{} {
 		if t.Field(i).Name[0] >= 97 {
 			continue
 		}
-		if v.Kind()==reflect.Ptr {
+		if v.Kind() == reflect.Ptr {
 			field := v.Elem().Field(i)
 			if !field.IsZero() {
-				res[SnakeString(t.Field(i).Name)] =field.Interface()
+				res[SnakeString(t.Field(i).Name)] = field.Interface()
 			}
-		}else{
+		} else {
 			field := v.Field(i)
 			if !field.IsZero() {
 				res[SnakeString(t.Field(i).Name)] = field.Interface()
 			}
 		}
-
 
 	}
 	return res

@@ -70,7 +70,7 @@ func Response(ctx *gin.Context, res Responser, err error, data interface{}) {
 		resData.Msg = msg
 	}
 
-	ctx.JSON(200,resData)
+	ctx.JSON(200, resData)
 	ctx.Abort()
 }
 
@@ -108,6 +108,7 @@ func RpcResponse(res Responser, err errors.Error, data interface{}) error {
 	return nil
 }
 
+//RpcResponseMarshal res.data string
 func RpcResponseMarshal(res Responser, err errors.Error, data interface{}) error {
 	defer func() {
 		if errr := recover(); errr != nil {
