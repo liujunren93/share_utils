@@ -3,11 +3,12 @@ package netHelper
 import (
 	"encoding/json"
 	"fmt"
+	"reflect"
+
 	"github.com/gin-gonic/gin"
 	"github.com/liujunren93/share/serrors"
 	"github.com/liujunren93/share_utils/errors"
 	"google.golang.org/grpc/status"
-	"reflect"
 )
 
 type Responser interface {
@@ -108,8 +109,8 @@ func RpcResponse(res Responser, err errors.Error, data interface{}) error {
 	return nil
 }
 
-//RpcResponseMarshal res.data string
-func RpcResponseMarshal(res Responser, err errors.Error, data interface{}) error {
+//RpcResponseString res.data string
+func RpcResponseString(res Responser, err errors.Error, data interface{}) error {
 	defer func() {
 		if errr := recover(); errr != nil {
 			errors.InternalErrorMsg(errr)

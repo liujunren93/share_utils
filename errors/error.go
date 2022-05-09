@@ -46,17 +46,18 @@ func NewDBDuplication(key string) Error {
 	}
 }
 
-func NewDBInternalErr(err error) Error {
+func NewDBInternal(err error) Error {
 
 	m := myError{
 		code: StatusDBInternalErr,
 		msg:  StatusDBInternalErr.GetMsg(),
 	}
 	if err != nil {
-		m.msg=err.Error()
+		m.msg = err.Error()
 	}
 	return m
 }
+
 //账户类错误  4001
 func NewUnauthorized(msg string) Error {
 	if msg == "" {

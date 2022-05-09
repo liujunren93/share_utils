@@ -1,9 +1,10 @@
 package auth
 
-type Auth interface {
+type Auther interface {
 	// Token generated using refresh token or credentials
 	Token(refreshToken string) (*Token, error)
 	Inspect(token string) (interface{}, error)
+	SetData(k string, v interface{})
 }
 
 // Token can be short or long lived

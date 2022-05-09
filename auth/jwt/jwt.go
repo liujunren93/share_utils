@@ -2,26 +2,39 @@ package jwt
 
 import (
 	"errors"
+	"time"
+
 	"github.com/dgrijalva/jwt-go"
 	"github.com/liujunren93/share_utils/auth"
-	"time"
 )
 
 type jwtAuth struct {
 	options auth.TokenOptions
 }
 
-func NewAuth(option ...auth.TokenOption) auth.Auth {
-	jAuth:= new(jwtAuth)
+func NewAuth(option ...auth.TokenOption) auth.Auther {
+	jAuth := new(jwtAuth)
 	op := auth.NewOption(option...)
 	jAuth.options = op
+
 	return jAuth
 }
 
 type JwtClaims struct {
-	Data interface{}
+	Data map[string]interface{}
 	Type int8 //1:token 2:refresh token
 	jwt.StandardClaims
+}
+
+func (j *jwtAuth) SetData(k string, v interface{}) {
+	if j.options.Data == nil {
+		j.options.Data = make(map[string]interface{})
+	}
+
+	j.options.Data[k] = v
+}
+func (j *jwtAuth) GetOptions() auth.TokenOptions {
+	return j.options
 }
 
 //Inspect 验证token
@@ -36,7 +49,9 @@ func (j *jwtAuth) Inspect(tokenStr string) (interface{}, error) {
 	}
 
 	if claims, ok := tk.Claims.(*JwtClaims); ok && tk.Valid {
-		return claims, nil
+		if claims.Type == 1 {
+			return claims.Data, nil
+		}
 	}
 
 	return nil, errors.New("token error")
@@ -91,12 +106,12 @@ func (j *jwtAuth) createToken(tkType int8) (string, error) {
 		Data: j.options.Data,
 		Type: tkType,
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Duration(expiry)*time.Second).Local().Unix(),
+			ExpiresAt: time.Now().Add(time.Duration(expiry) * time.Second).Local().Unix(),
 			IssuedAt:  time.Now().Unix(),
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	signedString, err := token.SignedString([]byte(j.options.Secret))
-
+	j.options.Data = nil
 	return signedString, err
 }

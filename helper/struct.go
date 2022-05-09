@@ -26,6 +26,9 @@ func Struct2MapSnakeNoZero(src interface{}) map[string]interface{} {
 		if t.Field(i).Name[0] >= 97 {
 			continue
 		}
+		if t.Field(i).Tag.Get("json") == "-" {
+			continue
+		}
 		if v.Kind() == reflect.Ptr {
 			field := v.Elem().Field(i)
 			if !field.IsZero() {
@@ -36,6 +39,38 @@ func Struct2MapSnakeNoZero(src interface{}) map[string]interface{} {
 			if !field.IsZero() {
 				res[SnakeString(t.Field(i).Name)] = field.Interface()
 			}
+		}
+
+	}
+	return res
+}
+
+func Struct2MapSnake(src interface{}) map[string]interface{} {
+	t := reflect.TypeOf(src)
+	v := reflect.ValueOf(src)
+	if t.Kind() == reflect.Ptr {
+		t = t.Elem()
+	}
+	if t.Kind() != reflect.Struct {
+		fmt.Println("Check type error not Struct")
+		return nil
+	}
+	fieldNum := t.NumField()
+	var res = make(map[string]interface{}, fieldNum)
+	for i := 0; i < fieldNum; i++ {
+		if t.Field(i).Name[0] >= 97 {
+			continue
+		}
+		if t.Field(i).Tag.Get("json") == "-" {
+			continue
+		}
+		if v.Kind() == reflect.Ptr {
+			field := v.Elem().Field(i)
+
+			res[SnakeString(t.Field(i).Name)] = field.Interface()
+		} else {
+			field := v.Field(i)
+			res[SnakeString(t.Field(i).Name)] = field.Interface()
 		}
 
 	}
