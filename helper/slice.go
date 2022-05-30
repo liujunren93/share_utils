@@ -6,11 +6,11 @@ import (
 	"github.com/liujunren93/share_utils/types"
 )
 
-func TransSliceType[OT, NT types.Number](list []OT) []NT {
-	var data []NT
+func TransSliceType[IT, OT types.Number](list []IT) []OT {
+	var data []OT
 	for _, t := range list {
 
-		data = append(data, NT(t))
+		data = append(data, OT(t))
 	}
 	return data
 }

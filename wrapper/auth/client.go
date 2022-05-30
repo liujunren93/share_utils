@@ -2,19 +2,22 @@ package auth
 
 import (
 	"context"
-	"github.com/micro/go-micro/v2/metadata"
 
-	"github.com/micro/go-micro/v2/client"
-	"github.com/micro/go-micro/v2/registry"
+	"github.com/liujunren93/share/wrapper"
+	"google.golang.org/grpc"
 )
 
-func NewClientAuthWrapper(token string) client.CallWrapper {
-	return func(cf client.CallFunc) client.CallFunc {
-		return func(ctx context.Context, node *registry.Node, req client.Request, rsp interface{}, opts client.CallOptions) error {
+const CLIENT_NAME = "auth_client"
 
-			ctx = metadata.Set(ctx, "Authorization", token)
-
-			return cf(ctx, node, req, rsp, opts)
-		}
+func NewClientWrapper(key string, f func(context.Context) interface{}) wrapper.CallWrapper {
+	return func() (grpc.UnaryClientInterceptor, string) {
+		return func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+			// ctx, err := metadata.SetVal(ctx, key,)
+			// if err != nil {
+			// 	return err
+			// }
+			//TODO set auth
+			return invoker(ctx, method, req, reply, cc, opts...)
+		}, CLIENT_NAME
 	}
 }

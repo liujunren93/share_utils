@@ -3,10 +3,11 @@ package gorm
 import (
 	"encoding/json"
 	"fmt"
+	"time"
+
 	_ "github.com/go-sql-driver/mysql"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"time"
 )
 
 type Base struct {
@@ -47,6 +48,9 @@ func NewMysql(basConf *Mysql, conf *gorm.Config) (*gorm.DB, error) {
 		DontSupportRenameColumn:   true,  // 用 `change` 重命名列，MySQL 8 之前的数据库和 MariaDB 不支持重命名列
 		SkipInitializeWithVersion: false, // 根据当前 MySQL 版本自动配置
 	}), conf)
+	if err != nil {
+		return nil, err
+	}
 
 	db, err := open.DB()
 	if err != nil {

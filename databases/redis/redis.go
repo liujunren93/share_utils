@@ -1,8 +1,8 @@
 package redis
 
-import "github.com/go-redis/redis/v8"
+import re "github.com/go-redis/redis/v8"
 
-func NewRedis(conf *redis.Options) *redis.Client {
+func NewRedis(conf *re.Options) *re.Client {
 
-	return redis.NewClient(conf)
+	return re.NewClient(conf)
 }

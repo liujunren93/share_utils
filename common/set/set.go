@@ -13,16 +13,19 @@ type Set[T comparable] struct {
 func NewSet[T comparable]() *Set[T] {
 	return &Set[T]{mp: make(map[T]struct{})}
 }
-func (set *Set[T]) Add(data T) {
+func (set *Set[T]) Add(data ...T) {
 	set.mu.Lock()
-	set.total++
-	set.mp[data] = struct{}{}
-	set.mu.Unlock()
+	defer set.mu.Unlock()
+	set.total += len(data)
+	for _, v := range data {
+		set.mp[v] = struct{}{}
+	}
+
 }
 
 func (set *Set[T]) List() []T {
 	var list []T
-	for i, _ := range set.mp {
+	for i := range set.mp {
 		list = append(list, i)
 	}
 	return list
