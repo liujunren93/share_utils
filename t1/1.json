@@ -1,0 +1,117 @@
+{
+  "TemplateId": "template-test-trans-DB-TRANS-F1-203-00101-20220527181949-test-trans-DB-TRANS-F1-203-00101-2022052718194901",
+  "TemplateType": "0",
+  "SegTime": 10,
+  "Video": {
+    "Enable": true,
+    "Copy": false,
+    "SizePolicy": "ScaleToHeight",
+    "AutoAdjust": true,
+    "Params": {
+      "CodecName": "h265",
+      "Resolution": {
+        "Width": 1280,
+        "Height": 720
+      },
+      "Bitrate": 1272,
+      "HighBitrate": 2100,
+      "Framerate": 25,
+      "Gop": 125,
+      "OpenGop": false,
+      "PixelFmt": "420",
+      "RateControl": "vbr",
+      "Crf": 28,
+      "Refs": 4,
+      "BFrames": 3,
+      "AspectRatio": "",
+      "Level": "auto",
+      "Preset": "superfast",
+      "Profile": "main",
+      "BitDepth": 8,
+      "SafeFrameRange": ""
+    }
+  },
+  "VideoProcess": {
+    "HdrInfo": {
+      "Copy": false,
+      "HdrType": "sdr",
+      "ColorSpace": "1",
+      "ColorTransfer": "1",
+      "ColorPrimaries": "1",
+      "ColorRange": "1"
+    },
+    "MiguEnhance": {
+      "ColorTransfer": "0"
+    },
+    "Luminance": "-1000000",
+    "Contrast": "-1000000",
+    "Saturation": "-1000000",
+    "Gamma": "-1000000",
+    "Scale": {
+      "Resolution": {
+        "Width": 0,
+        "Height": 0
+      }
+    },
+    "Rotate": 0,
+    "Crop": {
+      "Resolution": {
+        "Width": 0,
+        "Height": 0
+      },
+      "Position": {
+        "X": 0,
+        "Y": 0
+      }
+    },
+    "DeInterlace": false,
+    "PadAuto": false,
+    "Denoise": false,
+    "Sharp": {
+      "Enable": false,
+      "Mode": 0,
+      "ParamX": 1,
+      "ParamY": 1,
+      "ParamA": "1"
+    },
+    "Logo": {
+      "Enable": false,
+      "Position": {
+        "X": 0,
+        "Y": 0
+      },
+      "Resolution": {
+        "Width": 1280,
+        "Height": 720
+      },
+      "FilePath": "/home/pics/logos/migu_cctv_db.tga",
+      "Transparency": "1"
+    },
+    "Narrowband": 0,
+    "Deblock": {
+      "Enable": false,
+      "Mode": "weak",
+      "Size": 5
+    },
+    "Watermark": null,
+    "Mosaic": null
+  },
+  "Audio": {
+    "Enable": true,
+    "Copy": false,
+    "AudioAdditionNull": true,
+    "Params": {
+      "CodecName": "aac",
+      "Channel": 2,
+      "Bitrate": 64,
+      "SampleRate": 44100,
+      "Ebur128": true,
+      "AudioEbur128Loudness": 0,
+      "AudioEbur128Range": 0,
+      "AudioEbur128Tp": 0,
+      "Volume": 1,
+      "Profile": "lc"
+    }
+  },
+  "ExternalAudio": null
+}
