@@ -18,7 +18,7 @@ func NewClientWrapper(key string, f func(context.Context) string) wrapper.CallWr
 			if err != nil {
 				return err
 			}
-			panic(111)
+
 			return invoker(ctx, method, req, reply, cc, opts...)
 		}, NAME + key
 	}

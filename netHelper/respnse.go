@@ -55,6 +55,10 @@ func Response(ctx *gin.Context, res Responser, err error, data interface{}) {
 				code = int32(e.Code())
 				msg = e.Message()
 			}
+
+		} else {
+			code = int32(errors.StatusInternalServerError)
+			msg = errors.StatusInternalServerError.GetMsg()
 		}
 	}
 	if s, ok := data.(string); ok {

@@ -21,6 +21,7 @@ const (
 	StatusNotFound            Status = 4004 //
 	StatusRequestTimeout      Status = 4008 //
 	StatusInternalServerError Status = 5000 //服务器通用错误 前端不显示
+	StatusBreakerServerError  Status = 5001 //服务器通用错误 前端不显示
 	// 数据重复 52... DB 错误
 	StatusDBInternalErr      Status = 5200 // 数据库内错误
 	StatusDBDuplication      Status = 5201 // 数据重复
@@ -34,10 +35,11 @@ var statusText = map[Status]string{
 	StatusUnauthorized:        "Unauthorized",
 	StatusForbidden:           "Forbidden",
 	StatusNotFound:            "NotFound",
-	StatusRequestTimeout:      "RequestTimeout",
-	StatusInternalServerError: "InternalServerError",
+	StatusRequestTimeout:      "Request Timeout",
+	StatusInternalServerError: "Internal Server Error",
 	StatusDBInternalErr:       "DBInternalServerError",
 	StatusDBDuplication:       "Duplication",
 	StatusDBNotFound:          "DataNotFount",
 	StatusDBRowsAffectedZero:  "NoDataToUpdate",
+	StatusBreakerServerError:  "Status Breaker Server Error",
 }
