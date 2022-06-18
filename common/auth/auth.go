@@ -3,7 +3,7 @@ package auth
 type Auther interface {
 	// Token generated using refresh token or credentials
 	Token(refreshToken string) (*Token, error)
-	Inspect(token string) (interface{}, error)
+	Inspect(token string) (data interface{}, tokenType int8, err error)
 	SetData(k string, v interface{})
 }
 

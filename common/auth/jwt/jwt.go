@@ -38,23 +38,23 @@ func (j *jwtAuth) GetOptions() auth.TokenOptions {
 }
 
 //Inspect 验证token
-func (j *jwtAuth) Inspect(tokenStr string) (interface{}, error) {
+func (j *jwtAuth) Inspect(tokenStr string) (interface{}, int8, error) {
 
 	tk, err := jwt.ParseWithClaims(tokenStr, &JwtClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(j.options.Secret), nil
 	})
 
 	if err != nil {
-		return nil, err
+		return nil, -1, err
 	}
 
 	if claims, ok := tk.Claims.(*JwtClaims); ok && tk.Valid {
-		if claims.Type == 1 {
-			return claims.Data, nil
-		}
+		// if claims.Type == 1 {
+		return claims.Data, claims.Type, nil
+		// }
 	}
 
-	return nil, errors.New("token error")
+	return nil, -1, errors.New("token error")
 }
 
 //Token get token, if RefreshToken!="" will refresh token
@@ -64,8 +64,8 @@ func (j *jwtAuth) Token(RefreshToken string) (*auth.Token, error) {
 		return nil, errors.New("secret is empty")
 	}
 	if RefreshToken != "" { //刷新token
-		inspect, err := j.Inspect(RefreshToken)
-		if err != nil {
+		inspect, tp, err := j.Inspect(RefreshToken)
+		if err != nil || tp == 1 {
 			return nil, err
 		}
 		if jc, ok := inspect.(*JwtClaims); ok {
@@ -112,6 +112,6 @@ func (j *jwtAuth) createToken(tkType int8) (string, error) {
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	signedString, err := token.SignedString([]byte(j.options.Secret))
-	j.options.Data = nil
+
 	return signedString, err
 }

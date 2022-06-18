@@ -2,32 +2,28 @@ package redis
 
 import (
 	"context"
+
 	re "github.com/go-redis/redis/v8"
 	"github.com/liujunren93/share_utils/common/mq"
 )
 
 type redisMq struct {
 	redis *re.Client
-	opt *option
-
+	opt   *option
 }
 type option struct {
 	MsgSize int
-
 }
 
-
-
-
-func NewMq(client *re.Client,opts ...func(*option)) *redisMq {
+func NewMq(client *re.Client, opts ...func(*option)) *redisMq {
 	var opt option
 	for _, f := range opts {
 		f(&opt)
 	}
-	if opt.MsgSize==0 {
-		opt.MsgSize=100
+	if opt.MsgSize == 0 {
+		opt.MsgSize = 100
 	}
-	return &redisMq{redis: client,opt: &opt}
+	return &redisMq{redis: client, opt: &opt}
 }
 
 func (r *redisMq) Publish(ctx context.Context, topic string, val interface{}) error {
@@ -54,8 +50,8 @@ func (r *redisMq) Subscribe(ctx context.Context, topics ...string) (ch chan *mq.
 	}()
 	return ch
 }
-func WithMsgSIze(size int) func(*option)  {
+func WithMsgSIze(size int) func(*option) {
 	return func(o *option) {
-		o.MsgSize=size
+		o.MsgSize = size
 	}
 }

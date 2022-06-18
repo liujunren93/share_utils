@@ -7,6 +7,8 @@ type TokenOptions struct {
 	Expiry int64
 	//data
 	Data map[string]interface{}
+	// //RefreshTokenKeepData RefreshToken是否保存data，如果保存 生成token 使用RefreshToken的data
+	// RefreshTokenKeepData bool
 }
 
 type TokenOption func(o *TokenOptions)
@@ -16,6 +18,12 @@ func WithData(data map[string]interface{}) TokenOption {
 		o.Data = data
 	}
 }
+
+// func WithRefreshTokenKeepData(keep bool) TokenOption {
+// 	return func(o *TokenOptions) {
+// 		o.RefreshTokenKeepData = keep
+// 	}
+// }
 
 func WithSecret(secret string) TokenOption {
 	return func(o *TokenOptions) {

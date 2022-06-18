@@ -20,6 +20,7 @@ const (
 	StatusForbidden           Status = 4003 //权限
 	StatusNotFound            Status = 4004 //
 	StatusRequestTimeout      Status = 4008 //
+	StatusDomainDisable       Status = 4009 // domain 被禁用
 	StatusInternalServerError Status = 5000 //服务器通用错误 前端不显示
 	StatusBreakerServerError  Status = 5001 //服务器通用错误 前端不显示
 	// 数据重复 52... DB 错误
@@ -36,6 +37,7 @@ var statusText = map[Status]string{
 	StatusForbidden:           "Forbidden",
 	StatusNotFound:            "NotFound",
 	StatusRequestTimeout:      "Request Timeout",
+	StatusDomainDisable:       "Domain Disable",
 	StatusInternalServerError: "Internal Server Error",
 	StatusDBInternalErr:       "DBInternalServerError",
 	StatusDBDuplication:       "Duplication",
