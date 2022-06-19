@@ -5,6 +5,7 @@ import (
 
 	"github.com/liujunren93/share_utils/log"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 
 	"github.com/liujunren93/share/client"
 	"github.com/liujunren93/share/core/registry"
@@ -98,7 +99,10 @@ func (c *Client) GetShareClient(serverName string) (*client.Client, error) {
 			}
 		}
 	})
+	if c.balancer != "" {
+		thisClient.AddOptions(client.WithBalancer(c.balancer))
+	}
 
-	shareClient.AddOptions(client.WithBalancer(c.balancer), client.WithGrpcDialOption(grpc.WithInsecure()))
+	shareClient.AddOptions(client.WithGrpcDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())))
 	return shareClient, err
 }
