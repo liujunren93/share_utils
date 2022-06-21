@@ -1,6 +1,8 @@
 package store
 
 import (
+	"context"
+
 	"github.com/fsnotify/fsnotify"
 	"github.com/liujunren93/share_utils/config"
 	"github.com/spf13/viper"
@@ -10,7 +12,7 @@ type sViper struct {
 	viper *viper.Viper
 }
 
-func NewViperStore(o *config.DataOptions) *sViper {
+func NewViperStore(o *config.DataOptions) *config.Configer {
 
 	var v sViper
 
@@ -22,12 +24,12 @@ func NewViperStore(o *config.DataOptions) *sViper {
 	return &v
 }
 
-func (v *sViper) PublishConfig(options *config.DataOptions) (bool, error) {
+func (v *sViper) PublishConfig(ctx context.Context, options *config.DataOptions) (bool, error) {
 
 	panic("implement me")
 }
 
-func (v *sViper) GetConfig(o *config.DataOptions) (interface{}, error) {
+func (v *sViper) GetConfig(ctx context.Context, o *config.DataOptions) (interface{}, error) {
 	if o != nil {
 		v.viper.SetConfigFile(o.ConfigName)
 	}
@@ -40,7 +42,7 @@ func (v *sViper) GetConfig(o *config.DataOptions) (interface{}, error) {
 	return conf, nil
 }
 
-func (v *sViper) ListenConfig(o *config.DataOptions, f func(interface{})) {
+func (v *sViper) ListenConfig(ctx context.Context, o *config.DataOptions, f func(interface{})) {
 	if o != nil && o.ConfigName != "" {
 		v.viper.SetConfigFile(o.ConfigName)
 	}
@@ -51,6 +53,6 @@ func (v *sViper) ListenConfig(o *config.DataOptions, f func(interface{})) {
 	})
 }
 
-func (v *sViper) DeleteConfig(options *config.DataOptions) (bool, error) {
+func (v *sViper) DeleteConfig(ctx context.Context, options *config.DataOptions) (bool, error) {
 	panic("implement me")
 }

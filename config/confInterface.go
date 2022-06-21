@@ -1,22 +1,24 @@
 package config
 
-import "encoding/json"
+import (
+	"context"
+	"encoding/json"
+)
 
 type Configer interface {
-	PublishConfig(*DataOptions) (bool, error)
-	GetConfig(*DataOptions) (interface{}, error)
-	ListenConfig(*DataOptions, func(interface{}))
-	DeleteConfig(*DataOptions) (bool, error)
+	PublishConfig(context.Context, *DataOptions) (bool, error)
+	GetConfig(context.Context, *DataOptions) (interface{}, error)
+	ListenConfig(context.Context, *DataOptions, func(interface{}))
+	DeleteConfig(context.Context, *DataOptions) (bool, error)
 }
 
 type DataOptions struct {
-	DataId     string `json:"data_id"`
-	Group      string `json:"group"`
+	ConfigName string `json:"config_name"`
+	Group      string `json:"group"` //debug product
 	Content    string `json:"content"`
 	Path       string `json:"path"`
 	FileType   string `json:"file_type"`
-	ConfigName string `json:"config_name"`
-} 
+}
 
 func (opt DataOptions) String() string {
 	marshal, _ := json.Marshal(&opt)

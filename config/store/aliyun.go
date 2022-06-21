@@ -1,6 +1,8 @@
 package store
 
 import (
+	"context"
+
 	"github.com/liujunren93/share_utils/config"
 	"github.com/nacos-group/nacos-sdk-go/clients"
 	"github.com/nacos-group/nacos-sdk-go/clients/config_client"
@@ -41,22 +43,22 @@ func NewAcmStore(option *AcmOptions) (config.Configer, error) {
 	return &conf, err
 }
 
-//options  0:DataId,1:Group;2:Content
-func (a *acmConf) PublishConfig(options *config.DataOptions) (bool, error) {
+//options  0:configName,1:Group;2:Content
+func (a *acmConf) PublishConfig(ctx context.Context, options *config.DataOptions) (bool, error) {
 
 	return a.client.PublishConfig(vo.ConfigParam{
-		DataId:  options.DataId,
+		DataId:  options.ConfigName,
 		Group:   options.Group,
 		Content: options.Content,
 	})
 }
 
 //options  0:DataId,1:Group;
-func (a *acmConf) GetConfig(options *config.DataOptions) (interface{}, error) {
+func (a *acmConf) GetConfig(ctx context.Context, options *config.DataOptions) (interface{}, error) {
 
 	// Get plain content from ACM.
 	return a.client.GetConfig(vo.ConfigParam{
-		DataId: options.DataId,
+		DataId: options.ConfigName,
 		Group:  options.Group,
 	},
 	)
@@ -64,9 +66,9 @@ func (a *acmConf) GetConfig(options *config.DataOptions) (interface{}, error) {
 }
 
 //options  0:DataId,1:Group;
-func (a *acmConf) ListenConfig(options *config.DataOptions, f func(interface{})) {
+func (a *acmConf) ListenConfig(ctx context.Context, options *config.DataOptions, f func(interface{})) {
 	a.client.ListenConfig(vo.ConfigParam{
-		DataId: options.DataId,
+		DataId: options.ConfigName,
 		Group:  options.Group,
 		OnChange: func(namespace, group, dataId, data string) {
 			f(data)
@@ -76,9 +78,9 @@ func (a *acmConf) ListenConfig(options *config.DataOptions, f func(interface{}))
 }
 
 //
-func (a *acmConf) DeleteConfig(options *config.DataOptions) (bool, error) {
+func (a *acmConf) DeleteConfig(ctx context.Context, options *config.DataOptions) (bool, error) {
 	return a.client.DeleteConfig(vo.ConfigParam{
-		DataId: options.DataId,
+		DataId: options.ConfigName,
 		Group:  options.Group,
 	})
 }
