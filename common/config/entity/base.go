@@ -1,11 +1,17 @@
 package entity
 
 type LocalBase struct {
-	AppName          string `yml:"app_name"`
-	NameSpace        string `yaml:"namespace"`
-	ConfigCenterType string `yaml:"config_center_type"` //redis etcd
-	RunMode          string `yaml:"run_mode"`           //debug product
-	HttpHost         string `yaml:"http_host"`
+	AppName      string `mapstructure:"app_name"`
+	NameSpace    string `mapstructure:"namespace"`
+	ConfigCenter string `mapstructure:"config_center"` //redis etcd
+	RunMode      string `mapstructure:"run_mode"`      //debug product
+	HttpHost     string `mapstructure:"http_host"`
+}
+
+type ConfigCenter struct {
+	Enable bool   `mapstructure:"enable"`
+	Type   string `mapstructure:"type"` // redis
+	Redis  *Redis
 }
 
 type Log struct {

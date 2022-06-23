@@ -1,7 +1,9 @@
-package store
+package config
 
 import (
 	"context"
+	"path/filepath"
+	"strings"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
@@ -11,16 +13,27 @@ type Viper struct {
 	viper *viper.Viper
 }
 
-func NewViper(path, fileType, configName string) *Viper {
-
+func NewViper(filePath string) *Viper {
+	path, fileType, configName := configType(filePath)
 	var v Viper
-
 	v.viper = viper.New()
 	v.viper.AddConfigPath(path)
 	v.viper.SetConfigType(fileType)
 	v.viper.SetConfigName(configName)
-	//v.viper.Debug()
 	return &v
+}
+func configType(configPath string) (path, fileType, configName string) {
+	fileExt := strings.ToLower(filepath.Ext(configPath))
+	configName = filepath.Base(configPath)
+	path = filepath.Dir(configPath)
+
+	if fileExt == ".yml" || fileExt == ".yaml" {
+		fileType = "yaml"
+	} else {
+		fileType = fileExt[1:]
+	}
+	return
+
 }
 
 func (v *Viper) PublishConfig(ctx context.Context) (bool, error) {
