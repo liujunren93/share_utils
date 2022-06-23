@@ -3,7 +3,6 @@ package store
 import (
 	"context"
 
-	"github.com/liujunren93/share_utils/config"
 	"github.com/nacos-group/nacos-sdk-go/clients"
 	"github.com/nacos-group/nacos-sdk-go/clients/config_client"
 	"github.com/nacos-group/nacos-sdk-go/common/constant"
@@ -19,11 +18,11 @@ type AcmOptions struct {
 	CacheDir    string `json:"cache_dir"`
 }
 
-type acmConf struct {
+type Acm struct {
 	client config_client.IConfigClient
 }
 
-func NewAcmStore(option *AcmOptions) (config.Configer, error) {
+func NewAcmStore(option *AcmOptions) (*Acm, error) {
 	clientConfig := constant.ClientConfig{
 		Endpoint:       option.Endpoint,
 		NamespaceId:    option.NamespaceID,
@@ -34,7 +33,7 @@ func NewAcmStore(option *AcmOptions) (config.Configer, error) {
 		LogDir:         option.LogDir,
 		CacheDir:       option.CacheDir,
 	}
-	var conf acmConf
+	var conf Acm
 	// Initialize client.
 	configClient, err := clients.CreateConfigClient(map[string]interface{}{
 		"clientConfig": clientConfig,
@@ -44,32 +43,32 @@ func NewAcmStore(option *AcmOptions) (config.Configer, error) {
 }
 
 //options  0:configName,1:Group;2:Content
-func (a *acmConf) PublishConfig(ctx context.Context, options *config.DataOptions) (bool, error) {
+func (a *Acm) PublishConfig(ctx context.Context, configName, group, content string) (bool, error) {
 
 	return a.client.PublishConfig(vo.ConfigParam{
-		DataId:  options.ConfigName,
-		Group:   options.Group,
-		Content: options.Content,
+		DataId:  configName,
+		Group:   group,
+		Content: content,
 	})
 }
 
 //options  0:DataId,1:Group;
-func (a *acmConf) GetConfig(ctx context.Context, options *config.DataOptions) (interface{}, error) {
+func (a *Acm) GetConfig(ctx context.Context, configName, group string) (interface{}, error) {
 
 	// Get plain content from ACM.
 	return a.client.GetConfig(vo.ConfigParam{
-		DataId: options.ConfigName,
-		Group:  options.Group,
+		DataId: configName,
+		Group:  group,
 	},
 	)
 
 }
 
 //options  0:DataId,1:Group;
-func (a *acmConf) ListenConfig(ctx context.Context, options *config.DataOptions, f func(interface{})) {
+func (a *Acm) ListenConfig(ctx context.Context, configName, group string, f func(interface{})) {
 	a.client.ListenConfig(vo.ConfigParam{
-		DataId: options.ConfigName,
-		Group:  options.Group,
+		DataId: configName,
+		Group:  group,
 		OnChange: func(namespace, group, dataId, data string) {
 			f(data)
 		},
@@ -78,9 +77,9 @@ func (a *acmConf) ListenConfig(ctx context.Context, options *config.DataOptions,
 }
 
 //
-func (a *acmConf) DeleteConfig(ctx context.Context, options *config.DataOptions) (bool, error) {
+func (a *Acm) DeleteConfig(ctx context.Context, configName, group string) (bool, error) {
 	return a.client.DeleteConfig(vo.ConfigParam{
-		DataId: options.ConfigName,
-		Group:  options.Group,
+		DataId: configName,
+		Group:  group,
 	})
 }

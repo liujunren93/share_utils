@@ -3,6 +3,7 @@ package config
 import (
 	"context"
 	"encoding/json"
+	"errors"
 )
 
 type Configer interface {
@@ -24,3 +25,7 @@ func (opt DataOptions) String() string {
 	marshal, _ := json.Marshal(&opt)
 	return string(marshal)
 }
+
+var (
+	TypeErr = errors.New("type miss match")
+)
