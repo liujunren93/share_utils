@@ -1,11 +1,12 @@
 package entity
 
 type LocalBase struct {
-	AppName      string       `mapstructure:"app_name"`
-	NameSpace    string       `mapstructure:"namespace"`
-	ConfigCenter ConfigCenter `mapstructure:"config_center"` //redis etcd
-	RunMode      string       `mapstructure:"run_mode"`      //debug product
-	HttpHost     string       `mapstructure:"http_host"`
+	AppName          string            `mapstructure:"app_name"`
+	NameSpace        string            `mapstructure:"namespace"`
+	ConfCenter       ConfigCenter      `mapstructure:"conf_center"` //redis etcd
+	RunMode          string            `mapstructure:"run_mode"`    //debug product
+	HttpHost         string            `mapstructure:"http_host"`
+	ConfigCenterConf map[string]string `mapstructure:"config_center"`
 }
 
 type Config struct {

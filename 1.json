@@ -1,0 +1,89 @@
+{
+  "uid": "1",
+  "tasks": [
+    {
+      "vid": "0LbPZG0VtcxVpIeg3nRYdx-1654137671120",
+      "priority": "1",
+      "input": {
+        "in_uri": "migucloud2/5133/2022/6/2/0LbPZG0VtcxVpIeg3nRYdx.mp4"
+      },
+      "out_list": [
+        {
+          "svid": "0LbPZG0VtcxVpIeg3nRYdxcustom_cld2160p_h265hls",
+          "out_format": "hls",
+          "out_format_info": {
+            "file_path": "migucloud2/mgc_transfiles/5133/2022/6/2/0LbPZG0VtcxVpIeg3nRYdx/d04e5797/custom_cld2160p_h265"
+          },
+          "template_id": "custom_template",
+          "template_info": {
+            "video": {
+              "enable": true,
+              "params": {
+                "codec_name": "h265",
+                "res": {
+                  "width": 7680,
+                  "height": 4320
+                },
+                "bit_rate": 4096000,
+                "frame_rate": 30,
+                "gop_size": 75
+              }
+            },
+            "audio": {
+              "enable": true,
+              "params": {
+                "codec_name": "aac",
+                "bit_rate": 125000,
+                "sample_rate": 44100
+              }
+            }
+          },
+          "subtitle_info": {}
+        },
+        {
+          "svid": "0LbPZG0VtcxVpIeg3nRYdxcustom_cld2160p_h264hls",
+          "out_format": "hls",
+          "out_format_info": {
+            "file_path": "migucloud2/mgc_transfiles/5133/2022/6/2/0LbPZG0VtcxVpIeg3nRYdx/d04e5797/custom_cld2160p_h264"
+          },
+          "template_id": "custom_template",
+          "template_info": {
+            "video": {
+              "enable": true,
+              "params": {
+                "codec_name": "h264",
+                "res": {
+                  "width": 7680,
+                  "height": 4320
+                },
+                "bit_rate": 4096000,
+                "frame_rate": 30,
+                "gop_size": 75
+              }
+            },
+            "audio": {
+              "enable": true,
+              "params": {
+                "codec_name": "aac",
+                "bit_rate": 125000,
+                "sample_rate": 44100
+              }
+            }
+          },
+          "subtitle_info": {}
+        }
+      ],
+      "start_callback_list": [
+        "http://test.migucloud.com/utsp-offline-transcode/utspOffline/CbTransStart"
+      ],
+      "complete_callback_list": [
+        "http://test.migucloud.com/utsp-offline-transcode/utspOffline/CbTransCompleted"
+      ]
+    }
+  ]
+}
+ffprobe -print_format json -show_streams -select_streams v 
+ffprobe -select_streams v -show_entries format=duration,size,bit_rate,filename -show_streams -v quiet -of csv="p=0" -of json -i 
+
+
+sudo /opt/transcoder/bin/migu_probe v -show_entries format=duration,size,bit_rate,filename -show_streams -v quiet -of csv="p=0" -of json  -i "/mnt/transcoder/temp/20220602/15//0LbPZG0VtcxVpIeg3nRYdx-1654137671120/template-0LbPZG0VtcxVpIeg3nRYdx-1654137671120-0LbPZG0VtcxVpIeg3nRYdxcustom_cld2160p_h265hls/1001.mp4"
