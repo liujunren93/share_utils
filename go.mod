@@ -15,6 +15,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/jinzhu/inflection v1.0.0
 	github.com/liujunren93/share v0.0.0-20220531015406-868dc4e326e1
+	github.com/mitchellh/mapstructure v1.5.0
 	github.com/nacos-group/nacos-sdk-go v1.1.1
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/sirupsen/logrus v1.8.1
@@ -53,7 +54,6 @@ require (
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/mattn/go-isatty v0.0.14 // indirect
-	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect

@@ -1,8 +1,9 @@
-package config
+package store
 
 import (
 	"context"
 
+	"github.com/liujunren93/share_utils/common/config"
 	"github.com/nacos-group/nacos-sdk-go/clients"
 	"github.com/nacos-group/nacos-sdk-go/clients/config_client"
 	"github.com/nacos-group/nacos-sdk-go/common/constant"
@@ -42,35 +43,36 @@ func NewAcmStore(option *AcmOptions) (*Acm, error) {
 	return &conf, err
 }
 
-//options  0:configName,1:Group;2:Content
-func (a *Acm) PublishConfig(ctx context.Context, configName, group, content string) (bool, error) {
+func (a *Acm) PublishConfig(ctx context.Context, confName, group, content string) (bool, error) {
 
 	return a.client.PublishConfig(vo.ConfigParam{
-		DataId:  configName,
+		DataId:  confName,
 		Group:   group,
 		Content: content,
 	})
 }
 
 //options  0:DataId,1:Group;
-func (a *Acm) GetConfig(ctx context.Context, configName, group string) (interface{}, error) {
+func (a *Acm) GetConfig(ctx context.Context, confName, group string, callback config.Callback) error {
 
 	// Get plain content from ACM.
-	return a.client.GetConfig(vo.ConfigParam{
-		DataId: configName,
+	data, err := a.client.GetConfig(vo.ConfigParam{
+		DataId: confName,
 		Group:  group,
-	},
-	)
-
+	})
+	if err != nil {
+		return err
+	}
+	return callback(data)
 }
 
 //options  0:DataId,1:Group;
-func (a *Acm) ListenConfig(ctx context.Context, configName, group string, f func(interface{})) {
-	a.client.ListenConfig(vo.ConfigParam{
-		DataId: configName,
+func (a *Acm) ListenConfig(ctx context.Context, confName, group string, callback config.Callback) error {
+	return a.client.ListenConfig(vo.ConfigParam{
+		DataId: confName,
 		Group:  group,
 		OnChange: func(namespace, group, dataId, data string) {
-			f(data)
+			callback(data)
 		},
 	})
 

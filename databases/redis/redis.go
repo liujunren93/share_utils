@@ -1,8 +1,15 @@
 package redis
 
-import re "github.com/go-redis/redis/v8"
+import (
+	"context"
+	"time"
 
-func NewRedis(conf *re.Options) *re.Client {
+	re "github.com/go-redis/redis/v8"
+)
 
-	return re.NewClient(conf)
+func NewRedis(conf *re.Options) (*re.Client, error) {
+	ctx, _ := context.WithTimeout(context.Background(), time.Second*3)
+	cli := re.NewClient(conf)
+	err := cli.Ping(ctx).Err()
+	return cli, err
 }

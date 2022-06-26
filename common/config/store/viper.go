@@ -1,4 +1,4 @@
-package config
+package store
 
 import (
 	"context"
@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/fsnotify/fsnotify"
+	"github.com/liujunren93/share_utils/common/config"
 	"github.com/spf13/viper"
 )
 
@@ -36,26 +37,28 @@ func configType(configPath string) (path, fileType, configName string) {
 
 }
 
-func (v *Viper) PublishConfig(ctx context.Context) (bool, error) {
+func (v *Viper) PublishConfig(ctx context.Context, confName, group, content string) (bool, error) {
 	panic("implement me")
 }
 
-func (v *Viper) GetConfig(ctx context.Context, dest interface{}) error {
+func (v *Viper) GetConfig(ctx context.Context, confName, group string, callback config.Callback) error {
 	//v.viper.AddConfigPath("config")
+	// v.viper.AddConfigPath("config")
 	err := v.viper.ReadInConfig()
 	if err != nil {
 		return err
 	}
-	return v.viper.Unmarshal(&dest)
+	return callback(v.viper.AllSettings())
 }
 
-func (v *Viper) ListenConfig(ctx context.Context, f func(interface{})) {
+func (v *Viper) ListenConfig(ctx context.Context, confName, group string, callback config.Callback) error {
 	v.viper.WatchConfig()
 	v.viper.OnConfigChange(func(in fsnotify.Event) {
-		f(v.viper.AllSettings())
+		callback(v.viper.AllSettings())
 	})
+	return nil
 }
 
-func (v *Viper) DeleteConfig(ctx context.Context) (bool, error) {
+func (v *Viper) DeleteConfig(ctx context.Context, confName, group string) (bool, error) {
 	panic("implement me")
 }

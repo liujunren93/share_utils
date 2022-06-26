@@ -2,30 +2,18 @@ package config
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 )
-
-type Configer interface {
-	PublishConfig(context.Context, *DataOptions) (bool, error)
-	GetConfig(context.Context, *DataOptions) (interface{}, error)
-	ListenConfig(context.Context, *DataOptions, func(interface{}))
-	DeleteConfig(context.Context, *DataOptions) (bool, error)
-}
-
-type DataOptions struct {
-	ConfigName string `json:"config_name"`
-	Group      string `json:"group"` //debug product
-	Content    string `json:"content"`
-	Path       string `json:"path"`
-	FileType   string `json:"file_type"`
-}
-
-func (opt DataOptions) String() string {
-	marshal, _ := json.Marshal(&opt)
-	return string(marshal)
-}
 
 var (
 	TypeErr = errors.New("type miss match")
 )
+
+type Callback func(interface{}) error
+
+type Configer interface {
+	PublishConfig(ctx context.Context, confName, group, content string) (bool, error)
+	GetConfig(ctx context.Context, confName, group string, callback Callback) error
+	ListenConfig(ctx context.Context, confName, group string, callback Callback) error
+	DeleteConfig(ctx context.Context, confName, group string) (bool, error)
+}

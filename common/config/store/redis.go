@@ -1,21 +1,20 @@
-package config
+package store
 
 import (
 	"context"
 	"fmt"
-	"time"
 
 	"github.com/go-redis/redis/v8"
+	"github.com/liujunren93/share_utils/common/config"
 )
 
 type Redis struct {
 	namespace string
-	timeout   time.Duration
 	redis     *redis.Client
 }
 
-func NewRedis(r *redis.Client, timeout time.Duration, namespace string) *Redis {
-	return &Redis{namespace, timeout, r}
+func NewRedis(r *redis.Client, namespace string) config.Configer {
+	return &Redis{namespace, r}
 }
 
 func (r *Redis) PublishConfig(ctx context.Context, configName, group, content string) (bool, error) {
@@ -31,22 +30,26 @@ func (r *Redis) PublishConfig(ctx context.Context, configName, group, content st
 	return true, nil
 }
 
-func (r *Redis) GetConfig(ctx context.Context, configName, group string) (interface{}, error) {
-	_, key := r.GetKey(configName, group)
-	return r.redis.Get(ctx, key).Result()
+func (r *Redis) GetConfig(ctx context.Context, confName, group string, callback config.Callback) error {
+	_, key := r.GetKey(confName, group)
+	content, err := r.redis.Get(ctx, key).Result()
+	if err != nil {
+		return err
+	}
+	return callback(content)
+
 }
 
-func (r *Redis) ListenConfig(ctx context.Context, configName, group string, f func(interface{})) {
-	tpkey, _ := r.GetKey(configName, group)
+func (r *Redis) ListenConfig(ctx context.Context, confName, group string, callback config.Callback) error {
+	tpkey, _ := r.GetKey(confName, group)
 	pubsub := r.redis.Subscribe(ctx, tpkey)
 	ch := pubsub.Channel()
-	ctx, _ = context.WithTimeout(context.Background(), r.timeout)
 	for {
 		select {
 		case data := <-ch:
-			f(data.Payload)
+			return callback(data.Payload)
 		case <-ctx.Done():
-			return
+			return nil
 		}
 
 	}
