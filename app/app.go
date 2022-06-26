@@ -10,6 +10,7 @@ import (
 	"github.com/liujunren93/share_utils/common/config/store"
 	"github.com/liujunren93/share_utils/databases/redis"
 	"github.com/liujunren93/share_utils/log"
+	"github.com/liujunren93/share_utils/middleware"
 	"github.com/mitchellh/mapstructure"
 )
 
@@ -19,6 +20,7 @@ type App struct {
 
 func (a *App) RunGw(f func(*gin.Engine) error) error {
 	eng := gin.Default()
+	eng.Use(middleware.Cors)
 	if a.LocalConf.RunMode == "debug" {
 		gin.SetMode(gin.DebugMode)
 	}
@@ -54,20 +56,19 @@ func (a *App) InitConfig(conf interface{}) {
 	}
 	if a.LocalConf.ConfCenter.Enable {
 		a.initConfCenter()
-		ctx, _ := context.WithTimeout(context.Background(), 3*time.Second)
-		err = a.Configer.GetConfig(ctx, a.LocalConf.ConfCenter.ConfName, a.LocalConf.ConfCenter.Group, DescConfig(conf))
-		if err != nil {
-			panic(err)
-		}
-
-		go func() {
-			err := a.Configer.ListenConfig(a.ctx, a.LocalConf.ConfCenter.ConfName, a.LocalConf.ConfCenter.Group, DescConfigAndCallbacks(conf, a.configMonitors))
-			if err != nil {
-				log.Logger.Error(err)
-			}
-		}()
-
 	}
+	ctx, _ := context.WithTimeout(context.Background(), 3*time.Second)
+	err = a.Configer.GetConfig(ctx, a.LocalConf.ConfCenter.ConfName, a.LocalConf.ConfCenter.Group, DescConfig(conf))
+	if err != nil {
+		panic(err)
+	}
+
+	go func() {
+		err := a.Configer.ListenConfig(a.ctx, a.LocalConf.ConfCenter.ConfName, a.LocalConf.ConfCenter.Group, DescConfigAndCallbacks(conf, a.configMonitors))
+		if err != nil {
+			log.Logger.Error(err)
+		}
+	}()
 
 }
 
