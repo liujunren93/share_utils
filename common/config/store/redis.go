@@ -47,7 +47,8 @@ func (r *Redis) ListenConfig(ctx context.Context, confName, group string, callba
 	for {
 		select {
 		case data := <-ch:
-			return callback(data.Payload)
+			callback(data.Payload)
+
 		case <-ctx.Done():
 			return nil
 		}
