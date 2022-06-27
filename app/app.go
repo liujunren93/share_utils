@@ -32,14 +32,18 @@ func (a *App) RunGw(f func(*gin.Engine) error) error {
 
 }
 
+func (a *App) RunRpc(f func() error) error {
+	panic(1)
+}
+
 func NewApp(ctx context.Context) *App {
 	return &App{
 		appConfigOption: appConfigOption{ctx: ctx},
 	}
 }
 
-func (a *App) ConfigMonitor(f func()) {
-	a.configMonitors = append(a.configMonitors, f)
+func (a *App) AddConfigMonitor(f ...func()) {
+	a.configMonitors = append(a.configMonitors, f...)
 }
 
 func (a *App) InitConfig(conf interface{}) {

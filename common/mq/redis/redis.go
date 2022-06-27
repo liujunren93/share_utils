@@ -26,6 +26,9 @@ func NewMq(client *re.Client, opts ...func(*option)) *redisMq {
 	return &redisMq{redis: client, opt: &opt}
 }
 
+func (r *redisMq) UpdateClient(client *re.Client) {
+	r.redis = client
+}
 func (r *redisMq) Publish(ctx context.Context, topic string, val interface{}) error {
 	publish := r.redis.Publish(ctx, topic, val)
 	return publish.Err()
