@@ -33,7 +33,7 @@ func (a *App) RunGw(f func(*gin.Engine) error) error {
 }
 
 func (a *App) RunRpc(f func() error) error {
-	panic(1)
+	return f()
 }
 
 func NewApp(ctx context.Context) *App {

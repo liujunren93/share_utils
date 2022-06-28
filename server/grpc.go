@@ -59,7 +59,7 @@ func (s *Server) initOpts(opts []server.Option) error {
 		opentracing.SetGlobalTracer(jaeger)
 		s.opts = append(s.opts, server.WithHdlrWrappers(opentrace.NewServerWrapper(jaeger)))
 	}
-	if s.ServerName == "" {
+	if s.ServerName != "" {
 		s.opts = append(s.opts, server.WithName(s.ServerName))
 	}
 

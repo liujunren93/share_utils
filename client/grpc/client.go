@@ -18,7 +18,6 @@ import (
 
 var (
 	openTracer    opentracing.Tracer
-	thisClient    *client.Client
 	getClientOnce sync.Once
 )
 
@@ -74,8 +73,10 @@ type OpenTrace struct {
 	OpenTrace  string
 }
 
-func (c *Client) GetShareClient(serverName string) (*client.Client, error) {
-	var shareClient *client.Client
+var shareClient *client.Client
+
+func (c *Client) GetShareClient() (*client.Client, error) {
+
 	var err error
 	getClientOnce.Do(func() {
 		// 获取share 客户端
@@ -89,18 +90,19 @@ func (c *Client) GetShareClient(serverName string) (*client.Client, error) {
 				openTracer = newJaeger
 				opentracing.SetGlobalTracer(newJaeger)
 			}
-			thisClient.AddOptions(client.WithCallWrappers(opentrace.NewClientWrapper(openTracer)))
+			shareClient.AddOptions(client.WithCallWrappers(opentrace.NewClientWrapper(openTracer)))
 		}
 		if len(c.registryAddr) != 0 {
 			r, err := etcd.NewRegistry(registry.WithAddrs(c.registryAddr...))
-			thisClient.AddOptions(client.WithRegistry(r))
 			if err != nil {
 				return
 			}
+			shareClient.AddOptions(client.WithRegistry(r))
+
 		}
 	})
 	if c.balancer != "" {
-		thisClient.AddOptions(client.WithBalancer(c.balancer))
+		shareClient.AddOptions(client.WithBalancer(c.balancer))
 	}
 
 	shareClient.AddOptions(client.WithGrpcDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())))
