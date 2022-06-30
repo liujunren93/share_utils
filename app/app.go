@@ -7,10 +7,12 @@ import (
 
 	"github.com/gin-gonic/gin"
 	re "github.com/go-redis/redis/v8"
+	"github.com/liujunren93/share/server"
 	"github.com/liujunren93/share_utils/common/config/store"
 	"github.com/liujunren93/share_utils/databases/redis"
 	"github.com/liujunren93/share_utils/log"
 	"github.com/liujunren93/share_utils/middleware"
+	utilsServer "github.com/liujunren93/share_utils/server"
 	"github.com/mitchellh/mapstructure"
 )
 
@@ -32,8 +34,14 @@ func (a *App) RunGw(f func(*gin.Engine) error) error {
 
 }
 
-func (a *App) RunRpc(f func() error) error {
-	return f()
+func (a *App) RunRpc(registryAddr []string, f func(ser *server.GrpcServer) error) error {
+	s := utilsServer.Server{Address: a.LocalConf.HttpHost, Mode: a.LocalConf.RunMode, ServerName: a.LocalConf.AppName}
+	s.RegistryAddr = registryAddr
+	gs, err := s.NewServer()
+	if err != nil {
+		return err
+	}
+	return f(gs)
 }
 
 func NewApp(ctx context.Context) *App {

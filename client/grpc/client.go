@@ -41,14 +41,20 @@ func NewClient(opts ...option) *Client {
 }
 
 func WithBuildTargetFunc(buildTargetFunc client.BuildTargetFunc) option {
+
 	return func(c *Client) {
-		c.buildTargetFunc = buildTargetFunc
+		if buildTargetFunc != nil {
+			c.buildTargetFunc = buildTargetFunc
+		}
 	}
 }
 
 func WithEtcdAddr(addrs ...string) option {
 	return func(c *Client) {
-		c.registryAddr = addrs
+		if len(addrs) > 0 {
+			c.registryAddr = addrs
+		}
+
 	}
 }
 func WithOpenTrace(openTrace OpenTrace) option {
@@ -59,7 +65,10 @@ func WithOpenTrace(openTrace OpenTrace) option {
 
 func WithNamespace(namespace string) option {
 	return func(c *Client) {
-		c.namespace = namespace
+		if len(namespace) > 0 {
+			c.namespace = namespace
+		}
+
 	}
 }
 func WithBalancer(balancer string) option {
@@ -80,7 +89,10 @@ func (c *Client) GetShareClient() (*client.Client, error) {
 	var err error
 	getClientOnce.Do(func() {
 		// 获取share 客户端
-		shareClient = client.NewClient(client.WithNamespace(c.namespace), client.WithBuildTargetFunc(c.buildTargetFunc))
+		shareClient = client.NewClient(client.WithBuildTargetFunc(c.buildTargetFunc))
+		if len(c.namespace) > 0 {
+			shareClient.AddOptions(client.WithNamespace(c.namespace))
+		}
 		if len(c.openTrace.OpenTrace) != 0 {
 			newJaeger, _, err := openJaeger.NewJaeger(c.openTrace.ClientName, c.openTrace.OpenTrace)
 			if err != nil {
