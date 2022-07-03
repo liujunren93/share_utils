@@ -3,30 +3,38 @@ package log
 import (
 	"fmt"
 	"path"
+	"strings"
+	"time"
 
+	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	"github.com/sirupsen/logrus"
 )
 
 var Logger *logrus.Logger
 
 func init() {
-	if Logger == nil {
-		Logger = logrus.New()
-		Logger.SetReportCaller(true)
-		//Logger.SetFormatter(&logrus.TextFormatter{
-		//	FullTimestamp:   true,
-		//	DisableColors:true,
-		//	TimestampFormat:"2006-01-02 15:04:05",
-		//	CallerPrettyfier: func(frame *runtime.Frame) (function string, file string) {
-		//		//处理文件名
-		//		fileName := path.Base(frame.File)
-		//		return frame.Function, fileName
-		//	},
-		//
-		//})
-		Logger.AddHook(new(TestHook))
-		Logger.SetFormatter(&logrus.TextFormatter{})
+	Logger = logrus.New()
+}
+
+func Init(conf *Config) {
+	Logger.SetReportCaller(conf.SetReportCaller)
+	Logger.SetLevel(levelMap[strings.ToLower(conf.Level)])
+	Logger.AddHook(new(TestHook))
+	Logger.SetFormatter(&logrus.JSONFormatter{})
+	if !conf.Debug {
+		rotatelog, err := rotatelogs.New(
+			conf.Rotate.LogFile+".%Y%m%d%H%M",
+			rotatelogs.WithLocation(time.Local),
+			rotatelogs.WithLinkName(conf.Rotate.LogFile),
+			rotatelogs.WithMaxAge(conf.Rotate.MaxAge*time.Second),
+			rotatelogs.WithRotationTime(conf.Rotate.RotationTime*time.Second),
+		)
+		if err != nil {
+			panic("init logrus rotatelogs err" + err.Error())
+		}
+		Logger.SetOutput(rotatelog)
 	}
+
 }
 
 type TestHook struct {

@@ -1,19 +1,30 @@
-package app
+package config
 
 import (
-	"context"
 	"encoding/json"
 
+	"github.com/liujunren93/share_utils/app/config/entity"
 	"github.com/liujunren93/share_utils/common/config"
-	"github.com/liujunren93/share_utils/common/config/entity"
 	"github.com/mitchellh/mapstructure"
 )
 
-type appConfigOption struct {
-	LocalConf      entity.LocalBase
-	Configer       config.Configer
-	ctx            context.Context
-	configMonitors []func()
+var monitors []func()
+
+func InitRegistryMonitor() chan func() {
+	var monitorsCh = make(chan func())
+	go func() {
+		for f := range monitorsCh {
+			monitors = append(monitors, f)
+		}
+	}()
+	return monitorsCh
+
+}
+
+type AppConfigOption struct {
+	LocalConf *entity.LocalBase
+	Configer  config.Configer
+	Conf      *entity.Config
 }
 
 func DescConfig(desc interface{}) config.Callback {
@@ -22,13 +33,13 @@ func DescConfig(desc interface{}) config.Callback {
 	}
 }
 
-func DescConfigAndCallbacks(desc interface{}, callbacks []func()) config.Callback {
+func DescConfigAndCallbacks(desc interface{}) config.Callback {
 	return func(content interface{}) error {
 		err := decode(content, desc)
 		if err != nil {
 			return err
 		}
-		for _, callback := range callbacks {
+		for _, callback := range monitors {
 			callback()
 		}
 		return nil

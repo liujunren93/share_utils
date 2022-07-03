@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/liujunren93/share_utils/log"
+
 	"github.com/go-redis/redis/v8"
 	"github.com/liujunren93/share_utils/common/config"
 )
@@ -47,6 +49,7 @@ func (r *Redis) ListenConfig(ctx context.Context, confName, group string, callba
 	for {
 		select {
 		case data := <-ch:
+			log.Logger.Info("config update", data.Payload)
 			callback(data.Payload)
 
 		case <-ctx.Done():
