@@ -15,12 +15,12 @@ type Viper struct {
 }
 
 func NewViper(filePath string) *Viper {
-	path, fileType, configName := configType(filePath)
+
 	var v Viper
 	v.viper = viper.New()
-	v.viper.AddConfigPath(path)
-	v.viper.SetConfigType(fileType)
-	v.viper.SetConfigName(configName)
+	v.viper.AddConfigPath(filePath)
+	// v.viper.SetConfigType(fileType)
+	// v.viper.SetConfigName(configName)
 	return &v
 }
 func configType(configPath string) (path, fileType, configName string) {
@@ -41,20 +41,20 @@ func (v *Viper) PublishConfig(ctx context.Context, confName, group, content stri
 	panic("implement me")
 }
 
-func (v *Viper) GetConfig(ctx context.Context, confName, group string, callback config.Callback) error {
-	//v.viper.AddConfigPath("config")
-	// v.viper.AddConfigPath("config")
+func (v *Viper) GetConfig(ctx context.Context, fileType, fileName string, callback config.Callback) error {
+	v.viper.SetConfigType(fileType)
+	v.viper.SetConfigName(fileName)
 	err := v.viper.ReadInConfig()
 	if err != nil {
 		return err
 	}
-	return callback(v.viper.AllSettings())
+	return callback(fileType, fileName, v.viper.AllSettings())
 }
 
-func (v *Viper) ListenConfig(ctx context.Context, confName, group string, callback config.Callback) error {
+func (v *Viper) ListenConfig(ctx context.Context, fileType, fileName string, callback config.Callback) error {
 	v.viper.WatchConfig()
 	v.viper.OnConfigChange(func(in fsnotify.Event) {
-		callback(v.viper.AllSettings())
+		callback(fileType, fileName, v.viper.AllSettings())
 	})
 	return nil
 }

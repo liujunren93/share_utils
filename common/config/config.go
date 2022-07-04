@@ -9,7 +9,7 @@ var (
 	TypeErr = errors.New("type miss match")
 )
 
-type Callback func(interface{}) error
+type Callback func(confName, group string, configContent interface{}) error
 
 type Configer interface {
 	PublishConfig(ctx context.Context, confName, group, content string) (bool, error)

@@ -38,7 +38,7 @@ func (r *Redis) GetConfig(ctx context.Context, confName, group string, callback 
 	if err != nil {
 		return err
 	}
-	return callback(content)
+	return callback(confName, group, content)
 
 }
 
@@ -50,7 +50,7 @@ func (r *Redis) ListenConfig(ctx context.Context, confName, group string, callba
 		select {
 		case data := <-ch:
 			log.Logger.Info("config update", data.Payload)
-			callback(data.Payload)
+			callback(confName, group, data.Payload)
 
 		case <-ctx.Done():
 			return nil

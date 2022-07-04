@@ -63,7 +63,7 @@ func (a *Acm) GetConfig(ctx context.Context, confName, group string, callback co
 	if err != nil {
 		return err
 	}
-	return callback(data)
+	return callback(confName, group, data)
 }
 
 //options  0:DataId,1:Group;
@@ -72,7 +72,7 @@ func (a *Acm) ListenConfig(ctx context.Context, confName, group string, callback
 		DataId: confName,
 		Group:  group,
 		OnChange: func(namespace, group, dataId, data string) {
-			callback(data)
+			callback(confName, group, data)
 		},
 	})
 

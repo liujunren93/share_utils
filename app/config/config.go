@@ -8,13 +8,22 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
-var monitors []func()
+var monitorMap = make(map[string][]func())
 
-func InitRegistryMonitor() chan func() {
-	var monitorsCh = make(chan func())
+type Monitor struct {
+	ConfName string
+	Callback func()
+}
+
+func NewMonitor(confName, group string, callback func()) *Monitor {
+	return &Monitor{confName + group, callback}
+}
+
+func InitRegistryMonitor() chan *Monitor {
+	var monitorsCh = make(chan *Monitor)
 	go func() {
-		for f := range monitorsCh {
-			monitors = append(monitors, f)
+		for mo := range monitorsCh {
+			monitorMap[mo.ConfName] = append(monitorMap[mo.ConfName], mo.Callback)
 		}
 	}()
 	return monitorsCh
@@ -23,23 +32,24 @@ func InitRegistryMonitor() chan func() {
 
 type AppConfigOption struct {
 	LocalConf *entity.LocalBase
-	Configer  config.Configer
-	Conf      *entity.Config
+	Cloud     config.Configer
+	Local     config.Configer
+	BaseConf  *entity.Config
 }
 
 func DescConfig(desc interface{}) config.Callback {
-	return func(content interface{}) error {
+	return func(confName, group string, content interface{}) error {
 		return decode(content, desc)
 	}
 }
 
 func DescConfigAndCallbacks(desc interface{}) config.Callback {
-	return func(content interface{}) error {
+	return func(confName, group string, content interface{}) error {
 		err := decode(content, desc)
 		if err != nil {
 			return err
 		}
-		for _, callback := range monitors {
+		for _, callback := range monitorMap[confName+group] {
 			callback()
 		}
 		return nil
