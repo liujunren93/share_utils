@@ -15,13 +15,16 @@ var Logger *logrus.Logger
 func init() {
 	Logger = logrus.New()
 }
+func Upgrade(conf *Config) {
+	Init(conf)
+}
 
 func Init(conf *Config) {
 	Logger.SetReportCaller(conf.SetReportCaller)
 	Logger.SetLevel(levelMap[strings.ToLower(conf.Level)])
 	Logger.AddHook(new(TestHook))
 	Logger.SetFormatter(&logrus.JSONFormatter{})
-	if !conf.Debug {
+	if !conf.Debug && conf.Rotate != nil {
 		rotatelog, err := rotatelogs.New(
 			conf.Rotate.LogFile+".%Y%m%d%H%M",
 			rotatelogs.WithLocation(time.Local),
@@ -33,6 +36,7 @@ func Init(conf *Config) {
 			panic("init logrus rotatelogs err" + err.Error())
 		}
 		Logger.SetOutput(rotatelog)
+
 	}
 
 }

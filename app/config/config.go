@@ -3,7 +3,6 @@ package config
 import (
 	"encoding/json"
 
-	"github.com/liujunren93/share_utils/app/config/entity"
 	"github.com/liujunren93/share_utils/common/config"
 	"github.com/mitchellh/mapstructure"
 )
@@ -28,13 +27,6 @@ func InitRegistryMonitor() chan *Monitor {
 	}()
 	return monitorsCh
 
-}
-
-type AppConfigOption struct {
-	LocalConf *entity.LocalBase
-	Cloud     config.Configer
-	Local     config.Configer
-	BaseConf  *entity.Config
 }
 
 func DescConfig(desc interface{}) config.Callback {

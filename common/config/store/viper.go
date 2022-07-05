@@ -14,14 +14,14 @@ type Viper struct {
 	viper *viper.Viper
 }
 
-func NewViper(filePath string) *Viper {
-
-	var v Viper
+func NewViper(filePath string) (v *Viper, fileType, confname string) {
+	path, fileType, configName := configType(filePath)
+	v = new(Viper)
 	v.viper = viper.New()
-	v.viper.AddConfigPath(filePath)
+	v.viper.AddConfigPath(path)
 	// v.viper.SetConfigType(fileType)
 	// v.viper.SetConfigName(configName)
-	return &v
+	return v, fileType, configName
 }
 func configType(configPath string) (path, fileType, configName string) {
 	fileExt := strings.ToLower(filepath.Ext(configPath))

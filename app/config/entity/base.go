@@ -10,6 +10,7 @@ import (
 type ConfMap map[string]interface{}
 
 var DefaultConfig = Config{
+	Version: 0,
 	Log: &log.Config{
 		Debug:           false,
 		SetReportCaller: true,
@@ -38,6 +39,7 @@ func (c *ConfigCenter) ToConfig(dest interface{}) error {
 }
 
 type Config struct {
+	Version  int8           `json:"version" yaml:"version"` //配置版本
 	Log      *log.Config    `json:"log" yaml:"log"`
 	Redis    *redis.Options `json:"redis" yaml:"redis"`
 	Mysql    *gorm.Mysql    `json:"mysql" yaml:"mysql"`

@@ -37,7 +37,12 @@ type Remote struct {
 }
 
 var defaultConfig = Config{
-	Debug:           true,
+	Debug:           false,
 	SetReportCaller: true,
 	Level:           "debug",
+	Rotate: &Rotate{
+		LogFile:      "./log/log.json",
+		MaxAge:       86400 * 30,
+		RotationTime: 86400,
+	},
 }
