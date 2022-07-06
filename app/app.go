@@ -148,7 +148,7 @@ func (a *App) initConfCenter() {
 		if err != nil {
 			panic(err)
 		}
-		a.Cloud = store.NewRedis(client, a.LocalConf.NameSpace)
+		a.Cloud = store.NewRedis(client, a.LocalConf.Namespace)
 	}
 }
 
@@ -194,11 +194,18 @@ func (a *App) RunGw(f func(*gin.Engine) error) error {
 }
 
 func (a *App) RunRpc(registryAddr []string, f func(ser *server.GrpcServer) error) error {
-	s := utilsServer.Server{Address: a.LocalConf.HttpHost, Mode: a.LocalConf.RunMode, ServerName: a.LocalConf.AppName}
+	s := utilsServer.Server{Address: a.LocalConf.HttpHost, Mode: a.LocalConf.RunMode, Namespace: a.LocalConf.Namespace, ServerName: a.LocalConf.AppName}
 	s.RegistryAddr = registryAddr
 	gs, err := s.NewServer()
 	if err != nil {
+		log.Logger.Error(err)
 		return err
 	}
-	return f(gs)
+	err = f(gs)
+	if err != nil {
+		log.Logger.Error(err)
+		return err
+	}
+	return gs.Run()
+
 }

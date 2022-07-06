@@ -20,7 +20,7 @@ var DefaultConfig = Config{
 
 type LocalBase struct {
 	AppName    string       `mapstructure:"app_name"`
-	NameSpace  string       `mapstructure:"namespace"`
+	Namespace  string       `mapstructure:"namespace"`
 	ConfCenter ConfigCenter `mapstructure:"conf_center"` //redis etcd
 	RunMode    string       `mapstructure:"run_mode"`    //debug product
 	HttpHost   string       `mapstructure:"http_host"`
