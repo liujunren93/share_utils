@@ -19,6 +19,7 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/nacos-group/nacos-sdk-go v1.1.1
 	github.com/opentracing/opentracing-go v1.2.0
+	github.com/sharelife-china/share_proto v0.0.0-20220706102600-7117b612cf1d
 	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/viper v1.12.0
 	github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common v1.0.431

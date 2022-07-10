@@ -3,6 +3,8 @@ package config
 import (
 	"encoding/json"
 
+	"github.com/liujunren93/share_utils/log"
+
 	"github.com/liujunren93/share_utils/common/config"
 	"github.com/mitchellh/mapstructure"
 )
@@ -22,6 +24,7 @@ func InitRegistryMonitor() chan *Monitor {
 	var monitorsCh = make(chan *Monitor)
 	go func() {
 		for mo := range monitorsCh {
+			log.Logger.Debug("InitRegistryMonitor", mo.ConfName)
 			monitorMap[mo.ConfName] = append(monitorMap[mo.ConfName], mo.Callback)
 		}
 	}()

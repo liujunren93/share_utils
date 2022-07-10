@@ -2,6 +2,7 @@ package errors
 
 import (
 	"fmt"
+	"strings"
 )
 
 type Error interface {
@@ -10,19 +11,19 @@ type Error interface {
 	error
 }
 
-type myError struct {
+type ShError struct {
 	code Status
 	msg  string
 }
 
-func (e myError) GetCode() int32 {
+func (e ShError) GetCode() int32 {
 	return int32(e.code)
 }
-func (e myError) GetMsg() string {
+func (e ShError) GetMsg() string {
 	return e.msg
 }
 
-func (e myError) Error() string {
+func (e ShError) Error() string {
 	return fmt.Sprintf("code:%d,msg:%s", e.code, e.msg)
 }
 
@@ -31,7 +32,7 @@ func NewDBNoData(msg string) Error {
 	if msg == "" {
 		msg = StatusDBNotFound.GetMsg()
 	}
-	return myError{
+	return ShError{
 		code: StatusDBNotFound,
 		msg:  msg,
 	}
@@ -40,7 +41,7 @@ func NewDBNoData(msg string) Error {
 //数据重复 420
 func NewDBDuplication(key string) Error {
 
-	return myError{
+	return ShError{
 		code: StatusDBDuplication,
 		msg:  StatusDBDuplication.GetMsg() + " for " + key,
 	}
@@ -48,7 +49,7 @@ func NewDBDuplication(key string) Error {
 
 func NewDBInternal(err error) Error {
 
-	m := myError{
+	m := ShError{
 		code: StatusDBInternalErr,
 		msg:  StatusDBInternalErr.GetMsg(),
 	}
@@ -63,7 +64,7 @@ func NewUnauthorized(msg string) Error {
 	if msg == "" {
 		msg = StatusUnauthorized.GetMsg()
 	}
-	return myError{
+	return ShError{
 		code: StatusUnauthorized,
 		msg:  msg,
 	}
@@ -75,7 +76,7 @@ func NewForbidden(msg string) Error {
 	if msg == "" {
 		msg = StatusForbidden.GetMsg()
 	}
-	return myError{
+	return ShError{
 		code: StatusForbidden,
 		msg:  msg,
 	}
@@ -83,7 +84,7 @@ func NewForbidden(msg string) Error {
 
 //未知错误 5000
 func NewInternalError() Error {
-	return &myError{
+	return &ShError{
 		code: StatusInternalServerError,
 		msg:  StatusInternalServerError.GetMsg(),
 	}
@@ -96,7 +97,7 @@ func InternalErrorMsg(err interface{}) Error {
 	if er, ok := err.(string); ok {
 		msg = er
 	}
-	return myError{
+	return ShError{
 		code: StatusInternalServerError,
 		msg:  msg,
 	}
@@ -107,7 +108,7 @@ func NewBadRequest(msg string) Error {
 	if msg == "" {
 		msg = StatusBadRequest.GetMsg()
 	}
-	return myError{
+	return ShError{
 		code: StatusBadRequest,
 		msg:  msg,
 	}
@@ -115,5 +116,33 @@ func NewBadRequest(msg string) Error {
 
 //database
 func New(code Status, err string) Error {
-	return myError{code: code, msg: err}
+	return ShError{code: code, msg: err}
+}
+
+type ShErrors struct {
+	code Status
+	Errs []Error
+}
+
+func (e ShErrors) GetCode() int32 {
+	return int32(e.code)
+}
+func (e ShErrors) GetMsg() string {
+	return e.Error()
+}
+
+func (e ShErrors) Error() string {
+	var b = strings.Builder{}
+	for _, e := range e.Errs {
+		b.WriteString(e.Error())
+	}
+	return b.String()
+}
+
+func (e *ShErrors) AddErr(code Status, err string) {
+	e.Errs = append(e.Errs, New(code, err))
+}
+
+func NewS(code Status) ShErrors {
+	return ShErrors{}
 }

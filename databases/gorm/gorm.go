@@ -18,7 +18,7 @@ type Base struct {
 }
 
 type Mysql struct {
-	LogMode         bool   `json:"log_mode"`
+	Debug           bool   `json:"debug"`
 	Host            string `json:"host"`
 	User            string `json:"user"`
 	Password        string `json:"password"`
@@ -58,7 +58,7 @@ func NewMysql(basConf *Mysql, conf *gorm.Config) (*gorm.DB, error) {
 	}
 	db.SetConnMaxLifetime(time.Duration(basConf.ConnMaxLifeTime) * time.Second)
 	db.SetMaxOpenConns(basConf.MaxOpenConns)
-	if basConf.LogMode {
+	if basConf.Debug {
 		open = open.Debug()
 	}
 

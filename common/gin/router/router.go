@@ -12,14 +12,16 @@ const WHITE_PREFIX = "White"
 
 var whiteMap = make(map[string][]string)
 
-type RouterGroup struct {
+type Router struct {
+	Engine       *gin.Engine
 	group        *gin.RouterGroup
 	relativePath string
 }
 
-func NewRouterGroup(irouter *gin.RouterGroup) RouterGroup {
-	return RouterGroup{
-		group: irouter,
+func NewRouter(eng *gin.Engine) Router {
+	return Router{
+		Engine: eng,
+		group:  eng.Group(""),
 	}
 
 }
@@ -41,7 +43,7 @@ func InWhitelist(ctx *gin.Context, table string) bool {
 
 //White set WhiteList
 // prefix:White
-func (g RouterGroup) White(table string) RouterGroup {
+func (g Router) White(table string) Router {
 	g.group.BasePath()
 	var rPath string
 
@@ -51,91 +53,97 @@ func (g RouterGroup) White(table string) RouterGroup {
 	return g
 }
 
-func (g RouterGroup) Use(ms ...gin.HandlerFunc) RouterGroup {
+func (g Router) Use(ms ...gin.HandlerFunc) Router {
 	g.group.Use(ms...)
 	return g
 
 }
 
-func (g RouterGroup) Handle(httpMethod, relativePath string, handlers ...gin.HandlerFunc) RouterGroup {
+func (g Router) Handle(httpMethod, relativePath string, handlers ...gin.HandlerFunc) Router {
 	g.group.Handle(httpMethod, relativePath, handlers...)
 	g.relativePath = relativePath
 	return g
 }
 
-func (g RouterGroup) Any(relativePath string, handlers ...gin.HandlerFunc) RouterGroup {
+func (g Router) Any(relativePath string, handlers ...gin.HandlerFunc) Router {
 	g.group.Any(relativePath, handlers...)
 	g.relativePath = relativePath
 	return g
 }
 
-func (g RouterGroup) GET(relativePath string, handlers ...gin.HandlerFunc) RouterGroup {
+func (g Router) GET(relativePath string, handlers ...gin.HandlerFunc) Router {
 	g.group.GET(relativePath, handlers...)
 	g.relativePath = relativePath
 	return g
 }
 
-func (g RouterGroup) POST(relativePath string, handlers ...gin.HandlerFunc) RouterGroup {
+func (g Router) POST(relativePath string, handlers ...gin.HandlerFunc) Router {
 	g.group.POST(relativePath, handlers...)
 	g.relativePath = relativePath
 	return g
 }
 
-func (g RouterGroup) DELETE(relativePath string, handlers ...gin.HandlerFunc) RouterGroup {
+func (g Router) DELETE(relativePath string, handlers ...gin.HandlerFunc) Router {
 	g.group.DELETE(relativePath, handlers...)
 	g.relativePath = relativePath
 	return g
 }
 
-func (g RouterGroup) PATCH(relativePath string, handlers ...gin.HandlerFunc) RouterGroup {
+func (g Router) PATCH(relativePath string, handlers ...gin.HandlerFunc) Router {
 	g.group.PATCH(relativePath, handlers...)
 	g.relativePath = relativePath
 	return g
 }
 
-func (g RouterGroup) PUT(relativePath string, handlers ...gin.HandlerFunc) RouterGroup {
+func (g Router) PUT(relativePath string, handlers ...gin.HandlerFunc) Router {
 	g.group.PUT(relativePath, handlers...)
 	g.relativePath = relativePath
 	return g
 }
 
-func (g RouterGroup) OPTIONS(relativePath string, handlers ...gin.HandlerFunc) RouterGroup {
+func (g Router) NoRoute(handlers ...gin.HandlerFunc) {
+	groupHandler := g.group.Handlers
+	handlers = append(groupHandler, handlers...)
+	g.Engine.NoRoute(handlers...)
+}
+
+func (g Router) OPTIONS(relativePath string, handlers ...gin.HandlerFunc) Router {
 	g.group.OPTIONS(relativePath, handlers...)
 	g.relativePath = relativePath
 	return g
 }
 
-func (g RouterGroup) HEAD(relativePath string, handlers ...gin.HandlerFunc) RouterGroup {
+func (g Router) HEAD(relativePath string, handlers ...gin.HandlerFunc) Router {
 	g.group.Any(relativePath, handlers...)
 	g.relativePath = relativePath
 	return g
 }
 
-func (g RouterGroup) StaticFile(relativePath, filepath string) RouterGroup {
+func (g Router) StaticFile(relativePath, filepath string) Router {
 	g.group.StaticFile(relativePath, filepath)
 	g.relativePath = relativePath
 	return g
 }
 
-func (g RouterGroup) StaticFileFS(relativePath, filepath string, fs http.FileSystem) RouterGroup {
+func (g Router) StaticFileFS(relativePath, filepath string, fs http.FileSystem) Router {
 	g.group.StaticFileFS(relativePath, filepath, fs)
 	g.relativePath = relativePath
 	return g
 }
 
-func (g RouterGroup) Static(relativePath, root string) RouterGroup {
+func (g Router) Static(relativePath, root string) Router {
 	g.group.Static(relativePath, root)
 	g.relativePath = relativePath
 	return g
 }
 
-func (g RouterGroup) StaticFS(relativePath string, fs http.FileSystem) RouterGroup {
+func (g Router) StaticFS(relativePath string, fs http.FileSystem) Router {
 	g.group.StaticFS(relativePath, fs)
 	g.relativePath = relativePath
 	return g
 }
 
-func (g RouterGroup) Group(relativePath string, handlers ...gin.HandlerFunc) RouterGroup {
+func (g Router) Group(relativePath string, handlers ...gin.HandlerFunc) Router {
 	g.group = g.group.Group(relativePath, handlers...)
 	g.relativePath = ""
 	return g
