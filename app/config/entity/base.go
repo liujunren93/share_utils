@@ -24,6 +24,7 @@ type LocalBase struct {
 	ConfCenter ConfigCenter `mapstructure:"conf_center"` //redis etcd
 	RunMode    string       `mapstructure:"run_mode"`    //debug product
 	HttpHost   string       `mapstructure:"http_host"`
+	PluginPath string       `json:"plugin_path" yaml:"plugin_path"`
 }
 
 type ConfigCenter struct {
