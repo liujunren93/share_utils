@@ -16,6 +16,7 @@ import (
 	"github.com/liujunren93/share_utils/client/grpc"
 	cfg "github.com/liujunren93/share_utils/common/config"
 	"github.com/liujunren93/share_utils/common/config/store"
+	shareRouter "github.com/liujunren93/share_utils/common/gin/router"
 	"github.com/liujunren93/share_utils/databases/redis"
 	"github.com/liujunren93/share_utils/log"
 	"github.com/liujunren93/share_utils/middleware"
@@ -51,6 +52,7 @@ type App struct {
 	shareGrpcClient  *client.Client
 	monitorsCh       chan *config.Monitor
 	localMonitorOnce *sync.Once
+	plugin           *plugin
 }
 
 func NewApp(ctx context.Context) *App {
@@ -111,6 +113,8 @@ func (a *App) initConfig() {
 	if err != nil {
 		panic(err)
 	}
+	fmt.Printf("local config:%+v", a.LocalConf)
+
 	if a.LocalConf.ConfCenter.Enable {
 		a.initConfCenter()
 	}
@@ -180,15 +184,21 @@ func (a *App) GetGrpcClient(targetUrl string) (*client.Client, error) {
 
 }
 
-func (a *App) RunGw(f func(*gin.Engine) error) error {
+func (a *App) RunGw(f func(*gin.Engine) (shareRouter.Router, error)) error {
 	eng := gin.Default()
 	eng.Use(middleware.Cors)
 	if a.LocalConf.RunMode == "debug" {
 		gin.SetMode(gin.DebugMode)
 	}
-	err := f(eng)
+	router, err := f(eng)
 	if err != nil {
 		return err
+	}
+	if a.LocalConf.PluginPath != "" {
+		a.initPlugins()
+	}
+	if a.LocalConf.EnableAutoRoute {
+		a.AutoRoute(router)
 	}
 	return eng.Run(a.LocalConf.HttpHost)
 }

@@ -15,35 +15,57 @@ const (
 	PLUGIN_METHOD_PREPARE = "Prepare"
 )
 
-type nameFunc func() string
-type PrepareFunc func(ctx *gin.Context, method string) (req, res interface{}, err error)
+type ShPlugin struct {
+	Plugin     *plugin.Plugin
+	ServerName string
+	PluginName string
+}
 
-func OpenPlugin(pluginPath string) (p *plugin.Plugin, pluginName string, err error) {
-	p, err = plugin.Open(pluginPath)
+func OpenPlugin(pluginPath string) (sp *ShPlugin, err error) {
+	sp = new(ShPlugin)
+	p, err := plugin.Open(pluginPath)
 	if err != nil {
-		return nil, "", err
+		return
 	}
+	sp.Plugin = p
 	sym, err := p.Lookup(PLUGIN_METHOD_NAME)
 	if err != nil {
-		return nil, "", err
+		return
 	}
-	if f, ok := sym.(func() string); ok {
-		pluginName = f()
+	if f, ok := sym.(func() (serverName, pluginName string)); ok {
+		sp.ServerName, sp.PluginName = f()
+
 	} else {
-		return nil, "", errors.New("The name function of this plugin is not 'func() string'")
+		err = errors.New("The name function of this plugin is not 'func() string'")
 	}
 	return
 }
 
-//reqPath plugin/server/mehod
-//mehod=plugin.server/mehod
-func ParesRequest(reqPath, urlPrefix string) (plugin, server, method string) {
-	reqPath = strings.TrimLeft(strings.TrimLeft(reqPath, "/"), urlPrefix)
-	reqPath = path.Clean(reqPath)
+//reqPath /plugin/server/mehod
+//mehod=/plugin.server/mehod
+func ParesRequest(ctx *gin.Context, urlPrefix string) (pluginName, method string, err error) {
+	reqPath := strings.TrimLeft(path.Clean(ctx.Request.URL.Path), urlPrefix)
 	req := strings.Split(reqPath, "/")
+	fmt.Println("ParesRequest", req)
+	if len(req) != 4 {
+		err = errors.New("the request url is not autoRoute")
+		return
+	}
 	fmt.Println(req)
-	plugin = req[0]
-	server = req[0] + "." + req[1]
-	method = req[0] + "." + req[1] + "/" + req[2]
+	pluginName = req[1]
+	method = "/" + req[1] + "." + req[2] + "/" + req[3]
 	return
+}
+
+func (p *ShPlugin) Prepare(ctx *gin.Context, method string) (req, res interface{}, err error) {
+	symbol, err := p.Plugin.Lookup(PLUGIN_METHOD_PREPARE)
+	if err != nil {
+		return
+	}
+	f, ok := symbol.(func(ctx *gin.Context, method string) (req, res interface{}, err error))
+	if !ok {
+		err = errors.New("The Prepare function of this plugin is not 'func(ctx *gin.Context, method string) (req, res interface{}, err error)'")
+		return
+	}
+	return f(ctx, method)
 }
