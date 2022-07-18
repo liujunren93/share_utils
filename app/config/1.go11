@@ -2,34 +2,29 @@ package config
 
 import (
 	"encoding/json"
-	"fmt"
-	"reflect"
 
-	"github.com/liujunren93/share_utils/helper"
 	"github.com/liujunren93/share_utils/log"
 
 	"github.com/liujunren93/share_utils/common/config"
 	"github.com/mitchellh/mapstructure"
 )
 
-var monitorMap = make(map[string][]CallbackObj)
+var monitorMap = make(map[string][]func())
 
 type Monitor struct {
 	ConfName string
-	Callback CallbackObj
+	Obj      string
+	Callback func()
 }
 
-type CallbackObj struct {
-	field    string // 字段名
-	sha      string
-	callback func()
+type Callback struct {
+	Obj string
+	sha string
+	
 }
 
-func NewMonitor(confName, group, field string, callback func()) *Monitor {
-	return &Monitor{confName + group, CallbackObj{
-		field:    field,
-		callback: callback,
-	}}
+func NewMonitor(confName, group, obj string, callback func()) *Monitor {
+	return &Monitor{confName + group, obj, callback}
 }
 
 func InitRegistryMonitor() chan *Monitor {
@@ -56,19 +51,8 @@ func DescConfigAndCallbacks(desc interface{}) config.Callback {
 		if err != nil {
 			return err
 		}
-		vf := reflect.ValueOf(desc).Elem()
-		for k, c := range monitorMap[confName+group] {
-			f := vf.FieldByName(c.field)
-			sha, err := helper.Sha1Interface(f.Interface())
-			if err != nil {
-				fmt.Println(err)
-				log.Logger.Error("DescConfigAndCallbacks.Sha1Interface", err, vf.FieldByName(c.field).Interface())
-				continue
-			}
-			if sha != c.sha {
-				monitorMap[confName+group][k].sha = sha
-				c.callback()
-			}
+		for _, callback := range monitorMap[confName+group] {
+			callback()
 		}
 		return nil
 	}
