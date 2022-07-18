@@ -7,7 +7,7 @@ var proto string
 
 func init() {
 	flag.StringVar(&mode, "m", "", "go mod name")
-	flag.StringVar(&proto, "p", "", "proto file")
+	// flag.StringVar(&proto, "p", "", "proto file")
 }
 
 func main() {

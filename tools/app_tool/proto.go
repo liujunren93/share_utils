@@ -94,5 +94,6 @@ func GetSerName(buf []byte) string {
 }
 
 func GetSerFunc(buf []byte) string {
+	//  rpc List(ConfigListReq)returns(proto.DefaultRes);
 	strings.Replace(s string, old string, new string, n int)
 }

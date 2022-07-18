@@ -13,10 +13,6 @@ type jwtAuth struct {
 	options auth.TokenOptions
 }
 
-func (j *jwtAuth) String() string {
-	return j.options.Secret
-}
-
 func NewAuth(option ...auth.TokenOption) auth.Auther {
 	jAuth := new(jwtAuth)
 	op := auth.NewOption(option...)

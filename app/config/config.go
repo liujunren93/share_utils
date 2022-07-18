@@ -2,7 +2,6 @@ package config
 
 import (
 	"encoding/json"
-	"fmt"
 	"reflect"
 
 	"github.com/liujunren93/share_utils/helper"
@@ -61,7 +60,6 @@ func DescConfigAndCallbacks(desc interface{}) config.Callback {
 			f := vf.FieldByName(c.field)
 			sha, err := helper.Sha1Interface(f.Interface())
 			if err != nil {
-				fmt.Println(err)
 				log.Logger.Error("DescConfigAndCallbacks.Sha1Interface", err, vf.FieldByName(c.field).Interface())
 				continue
 			}
