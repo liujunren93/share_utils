@@ -13,6 +13,7 @@ const WHITE_PREFIX = "White"
 var whiteMap = make(map[string][]string)
 
 type Router struct {
+	IsGroup      bool
 	Engine       *gin.Engine
 	group        *gin.RouterGroup
 	relativePath string
@@ -44,10 +45,11 @@ func InWhitelist(ctx *gin.Context, table string) bool {
 //White set WhiteList
 // prefix:White
 func (g Router) White(table string) Router {
-	g.group.BasePath()
-	var rPath string
 
-	rPath = g.group.BasePath() + "////" + g.relativePath
+	rPath := g.group.BasePath()
+	if !g.IsGroup {
+		rPath += "/" + g.relativePath
+	}
 	rPath = path.Clean(rPath)
 	whiteMap[table] = append(whiteMap[table], rPath)
 	return g
@@ -145,6 +147,7 @@ func (g Router) StaticFS(relativePath string, fs http.FileSystem) Router {
 
 func (g Router) Group(relativePath string, handlers ...gin.HandlerFunc) Router {
 	return Router{
+		IsGroup:      true,
 		Engine:       g.Engine,
 		group:        g.group.Group(relativePath, handlers...),
 		relativePath: relativePath,
