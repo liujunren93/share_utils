@@ -14,22 +14,25 @@ func (s Status) GetMsg() (msg string) {
 //database
 
 const (
-	StatusOK                  Status = 200  //success
-	StatusBadRequest          Status = 4000 //数据绑定错误
-	StatusUnauthorized        Status = 4001 //账户类错误
-	StatusForbidden           Status = 4003 //权限
-	StatusNotFound            Status = 4004 //
-	StatusRequestTimeout      Status = 4008 //
-	StatusDomainDisable       Status = 4009 // domain 被禁用
-	StatusInternalServerError Status = 5000 //服务器通用错误 前端不显示
-	StatusBreakerServerError  Status = 5001 //服务器通用错误 前端不显示
-	StatusBatchError          Status = 5040 //服务器批量通用错误 前端显示
-	// 数据重复 52... DB 错误
-	StatusDBInternalErr      Status = 5200 // 数据库内错误
-	StatusDBDuplication      Status = 5201 // 数据重复
-	StatusDBNotFound         Status = 5202 // 数据不存在
-	StatusDBRowsAffectedZero Status = 5203 // 数据影响条数为0
-	StatusPulishConfigError  Status = 5204 // 发布配置错误
+	StatusOK Status = 200 //success
+	//数据相关
+	StatusDBInternalErr      Status = 11001 // 数据库内错误
+	StatusDBDuplication      Status = 11002 // 数据重复
+	StatusDBNotFound         Status = 11003 // 数据不存在
+	StatusDBRowsAffectedZero Status = 11004 // 数据影响条数为0
+	// 系统相关错误
+	StatusBadRequest          Status = 14000 //数据绑定错误
+	StatusUnauthorized        Status = 14001 //账户类错误
+	StatusTokenTimeout        Status = 14002 //token过期
+	StatusForbidden           Status = 14003 //权限
+	StatusNotFound            Status = 14004 //
+	StatusRefreshTokenTimeout Status = 14005 //RefreshToken过期
+	StatusRequestTimeout      Status = 14008 //
+	StatusDomainDisable       Status = 14009 // domain 被禁用
+	StatusInternalServerError Status = 15000 //服务器通用错误 前端不显示
+	StatusBreakerServerError  Status = 15001 //服务器通用错误 前端不显示
+	StatusPulishConfigError   Status = 15204 // 发布配置错误
+	StatusBatchError          Status = 16501 //服务器批量通用错误
 
 )
 
@@ -37,6 +40,8 @@ var statusText = map[Status]string{
 	StatusOK:                  "ok",
 	StatusBadRequest:          "BadRequest",
 	StatusUnauthorized:        "Unauthorized",
+	StatusTokenTimeout:        "Authorized Timeout",
+	StatusRefreshTokenTimeout: "RefreshToken Timeout",
 	StatusForbidden:           "Forbidden",
 	StatusNotFound:            "NotFound",
 	StatusRequestTimeout:      "Request Timeout",

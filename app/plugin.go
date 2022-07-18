@@ -65,6 +65,7 @@ func (a *App) AutoRoute(r shareRouter.Router) error {
 		a.plugin.pluginMapMu.RUnlock()
 		if ok {
 			req, res, err := p.Prepare(ctx, method)
+			log.Logger.Debug("AutoRoute.method", req, res, err)
 			if err != nil {
 				netHelper.Response(ctx, errors.NewBadRequest(err.Error()), err, nil)
 				// log.Logger.Error("noRoute.Prepare", err)

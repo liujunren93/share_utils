@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	re "github.com/go-redis/redis/v8"
 	"github.com/liujunren93/share/client"
+	shLog "github.com/liujunren93/share/log"
 	"github.com/liujunren93/share/server"
 	"github.com/liujunren93/share_utils/app/config"
 	"github.com/liujunren93/share_utils/app/config/entity"
@@ -75,7 +75,7 @@ func (a *App) GetDefaultConfig() *entity.Config {
 	return a.defaultConf
 }
 
-func (a *App) CloudConfigMonitor(confName, group string, callbacks ...func()) {
+func (a *App) CloudConfigMonitor(confName, group, fieldName string, callbacks ...func()) {
 	if confName == "" {
 		confName = a.LocalConf.ConfCenter.ConfName
 	}
@@ -83,18 +83,18 @@ func (a *App) CloudConfigMonitor(confName, group string, callbacks ...func()) {
 		group = a.LocalConf.ConfCenter.Group
 	}
 	for _, callback := range callbacks {
-		a.monitorsCh <- config.NewMonitor(confName, group, callback)
+		a.monitorsCh <- config.NewMonitor(confName, group, fieldName, callback)
 	}
 }
 
-func (a *App) LocalConfigMonitor(fileType, fileName string, dest interface{}, callbacks ...func()) {
+func (a *App) LocalConfigMonitor(fileType, fileName, fieldName string, dest interface{}, callbacks ...func()) {
 	a.localMonitorOnce.Do(func() {
 		go func() {
 			a.Local.ListenConfig(a.ctx, fileType, fileName, config.DescConfigAndCallbacks(dest))
 		}()
 	})
 	for _, callback := range callbacks {
-		a.monitorsCh <- config.NewMonitor(fileType, fileName, callback)
+		a.monitorsCh <- config.NewMonitor(fileType, fileName, fieldName, callback)
 	}
 }
 
@@ -113,7 +113,7 @@ func (a *App) initConfig() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("local config:%+v", a.LocalConf)
+	fmt.Printf("local config:%+v\n", a.LocalConf)
 
 	if a.LocalConf.ConfCenter.Enable {
 		a.initConfCenter()
@@ -146,7 +146,7 @@ func (a *App) GetConfig(ct confType, ctx context.Context, confName, group string
 func (a *App) initConfCenter() {
 	switch a.LocalConf.ConfCenter.Type {
 	case "redis":
-		var conf re.Options
+		var conf redis.Config
 		a.LocalConf.ConfCenter.ToConfig(&conf)
 		client, err := redis.NewRedis(&conf)
 		if err != nil {
@@ -160,7 +160,8 @@ func (a *App) initLogger() {
 	if a.defaultConf.Log != nil {
 		log.Init(a.defaultConf.Log)
 	}
-	a.CloudConfigMonitor(a.LocalConf.ConfCenter.ConfName, a.LocalConf.ConfCenter.Group, func() {
+	shLog.Logger = log.Logger
+	a.CloudConfigMonitor(a.LocalConf.ConfCenter.ConfName, a.LocalConf.ConfCenter.Group, "Log", func() {
 		log.Upgrade(a.defaultConf.Log)
 	})
 }
@@ -194,7 +195,7 @@ func (a *App) RunGw(f func(*gin.Engine) (shareRouter.Router, error)) error {
 	if err != nil {
 		return err
 	}
-	if a.LocalConf.PluginPath != "" {
+	if a.LocalConf.EnableAutoRoute && a.LocalConf.PluginPath != "" {
 		a.initPlugins()
 	}
 	if a.LocalConf.EnableAutoRoute {

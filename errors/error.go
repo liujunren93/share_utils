@@ -29,94 +29,69 @@ func (e ShError) Error() string {
 
 // 数据不存在
 func NewDBNoData(msg string) Error {
-	if msg == "" {
-		msg = StatusDBNotFound.GetMsg()
-	}
-	return ShError{
-		code: StatusDBNotFound,
-		msg:  msg,
-	}
+	return NewPublic(StatusDBNotFound, msg)
 }
 
 //数据重复 420
 func NewDBDuplication(key string) Error {
-
-	return ShError{
-		code: StatusDBDuplication,
-		msg:  StatusDBDuplication.GetMsg() + " for " + key,
-	}
+	return NewPublic(StatusDBDuplication, StatusDBDuplication.GetMsg()+" for "+key)
 }
 
 func NewDBInternal(err error) Error {
 
-	m := ShError{
-		code: StatusDBInternalErr,
-		msg:  StatusDBInternalErr.GetMsg(),
-	}
-	if err != nil {
-		m.msg = err.Error()
-	}
-	return m
+	return New(StatusDBInternalErr, err)
 }
 
 //账户类错误  4001
 func NewUnauthorized(msg string) Error {
-	if msg == "" {
-		msg = StatusUnauthorized.GetMsg()
-	}
-	return ShError{
-		code: StatusUnauthorized,
-		msg:  msg,
-	}
+	return NewPublic(StatusUnauthorized, msg)
 }
 
 //数据权限 4003
-func NewForbidden(msg string) Error {
+func NewForbidden(msg interface{}) Error {
 
-	if msg == "" {
-		msg = StatusForbidden.GetMsg()
-	}
-	return ShError{
-		code: StatusForbidden,
-		msg:  msg,
-	}
+	return NewPublic(StatusForbidden, msg)
 }
 
 //未知错误 5000
-func NewInternalError() Error {
-	return &ShError{
-		code: StatusInternalServerError,
-		msg:  StatusInternalServerError.GetMsg(),
-	}
-}
-func InternalErrorMsg(err interface{}) Error {
-	var msg string
-	if er, ok := err.(error); ok {
-		msg = er.Error()
-	}
-	if er, ok := err.(string); ok {
-		msg = er
-	}
-	return ShError{
-		code: StatusInternalServerError,
-		msg:  msg,
-	}
+func NewInternalError(err interface{}) Error {
+
+	return New(StatusInternalServerError, err)
 }
 
 // 参数错误 4000
-func NewBadRequest(msg string) Error {
-	if msg == "" {
-		msg = StatusBadRequest.GetMsg()
-	}
-	return ShError{
-		code: StatusBadRequest,
-		msg:  msg,
-	}
+func NewBadRequest(err interface{}) Error {
+
+	return NewPublic(StatusBadRequest, err)
 }
 
 //database
-func New(code Status, err string) Error {
-	return ShError{code: code, msg: err}
+func New(code Status, err interface{}) Error {
+	m := getMsg(code, err)
+	return ShError{code: code * 10, msg: m}
+}
+
+func NewPublic(code Status, err interface{}) Error {
+	m := getMsg(code, err)
+	return ShError{code: code*10 + 1, msg: m}
+}
+func getMsg(s Status, err interface{}) string {
+	msg := s.GetMsg()
+	if err != nil {
+		switch m := err.(type) {
+		case string:
+			if m != "" {
+				msg = m
+			}
+
+		case error:
+			msg = m.Error()
+		default:
+			msg = fmt.Sprintf("%v", m)
+		}
+	}
+
+	return msg
 }
 
 type ShErrors struct {

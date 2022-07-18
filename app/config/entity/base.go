@@ -1,8 +1,8 @@
 package entity
 
 import (
-	"github.com/go-redis/redis/v8"
 	"github.com/liujunren93/share_utils/databases/gorm"
+	"github.com/liujunren93/share_utils/databases/redis"
 	"github.com/liujunren93/share_utils/log"
 	"github.com/mitchellh/mapstructure"
 )
@@ -42,9 +42,9 @@ func (c *ConfigCenter) ToConfig(dest interface{}) error {
 }
 
 type Config struct {
-	Version  int8           `json:"version" yaml:"version"` //配置版本
-	Log      *log.Config    `json:"log" yaml:"log"`
-	Redis    *redis.Options `json:"redis" yaml:"redis"`
-	Mysql    *gorm.Mysql    `json:"mysql" yaml:"mysql"`
-	Registry *Registry      `json:"registry" yaml:"registry"`
+	Version  int8          `json:"version" yaml:"version"` //配置版本
+	Log      *log.Config   `json:"log" yaml:"log"`
+	Redis    *redis.Config `json:"redis" yaml:"redis"`
+	Mysql    *gorm.Mysql   `json:"mysql" yaml:"mysql"`
+	Registry *Registry     `json:"registry" yaml:"registry"`
 }

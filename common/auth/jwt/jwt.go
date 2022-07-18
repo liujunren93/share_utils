@@ -2,6 +2,7 @@ package jwt
 
 import (
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -10,6 +11,10 @@ import (
 
 type jwtAuth struct {
 	options auth.TokenOptions
+}
+
+func (j *jwtAuth) String() string {
+	return j.options.Secret
 }
 
 func NewAuth(option ...auth.TokenOption) auth.Auther {
@@ -39,8 +44,9 @@ func (j *jwtAuth) GetOptions() auth.TokenOptions {
 
 //Inspect 验证token
 func (j *jwtAuth) Inspect(tokenStr string) (interface{}, int8, error) {
-
+	Secret := j.options.Secret
 	tk, err := jwt.ParseWithClaims(tokenStr, &JwtClaims{}, func(token *jwt.Token) (interface{}, error) {
+		fmt.Println(Secret)
 		return []byte(j.options.Secret), nil
 	})
 

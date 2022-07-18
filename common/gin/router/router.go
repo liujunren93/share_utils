@@ -144,7 +144,9 @@ func (g Router) StaticFS(relativePath string, fs http.FileSystem) Router {
 }
 
 func (g Router) Group(relativePath string, handlers ...gin.HandlerFunc) Router {
-	g.group = g.group.Group(relativePath, handlers...)
-	g.relativePath = ""
-	return g
+	return Router{
+		Engine:       g.Engine,
+		group:        g.group.Group(relativePath, handlers...),
+		relativePath: relativePath,
+	}
 }

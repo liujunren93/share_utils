@@ -3,6 +3,7 @@ package helper
 import (
 	"crypto/md5"
 	"crypto/sha1"
+	"encoding/json"
 	"fmt"
 	"net/url"
 	"sort"
@@ -16,8 +17,17 @@ import (
 func Sha1Str(str string) string {
 	hash := sha1.New()
 	hash.Write([]byte(str))
-
 	return fmt.Sprintf("%x", hash.Sum(nil))
+}
+func Sha1Interface(src interface{}) (string, error) {
+	fmt.Println(src)
+	hash := sha1.New()
+	data, err := json.Marshal(src)
+	if err != nil {
+		return "", err
+	}
+	hash.Write([]byte(data))
+	return fmt.Sprintf("%x", hash.Sum(nil)), nil
 }
 
 //Md5Str

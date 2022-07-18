@@ -85,15 +85,15 @@ func RpcResponse(res Responser, err errors.Error, data interface{}) error {
 	defer func() {
 		if errr := recover(); errr != nil {
 			fmt.Println(errr)
-			errors.InternalErrorMsg(errr)
+			errors.NewInternalError(errr.(error))
 		}
 	}()
 	var code int32 = 200
 	var msg string = "ok"
 	if err != nil {
-		//if err.GetCode() == 5000 {
-		//	err = serrors.InternalServerError(err).(errors.Error)
-		//}
+		if err.GetCode() == errors.StatusInternalServerError.GetCode() {
+			return serrors.InternalServerError(err)
+		}
 		code = err.GetCode()
 		msg = err.GetMsg()
 	}
@@ -118,17 +118,14 @@ func RpcResponse(res Responser, err errors.Error, data interface{}) error {
 func RpcResponseString(res Responser, err errors.Error, data interface{}) error {
 	defer func() {
 		if errr := recover(); errr != nil {
-			errors.InternalErrorMsg(errr)
+			errors.NewInternalError(errr)
 		}
 	}()
-	marshal, errr := json.Marshal(data)
-	if err != nil {
-		return errr
-	}
+
 	var code int32 = 200
 	var msg string = "ok"
 	if err != nil {
-		if err.GetCode() == 5000 {
+		if err.GetCode() == errors.StatusInternalServerError.GetCode() {
 			return serrors.InternalServerError(err)
 		}
 		code = err.GetCode()
@@ -142,10 +139,17 @@ func RpcResponseString(res Responser, err errors.Error, data interface{}) error 
 	elem := of.Elem()
 	elem.FieldByName("Code").SetInt(int64(code))
 	elem.FieldByName("Msg").SetString(msg)
-	Data := elem.FieldByName("Data")
-	dataOf := reflect.ValueOf(string(marshal))
-	if dataOf.IsValid() {
-		Data.Set(dataOf)
+
+	if data != nil {
+		Data := elem.FieldByName("Data")
+		marshal, errr := json.Marshal(data)
+		if err != nil {
+			return errr
+		}
+		dataOf := reflect.ValueOf(string(marshal))
+		if dataOf.IsValid() {
+			Data.Set(dataOf)
+		}
 	}
 
 	return nil

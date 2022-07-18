@@ -11,15 +11,18 @@ import (
 )
 
 var Logger *logrus.Logger
+var shaLogConfig string
 
 func init() {
 	Logger = logrus.New()
 }
 func Upgrade(conf *Config) {
+
 	Init(conf)
 }
 
 func Init(conf *Config) {
+
 	Logger.SetReportCaller(conf.SetReportCaller)
 	Logger.SetLevel(levelMap[strings.ToLower(conf.Level)])
 	Logger.AddHook(new(TestHook))
