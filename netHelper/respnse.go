@@ -51,10 +51,10 @@ func Response(ctx *gin.Context, res Responser, err error, data interface{}) {
 	if err != nil {
 		msg = err.Error()
 		if e, ok := status.FromError(err); ok {
-			if e.Code() >= 5000 {
-				code = int32(e.Code())
-				msg = e.Message()
-			}
+			fmt.Println("Response", e)
+
+			code = int32(errors.StatusInternalServerError)
+			msg = errors.StatusInternalServerError.GetMsg()
 
 		} else if code == 0 {
 			code = int32(errors.StatusInternalServerError)

@@ -59,7 +59,7 @@ func NewInternalError(err interface{}) Error {
 	return New(StatusInternalServerError, err)
 }
 
-// 参数错误 4000
+// 参数错误 14000
 func NewBadRequest(err interface{}) Error {
 
 	return NewPublic(StatusBadRequest, err)
@@ -104,6 +104,9 @@ func (e ShErrors) GetCode() int32 {
 }
 func (e ShErrors) GetMsg() string {
 	return e.Error()
+}
+func (e ShErrors) Len() int {
+	return len(e.Errs)
 }
 
 func (e ShErrors) Error() string {

@@ -10,6 +10,8 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+type Fields map[string]interface{}
+
 var Logger *logrus.Logger
 var shaLogConfig string
 
@@ -21,12 +23,18 @@ func Upgrade(conf *Config) {
 	Init(conf)
 }
 
+// func GetLogger(group string) *logrus.Logger {
+// 	fmt.Println("GetLogger", group)
+// 	Logger.SetFormatter(&JSONFormatter{group, jsonFormatter})
+// 	return Logger
+// }
+
 func Init(conf *Config) {
 
 	Logger.SetReportCaller(conf.SetReportCaller)
 	Logger.SetLevel(levelMap[strings.ToLower(conf.Level)])
 	Logger.AddHook(new(TestHook))
-	Logger.SetFormatter(&logrus.JSONFormatter{})
+	Logger.SetFormatter(&JSONFormatter{"", &logrus.JSONFormatter{}})
 	if !conf.Debug && conf.Rotate != nil {
 		rotatelog, err := rotatelogs.New(
 			conf.Rotate.LogFile+".%Y%m%d%H%M",
@@ -63,15 +71,13 @@ func (hook *TestHook) Levels() []logrus.Level {
 }
 
 type shareFormatter struct {
-	TimestampFormat string
+	prifix string
 }
 
 func (s shareFormatter) Format(entry *logrus.Entry) ([]byte, error) {
-	if s.TimestampFormat == "" {
-		s.TimestampFormat = "2006-01-02 15:04:05"
-	}
+
 	fileName := path.Base(entry.Caller.File)
 
-	sprintf := fmt.Sprintf("[%s][%s|%s:%d]:%v\n\r", entry.Level, entry.Time.Format(s.TimestampFormat), fileName, entry.Caller.Line, entry.Message)
+	sprintf := fmt.Sprintf("[%s][%s|%s:%d]:%v\n\r", entry.Level, entry.Time.Format("2006-01-02 15:04:05"), fileName, entry.Caller.Line, entry.Message)
 	return []byte(sprintf), nil
 }
