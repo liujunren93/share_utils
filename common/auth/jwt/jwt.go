@@ -2,7 +2,6 @@ package jwt
 
 import (
 	"errors"
-	"fmt"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -40,9 +39,7 @@ func (j *jwtAuth) GetOptions() auth.TokenOptions {
 
 //Inspect 验证token
 func (j *jwtAuth) Inspect(tokenStr string) (interface{}, int8, error) {
-	Secret := j.options.Secret
 	tk, err := jwt.ParseWithClaims(tokenStr, &JwtClaims{}, func(token *jwt.Token) (interface{}, error) {
-		fmt.Println(Secret)
 		return []byte(j.options.Secret), nil
 	})
 
@@ -100,7 +97,7 @@ func (j *jwtAuth) createToken(tkType int8) (string, error) {
 	expiry := j.options.Expiry
 
 	if tkType == 2 {
-		expiry += 7200
+		expiry *= 2
 
 	}
 

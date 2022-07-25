@@ -27,7 +27,7 @@ func main() {
 	defer op.Close()
 
 	data, err := io.ReadAll(op)
-	ap := app.NewApp(context.TODO())
+	ap := app.NewApp(context.TODO(), nil)
 
 	_, err = ap.Cloud.PublishConfig(context.TODO(), ap.LocalConf.ConfCenter.ConfName, ap.LocalConf.ConfCenter.Group, string(data))
 	if err != nil {

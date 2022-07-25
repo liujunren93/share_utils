@@ -1,6 +1,7 @@
 package helper
 
 import (
+	"fmt"
 	"math/rand"
 	"strconv"
 	"strings"
@@ -39,6 +40,10 @@ func String2Int(str string) int {
 	}
 	return integer
 
+}
+
+func Any2String(data any) string {
+	return fmt.Sprintf("%v", data)
 }
 
 func SnakeString(s string) string {

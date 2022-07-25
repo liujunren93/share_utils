@@ -27,6 +27,7 @@ const (
 	StatusForbidden           Status = 14003 //权限
 	StatusNotFound            Status = 14004 //
 	StatusRefreshTokenTimeout Status = 14005 //RefreshToken过期
+	StatusMetadataNotFound    Status = 14006 // 从metadata中未获取到数据
 	StatusRequestTimeout      Status = 14008 //
 	StatusDomainDisable       Status = 14009 // domain 被禁用
 	StatusInternalServerError Status = 15000 //服务器通用错误 前端不显示
@@ -42,6 +43,7 @@ var statusText = map[Status]string{
 	StatusUnauthorized:        "Unauthorized",
 	StatusTokenTimeout:        "Authorized Timeout",
 	StatusRefreshTokenTimeout: "RefreshToken Timeout",
+	StatusMetadataNotFound:    "Metadata Lost Val",
 	StatusForbidden:           "Forbidden",
 	StatusNotFound:            "NotFound",
 	StatusRequestTimeout:      "Request Timeout",

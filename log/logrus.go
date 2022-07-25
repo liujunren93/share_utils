@@ -19,7 +19,7 @@ func init() {
 	Logger = logrus.New()
 }
 func Upgrade(conf *Config) {
-
+	Logger.Debug("upgrade.log", conf)
 	Init(conf)
 }
 

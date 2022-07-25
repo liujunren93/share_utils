@@ -9,8 +9,14 @@ import (
 
 type ConfMap map[string]interface{}
 
-var DefaultConfig = Config{
-	Version: 0,
+type DefaultConfiger interface {
+	GetVersion() string
+	GetLogConfig() (*log.Config, bool)
+	GetRegistryConfig() (*Registry, bool)
+}
+
+var DefaultConfig = &Config{
+	Version: "v0.0.1",
 	Log: &log.Config{
 		Debug:           false,
 		SetReportCaller: true,
@@ -42,9 +48,25 @@ func (c *ConfigCenter) ToConfig(dest interface{}) error {
 }
 
 type Config struct {
-	Version  int8          `json:"version" yaml:"version"` //配置版本
+	Version  string        `json:"version" yaml:"version"` //配置版本
 	Log      *log.Config   `json:"log" yaml:"log"`
 	Redis    *redis.Config `json:"redis" yaml:"redis"`
 	Mysql    *gorm.Mysql   `json:"mysql" yaml:"mysql"`
 	Registry *Registry     `json:"registry" yaml:"registry"`
+}
+
+func (c *Config) GetVersion() string {
+	return c.Version
+}
+func (c *Config) GetLogConfig() (*log.Config, bool) {
+	if c.Log == nil {
+		return nil, false
+	}
+	return c.Log, true
+}
+func (c *Config) GetRegistryConfig() (*Registry, bool) {
+	if c.Registry == nil {
+		return nil, false
+	}
+	return c.Registry, true
 }

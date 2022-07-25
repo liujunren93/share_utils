@@ -18,8 +18,8 @@ var levelMap = map[string]logrus.Level{
 
 type Config struct {
 	Debug           bool    `json:"debug" yaml:"debug"`
-	SetReportCaller bool    `json:"set_report_caller" yaml:"set_report_caller"`
-	Level           string  `json:"level" yaml:"level"` //required
+	SetReportCaller bool    `json:"set_report_caller" yaml:"set_report_caller"` //是否打印文件
+	Level           string  `json:"level" yaml:"level"`                         //required
 	Rotate          *Rotate `json:"rotate" yaml:"rotate"`
 	Remote          *Remote `yaml:"remote"`
 }
@@ -37,7 +37,7 @@ type Remote struct {
 }
 
 var defaultConfig = Config{
-	Debug:           false,
+	Debug:           true,
 	SetReportCaller: true,
 	Level:           "debug",
 	Rotate: &Rotate{

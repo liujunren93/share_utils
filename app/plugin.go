@@ -32,16 +32,15 @@ func (a *App) initPlugins() {
 	}
 
 	for _, f := range files {
-		fmt.Println("loadPlug", f.Name())
+		log.Logger.Debug("initPlugins.plugin.name", f.Name())
 		if filepath.Ext(f.Name()) == ".so" {
 			sp, err := myplugin.OpenPlugin(PluginPath + "/" + f.Name())
 
 			if err != nil {
-				fmt.Println("loadPlugins.OpenPlugin", PluginPath+"/"+f.Name(), err)
 				log.Logger.Error("loadPlugins.OpenPlugin", PluginPath+"/"+f.Name(), err)
 				continue
 			}
-			fmt.Println(sp)
+			log.Logger.Debug("initPlugins.add.plugin", sp.PluginName)
 			log.Logger.Debug("initPlugins", sp)
 			a.plugin.pluginMap[sp.PluginName] = sp
 		}
@@ -49,7 +48,7 @@ func (a *App) initPlugins() {
 }
 
 func (a *App) AutoRoute(r shareRouter.Router) error {
-	fmt.Println("AutoRoute", a.plugin.pluginMap)
+	log.Logger.Debug("AutoRoute", a.plugin.pluginMap)
 	r.NoRoute(func(ctx *gin.Context) {
 		plugin, method, err := myplugin.ParesRequest(ctx, a.LocalConf.ApiPrefix)
 		fmt.Println("AutoRoute.ParesRequest", plugin, method, err)
@@ -61,7 +60,7 @@ func (a *App) AutoRoute(r shareRouter.Router) error {
 		// retry:
 		a.plugin.pluginMapMu.RLock()
 		p, ok := a.plugin.pluginMap[plugin]
-		fmt.Println(plugin, p)
+		log.Logger.Debug("AutoRoute.pluginMap", p.ServerName, ok)
 		a.plugin.pluginMapMu.RUnlock()
 		if ok {
 			req, res, err := p.Prepare(ctx, method)
