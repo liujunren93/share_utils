@@ -55,9 +55,9 @@ type App struct {
 	plugin           *plugin
 }
 
-func NewApp(ctx context.Context, defaultConfig entity.DefaultConfiger) *App {
+func NewApp(defaultConfig entity.DefaultConfiger) *App {
 	app := &App{
-		ctx: ctx,
+		ctx: context.TODO(),
 		appConfigOption: appConfigOption{
 			defaultConf: defaultConfig,
 		},
@@ -123,9 +123,10 @@ func (a *App) initConfig() {
 	}
 	ctx, _ := context.WithTimeout(context.Background(), 3*time.Second)
 	err = a.Cloud.GetConfig(ctx, a.LocalConf.ConfCenter.ConfName, a.LocalConf.ConfCenter.Group, config.DescConfig(a.defaultConf))
-	fmt.Println("defaultConf:", a.defaultConf)
 	if err != nil {
 		fmt.Println("get Config from cloud err:" + err.Error())
+		panic("get Config from cloud err:" + err.Error())
+
 	}
 	a.initLogger()
 	go func() {

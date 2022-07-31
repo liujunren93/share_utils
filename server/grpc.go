@@ -35,7 +35,12 @@ func (s *Server) NewServer(opts ...server.Option) (*server.GrpcServer, error) {
 	grpcServer := server.NewGrpcServer(s.opts...)
 	//注册中心
 	if len(s.RegistryAddr) > 0 {
-		newRegistry, err := etcd.NewRegistry(registry.WithAddrs(s.RegistryAddr...))
+		var registryOpt = []registry.Option{registry.WithAddrs(s.RegistryAddr...)}
+		if s.Mode == "debug" {
+			registryOpt = append(registryOpt, registry.WithLease(10000))
+		}
+
+		newRegistry, err := etcd.NewRegistry(registryOpt...)
 		if err != nil {
 			return nil, err
 		}

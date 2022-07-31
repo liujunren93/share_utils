@@ -34,7 +34,7 @@ func Init(conf *Config) {
 	Logger.SetReportCaller(conf.SetReportCaller)
 	Logger.SetLevel(levelMap[strings.ToLower(conf.Level)])
 	Logger.AddHook(new(TestHook))
-	Logger.SetFormatter(&JSONFormatter{"", &logrus.JSONFormatter{}})
+	Logger.SetFormatter(&logrus.JSONFormatter{})
 	if !conf.Debug && conf.Rotate != nil {
 		rotatelog, err := rotatelogs.New(
 			conf.Rotate.LogFile+".%Y%m%d%H%M",

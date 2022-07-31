@@ -9,7 +9,7 @@ import (
 * @Author: liujunren
 * @Date: 2022/2/28 14:15
  */
-
+// struct -> map 不保留空值
 func Struct2MapSnakeNoZero(src interface{}) map[string]interface{} {
 	t := reflect.TypeOf(src)
 	v := reflect.ValueOf(src)
@@ -29,6 +29,9 @@ func Struct2MapSnakeNoZero(src interface{}) map[string]interface{} {
 		if t.Field(i).Tag.Get("json") == "-" {
 			continue
 		}
+		if t.Field(i).Tag.Get("gorm") == "-" {
+			continue
+		}
 		if v.Kind() == reflect.Ptr {
 			field := v.Elem().Field(i)
 			if !field.IsZero() {
@@ -45,6 +48,7 @@ func Struct2MapSnakeNoZero(src interface{}) map[string]interface{} {
 	return res
 }
 
+// struct -> map 保留空值
 func Struct2MapSnake(src interface{}) map[string]interface{} {
 	t := reflect.TypeOf(src)
 	v := reflect.ValueOf(src)
@@ -62,6 +66,9 @@ func Struct2MapSnake(src interface{}) map[string]interface{} {
 			continue
 		}
 		if t.Field(i).Tag.Get("json") == "-" {
+			continue
+		}
+		if t.Field(i).Tag.Get("gorm") == "-" {
 			continue
 		}
 		if v.Kind() == reflect.Ptr {

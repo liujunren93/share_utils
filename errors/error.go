@@ -67,11 +67,17 @@ func NewBadRequest(err interface{}) Error {
 
 //database
 func New(code Status, err interface{}) Error {
+	if er, ok := err.(Error); ok {
+		return er
+	}
 	m := getMsg(code, err)
 	return ShError{code: code * 10, msg: m}
 }
 
 func NewPublic(code Status, err interface{}) Error {
+	if er, ok := err.(Error); ok {
+		return er
+	}
 	m := getMsg(code, err)
 	return ShError{code: code*10 + 1, msg: m}
 }

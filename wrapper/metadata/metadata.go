@@ -7,22 +7,43 @@ import (
 	"github.com/liujunren93/share/wrapper"
 	"github.com/liujunren93/share_utils/common/metadata"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/proto"
 )
 
 const NAME = "metadata"
 
-func NewClientWrapper(key string, f func(context.Context) string) wrapper.CallWrapper {
+func NewClientWrapper(key string, f func(context.Context) ([]byte, error)) wrapper.CallWrapper {
 
 	return func() (grpc.UnaryClientInterceptor, string) {
 		return func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
-			fmt.Println(f(ctx))
-			ctx, err := metadata.SetVal(ctx, key, f(ctx))
+
+			data, err := f(ctx)
 			if err != nil {
 				return err
 			}
+			ctx, err = metadata.SetVal(ctx, key, string(data))
+			if err != nil {
+				return err
+			}
+			return invoker(ctx, method, req, reply, cc, opts...)
+		}, NAME + key
+	}
 
-			ctx, _ = metadata.SetVal(ctx, "aaaa", "111")
-			fmt.Println(metadata.GetAll(ctx))
+}
+
+func NewClientWrapperMessage(key string, f func(context.Context) (proto.Message, error)) wrapper.CallWrapper {
+
+	return func() (grpc.UnaryClientInterceptor, string) {
+		return func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+			val, err := f(ctx)
+			if err != nil {
+				return err
+			}
+			fmt.Println("NewClientWrapperMessage", val)
+			ctx, err = metadata.SetMessage(ctx, key, val)
+			if err != nil {
+				return err
+			}
 			return invoker(ctx, method, req, reply, cc, opts...)
 		}, NAME + key
 	}

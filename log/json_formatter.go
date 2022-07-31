@@ -1,8 +1,6 @@
 package log
 
 import (
-	"fmt"
-
 	"github.com/sirupsen/logrus"
 )
 
@@ -18,7 +16,6 @@ type JSONFormatter struct {
 
 // Format renders a single log entry
 func (f *JSONFormatter) Format(entry *logrus.Entry) ([]byte, error) {
-	fmt.Println("JSONFormatter:", f.Group)
 	data, err := f.jSONFormatter.Format(entry)
 	if err != nil {
 		return nil, err

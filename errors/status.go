@@ -20,6 +20,7 @@ const (
 	StatusDBDuplication      Status = 11002 // 数据重复
 	StatusDBNotFound         Status = 11003 // 数据不存在
 	StatusDBRowsAffectedZero Status = 11004 // 数据影响条数为0
+	StatusDBPermissionDenied Status = 11005 // 无数据操作权限
 	// 系统相关错误
 	StatusBadRequest          Status = 14000 //数据绑定错误
 	StatusUnauthorized        Status = 14001 //账户类错误
@@ -38,22 +39,25 @@ const (
 )
 
 var statusText = map[Status]string{
-	StatusOK:                  "ok",
-	StatusBadRequest:          "BadRequest",
+	StatusOK: "ok",
+	//数据相关
+	StatusDBInternalErr:      "DB internal server error",
+	StatusDBDuplication:      "DB duplication",
+	StatusDBNotFound:         "Data notfount",
+	StatusDBRowsAffectedZero: "No data to update",
+	StatusDBPermissionDenied: "Permission denied",
+	// 系统相关错误
+	StatusBadRequest:          "Bad request",
 	StatusUnauthorized:        "Unauthorized",
-	StatusTokenTimeout:        "Authorized Timeout",
-	StatusRefreshTokenTimeout: "RefreshToken Timeout",
-	StatusMetadataNotFound:    "Metadata Lost Val",
+	StatusTokenTimeout:        "Authorized timeout",
 	StatusForbidden:           "Forbidden",
 	StatusNotFound:            "NotFound",
-	StatusRequestTimeout:      "Request Timeout",
-	StatusDomainDisable:       "Domain Disable",
-	StatusInternalServerError: "Internal Server Error",
-	StatusDBInternalErr:       "DBInternalServerError",
-	StatusDBDuplication:       "Duplication",
-	StatusDBNotFound:          "DataNotFount",
-	StatusDBRowsAffectedZero:  "NoDataToUpdate",
-	StatusBreakerServerError:  "Status Breaker Server Error",
-	StatusPulishConfigError:   "Pulish Config Error",
-	StatusBatchError:          "Status Batch Error",
+	StatusRefreshTokenTimeout: "RefreshToken timeout",
+	StatusMetadataNotFound:    "Metadata lost val",
+	StatusRequestTimeout:      "Request timeout",
+	StatusDomainDisable:       "Domain disable",
+	StatusInternalServerError: "Internal server error",
+	StatusBreakerServerError:  "Status breaker server error",
+	StatusPulishConfigError:   "Pulish config error",
+	StatusBatchError:          "Status batch error",
 }

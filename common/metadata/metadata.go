@@ -3,9 +3,11 @@ package metadata
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strings"
 
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -26,15 +28,11 @@ func GetAll(ctx context.Context) (metadata.MD, bool) {
 
 func GetVal(ctx context.Context, key string) (string, bool) {
 	key = strings.ToLower(key)
-	incomingContext, ok := GetAll(ctx)
+	md, ok := GetAll(ctx)
 	if !ok {
 		return "", ok
 	}
-	strings, ok := incomingContext[key]
-	if !ok {
-		return "", ok
-	}
-	return strings[0], ok
+	return md.Get(key)[0], ok
 }
 
 func GetValUnmarshal(ctx context.Context, key string, dest proto.Message) error {
@@ -46,10 +44,38 @@ func GetValUnmarshal(ctx context.Context, key string, dest proto.Message) error 
 }
 
 func SetVal(ctx context.Context, key string, val string) (context.Context, error) {
-	if val == "" {
+
+	if len(val) == 0 {
 		return ctx, nil
 	}
-	// pairs := metadata.Pairs(key, val)
 
 	return metadata.AppendToOutgoingContext(ctx, strings.ToLower(key), val), nil
+}
+
+func GetMessage(ctx context.Context, key string, dest proto.Message) (error, bool) {
+	md, ok := GetVal(ctx, key)
+	if !ok {
+		return nil, ok
+	}
+	if len(md) == 0 {
+		return nil, false
+	}
+	err := prototext.Unmarshal([]byte(md), dest)
+	if err != nil {
+		return err, false
+	}
+	fmt.Println(dest.ProtoReflect().IsValid())
+	return nil, dest == nil || dest.ProtoReflect().IsValid()
+}
+
+func SetMessage(ctx context.Context, key string, val proto.Message) (context.Context, error) {
+
+	if val == nil || !val.ProtoReflect().IsValid() {
+		return ctx, nil
+	}
+	data, err := prototext.Marshal(val)
+	if err != nil {
+		return ctx, err
+	}
+	return metadata.AppendToOutgoingContext(ctx, strings.ToLower(key), string(data)), nil
 }
