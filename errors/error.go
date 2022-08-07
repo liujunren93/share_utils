@@ -37,13 +37,13 @@ func NewDBDuplication(key string) Error {
 	return NewPublic(StatusDBDuplication, StatusDBDuplication.GetMsg()+" for "+key)
 }
 
-func NewDBInternal(err error) Error {
+func NewDBInternal(err interface{}) Error {
 
 	return New(StatusDBInternalErr, err)
 }
 
 //账户类错误  4001
-func NewUnauthorized(msg string) Error {
+func NewUnauthorized(msg interface{}) Error {
 	return NewPublic(StatusUnauthorized, msg)
 }
 

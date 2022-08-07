@@ -2,7 +2,6 @@ package metadata
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/liujunren93/share/wrapper"
 	"github.com/liujunren93/share_utils/common/metadata"
@@ -39,7 +38,6 @@ func NewClientWrapperMessage(key string, f func(context.Context) (proto.Message,
 			if err != nil {
 				return err
 			}
-			fmt.Println("NewClientWrapperMessage", val)
 			ctx, err = metadata.SetMessage(ctx, key, val)
 			if err != nil {
 				return err
