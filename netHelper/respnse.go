@@ -30,7 +30,7 @@ func ResponseOk(ctx *gin.Context, data interface{}) {
 //Response
 //Response
 func Response(ctx *gin.Context, res Responser, err error, data interface{}) {
-
+	fmt.Println(res, err, data)
 	var code int32 = 200
 	var msg = "ok"
 
@@ -50,13 +50,9 @@ func Response(ctx *gin.Context, res Responser, err error, data interface{}) {
 
 	if err != nil {
 		msg = err.Error()
-		if e, ok := status.FromError(err); ok {
+		if e, ok := status.FromError(err); ok || code == 0 {
 			fmt.Println("Response", e)
 
-			code = int32(errors.StatusInternalServerError)
-			msg = errors.StatusInternalServerError.GetMsg()
-
-		} else if code == 0 {
 			code = int32(errors.StatusInternalServerError)
 			msg = errors.StatusInternalServerError.GetMsg()
 
@@ -66,6 +62,10 @@ func Response(ctx *gin.Context, res Responser, err error, data interface{}) {
 		var da interface{}
 		json.Unmarshal([]byte(s), &da)
 		data = da
+	}
+	if code > 10000 && code&1 == 0 {
+		code = int32(errors.StatusInternalServerError)
+		msg = errors.StatusInternalServerError.GetMsg()
 	}
 	resData := HttpResponse{
 		Code: errors.Status(code),
