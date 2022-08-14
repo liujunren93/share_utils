@@ -30,7 +30,6 @@ func ResponseOk(ctx *gin.Context, data interface{}) {
 //Response
 //Response
 func Response(ctx *gin.Context, res Responser, err error, data interface{}) {
-	fmt.Println(res, err, data)
 	var code int32 = 200
 	var msg = "ok"
 

@@ -1,89 +1,87 @@
 {
-  "uid": "1",
-  "tasks": [
+  "vid": "test-ma-100316",
+  "priority": "1",
+  "input": {
+    "in_uri": "videos/online_miguyun/N202208100001.mp4",
+    "image_duration": -1,
+    "segment_duration": 180
+  },
+  "out_list": [
     {
-      "vid": "0LbPZG0VtcxVpIeg3nRYdx-1654137671120",
-      "priority": "1",
-      "input": {
-        "in_uri": "migucloud2/5133/2022/6/2/0LbPZG0VtcxVpIeg3nRYdx.mp4"
+      "svid": "test-ma-10031601",
+      "output_name": "test01.mp4",
+      "out_format": "hls",
+      "out_format_info": {
+        "file_path": "transcoder-temp-mg/20220810/17/test/test-ma-100316/01/media",
+        "ts_duration": 10
       },
-      "out_list": [
+      "template_id": "sim56",
+      "snapshot_info": {
+        "starttime": 1,
+        "snapshotrate": 2,
+        "maxpicnum": 6,
+        "pic_path": "transcoder-temp-mg/20220810/17/test/test-ma-100316/01/media/pics",
+        "resolution": "640*360"
+      },
+      "gif_info": {
+        "resolution": "640*360",
+        "gif_path": "transcoder-temp-mg/20220810/17/test/test-ma-100316/01/media/pics",
+        "timelist": [
+          {
+            "begin_time": 5,
+            "duration": 10
+          },
+          {
+            "begin_time": 15,
+            "duration": 18
+          }
+        ]
+      },
+      "subtitle_info": {
+        "pos_info": [
+          {
+            "index": 1,
+            "y_position": 120,
+            "height": 1080,
+            "width": 1920,
+            "font_size": 12,
+            "font_color": "e8e8e8",
+            "font_type": "heiti"
+          },
+          {
+            "index": 2,
+            "y_position": 90,
+            "height": 1080,
+            "width": 1920,
+            "font_size": 9,
+            "font_color": "e8e8e8",
+            "font_type": "heiti"
+          }
+        ]
+      },
+      "text_info": [
         {
-          "svid": "0LbPZG0VtcxVpIeg3nRYdxcustom_cld2160p_h265hls",
-          "out_format": "hls",
-          "out_format_info": {
-            "file_path": "migucloud2/mgc_transfiles/5133/2022/6/2/0LbPZG0VtcxVpIeg3nRYdx/d04e5797/custom_cld2160p_h265"
-          },
-          "template_id": "custom_template",
-          "template_info": {
-            "video": {
-              "enable": true,
-              "params": {
-                "codec_name": "h265",
-                "res": {
-                  "width": 7680,
-                  "height": 4320
-                },
-                "bit_rate": 4096000,
-                "frame_rate": 30,
-                "gop_size": 75
-              }
-            },
-            "audio": {
-              "enable": true,
-              "params": {
-                "codec_name": "aac",
-                "bit_rate": 125000,
-                "sample_rate": 44100
-              }
+          "text": "许可 ~!@#$^\u0026*()_+{}|:\u003c\u003e?`[]/,/./;/'\t\r \n      证号：(广局)剧审/%网字(2022)第0055::::::::号\n\r登记号：12648020331472306",
+          "x_position": 34,
+          "y_position": 122,
+          "font_size": 12,
+          "font_color": "white",
+          "font_type": "黑体",
+          "slices": [
+            {
+              "end": 6
             }
-          },
-          "subtitle_info": {}
-        },
-        {
-          "svid": "0LbPZG0VtcxVpIeg3nRYdxcustom_cld2160p_h264hls",
-          "out_format": "hls",
-          "out_format_info": {
-            "file_path": "migucloud2/mgc_transfiles/5133/2022/6/2/0LbPZG0VtcxVpIeg3nRYdx/d04e5797/custom_cld2160p_h264"
-          },
-          "template_id": "custom_template",
-          "template_info": {
-            "video": {
-              "enable": true,
-              "params": {
-                "codec_name": "h264",
-                "res": {
-                  "width": 7680,
-                  "height": 4320
-                },
-                "bit_rate": 4096000,
-                "frame_rate": 30,
-                "gop_size": 75
-              }
-            },
-            "audio": {
-              "enable": true,
-              "params": {
-                "codec_name": "aac",
-                "bit_rate": 125000,
-                "sample_rate": 44100
-              }
-            }
-          },
-          "subtitle_info": {}
+          ]
         }
-      ],
-      "start_callback_list": [
-        "http://test.migucloud.com/utsp-offline-transcode/utspOffline/CbTransStart"
-      ],
-      "complete_callback_list": [
-        "http://test.migucloud.com/utsp-offline-transcode/utspOffline/CbTransCompleted"
       ]
     }
+  ],
+  "start_callback_list": [
+    "url1",
+    "url2"
+  ],
+  "complete_callback_list": [
+    "http://10.186.51.101:80/ov0/cbTransCompleted",
+    "http://test.migucloud.com/utsp-offline-transcode/utspOffline/CbTransCompleted"
   ]
 }
-ffprobe -print_format json -show_streams -select_streams v 
-ffprobe -select_streams v -show_entries format=duration,size,bit_rate,filename -show_streams -v quiet -of csv="p=0" -of json -i 
-
-
-sudo /opt/transcoder/bin/migu_probe v -show_entries format=duration,size,bit_rate,filename -show_streams -v quiet -of csv="p=0" -of json  -i "/mnt/transcoder/temp/20220602/15//0LbPZG0VtcxVpIeg3nRYdx-1654137671120/template-0LbPZG0VtcxVpIeg3nRYdx-1654137671120-0LbPZG0VtcxVpIeg3nRYdxcustom_cld2160p_h265hls/1001.mp4"

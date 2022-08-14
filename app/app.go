@@ -52,7 +52,7 @@ type App struct {
 	shareGrpcClient  *client.Client
 	monitorsCh       chan *config.Monitor
 	localMonitorOnce *sync.Once
-	plugin           *plugin
+	plugin           *Plugin
 }
 
 func NewApp(defaultConfig entity.DefaultConfiger) *App {
