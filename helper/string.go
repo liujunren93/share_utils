@@ -68,3 +68,13 @@ func SnakeString(s string) string {
 
 	return strings.ToLower(string(data[:]))
 }
+
+// keep substr left
+func SubstrLeft(s, substr string) string {
+	return s[:strings.Index(s, substr)]
+}
+
+// keep substr right
+func SubstrRight(s, substr string) string {
+	return s[strings.Index(s, substr)+1:]
+}

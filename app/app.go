@@ -190,6 +190,9 @@ func (a *App) GetGrpcClient(targetUrl string) (*client.Client, error) {
 		a.shareGrpcClient = shareClient
 
 	}
+	if a.LocalConf.RunMode == "debug" {
+		a.shareGrpcClient.AddOptions(client.WithTimeout(time.Second * 30))
+	}
 	return a.shareGrpcClient, nil
 
 }

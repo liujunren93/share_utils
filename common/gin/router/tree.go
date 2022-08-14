@@ -79,10 +79,13 @@ func (node *Node) find(paths []string, method string) *Node {
 			return node
 		} else {
 			for _, n := range node.Childs {
-				tnode := n.find(paths[1:], method)
-				if tnode != nil {
-					return tnode
+				if len(paths) > 1 {
+					tnode := n.find(paths[1:], method)
+					if tnode != nil {
+						return tnode
+					}
 				}
+
 			}
 		}
 	} else {

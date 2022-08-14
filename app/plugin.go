@@ -15,6 +15,7 @@ import (
 	"github.com/liujunren93/share_utils/common/gin/router"
 	shareRouter "github.com/liujunren93/share_utils/common/gin/router"
 	shErr "github.com/liujunren93/share_utils/errors"
+	"github.com/liujunren93/share_utils/helper"
 	"github.com/liujunren93/share_utils/netHelper"
 
 	"github.com/liujunren93/share_utils/log"
@@ -55,6 +56,7 @@ func (a *App) initPlugins() {
 			}
 		}
 	}
+	// panic(len(a.plugin.pluginMap))
 }
 
 func (a *App) AutoRoute(r shareRouter.Router) error {
@@ -187,8 +189,7 @@ func ParesRequest(ctx *gin.Context, urlPrefix string) (pluginName, reqPath, meth
 	ctx.FullPath()
 
 	reqPath = strings.Trim(strings.TrimLeft(path.Clean(ctx.Request.URL.Path), urlPrefix), "/")
-	req := strings.Split(reqPath, "/")
-	return req[0], reqPath, ctx.Request.Method
+	return helper.SubstrLeft(reqPath, "/"), helper.SubstrRight(reqPath, "/"), ctx.Request.Method
 
 }
 
