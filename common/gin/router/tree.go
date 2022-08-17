@@ -3,6 +3,9 @@ package router
 import (
 	"path"
 	"strings"
+
+	"github.com/gin-gonic/gin"
+	"github.com/liujunren93/share_utils/helper"
 )
 
 type Node struct {
@@ -63,7 +66,7 @@ func (node *Node) add(paths []string, method, grpcPath string) {
 
 }
 
-func (node *Node) Find(reqPath string, method string) *Node {
+func (node *Node) Find(reqPath string, method string) (n *Node, params gin.Param) {
 	method = strings.ToUpper(method)
 	reqPath = "/" + reqPath
 	reqPath = path.Clean(reqPath)
@@ -72,17 +75,17 @@ func (node *Node) Find(reqPath string, method string) *Node {
 	return node.find(paths, method)
 }
 
-func (node *Node) find(paths []string, method string) *Node {
+func (node *Node) find(paths []string, method string) (n *Node, param gin.Param) {
 	var cpath = paths[0]
 	if node.Path == cpath {
 		if len(paths) == 1 && node.Method == method {
-			return node
+			return node, param
 		} else {
 			for _, n := range node.Childs {
 				if len(paths) > 1 {
-					tnode := n.find(paths[1:], method)
+					tnode, param := n.find(paths[1:], method)
 					if tnode != nil {
-						return tnode
+						return tnode, param
 					}
 				}
 
@@ -90,9 +93,12 @@ func (node *Node) find(paths []string, method string) *Node {
 		}
 	} else {
 		if len(paths) == 1 && string(node.Path[0]) == ":" && node.Method == method {
-			return node
+			return node, gin.Param{
+				Key:   helper.SubstrRight(node.Path, ":"),
+				Value: cpath,
+			}
 		}
 
 	}
-	return nil
+	return
 }

@@ -53,6 +53,12 @@ func NewForbidden(msg interface{}) Error {
 	return NewPublic(StatusForbidden, msg)
 }
 
+//数据权限 4004
+func NewStatusNotFound(msg interface{}) Error {
+
+	return NewPublic(StatusNotFound, msg)
+}
+
 //未知错误 5000
 func NewInternalError(err interface{}) Error {
 

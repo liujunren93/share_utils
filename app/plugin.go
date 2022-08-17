@@ -1,7 +1,6 @@
 package app
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
@@ -68,16 +67,16 @@ func (a *App) AutoRoute(r shareRouter.Router) error {
 		// 	isRetry := false
 		// retry:
 		p, ok := a.plugin.pluginMap[plugin]
-		log.Logger.Debug("AutoRoute.pluginMap", p.ServerName, ok)
-		node := p.Router.Find(reqPath, method)
-		if node == nil {
-			fmt.Println(node)
-			netHelper.Response(ctx, shErr.StatusNotFound, nil, nil)
-			return
-		}
-		da, err := json.Marshal(node)
-		fmt.Println(string(da), err)
 		if ok {
+			node, param := p.Router.Find(reqPath, method)
+			if node == nil {
+				fmt.Println(node)
+				netHelper.Response(ctx, shErr.NewStatusNotFound(""), nil, nil)
+				return
+			}
+			if len(param.Key) > 0 {
+				ctx.Params = append(ctx.Params, param)
+			}
 			req, res, err := p.Prepare(ctx, node.GrpcPath)
 			log.Logger.Debug("AutoRoute.method", req, res, err)
 			if err != nil {
@@ -93,7 +92,7 @@ func (a *App) AutoRoute(r shareRouter.Router) error {
 			err = a.shareGrpcClient.Invoke(ctx, node.GrpcPath, req, res, cc)
 			netHelper.Response(ctx, res.(netHelper.Responser), err, nil)
 		} else {
-			netHelper.Response(ctx, shErr.StatusNotFound, nil, nil)
+			netHelper.Response(ctx, shErr.NewStatusNotFound(""), nil, nil)
 			return
 			// err := a.addPlugin(plugin)
 			// if err != nil {
@@ -160,6 +159,7 @@ func (a *App) openPlugin(pluginPath string) (err error) {
 
 	} else {
 		err = errors.New("The PLUGIN_METHOD_NAME function of this plugin is not 'func() (string,string)'")
+		return err
 	}
 	sym, err = p.Lookup(PLUGIN_METHOD_GET_ROUTERE)
 	if f, ok := sym.(func() map[string]string); ok {
