@@ -211,7 +211,6 @@ func (a *App) RunGw(f func(*gin.Engine) (shareRouter.Router, error)) error {
 		a.initPlugins()
 	}
 	if a.LocalConf.EnableAutoRoute {
-		log.Logger.Debug("11111")
 		a.AutoRoute(router)
 	}
 	return eng.Run(a.LocalConf.HttpHost)

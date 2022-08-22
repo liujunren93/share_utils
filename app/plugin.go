@@ -20,10 +20,18 @@ import (
 	"github.com/liujunren93/share_utils/log"
 )
 
+type ShPluginer interface {
+	Name() (serverName, pluginName string)
+	GetRouter() map[string]string
+	Prepare(ctx *gin.Context, method string) (req, res interface{}, err shErr.Error)
+}
+
+const PLUGIN_NAME = "ShPlugin"
+
 var autoRouter = shareRouter.NewTree("/", "")
 
 type ShPlugin struct {
-	Plugin     *plugin.Plugin
+	pluginer   ShPluginer
 	ServerName string
 	PluginName string
 	Router     *router.Node
@@ -110,16 +118,7 @@ func (a *App) AutoRoute(r shareRouter.Router) error {
 }
 
 func (p *ShPlugin) Prepare(ctx *gin.Context, method string) (req, res interface{}, err error) {
-	symbol, err := p.Plugin.Lookup(PLUGIN_METHOD_PREPARE)
-	if err != nil {
-		return
-	}
-	f, ok := symbol.(func(ctx *gin.Context, method string) (req, res interface{}, err shErr.Error))
-	if !ok {
-		err = errors.New("The Prepare function of this plugin is not 'func(ctx *gin.Context, method string) (req, res interface{}, err errors.Error)'")
-		return
-	}
-	return f(ctx, method)
+	return p.pluginer.Prepare(ctx, method)
 }
 
 // func (a *App) addPlugin(name string) error {
@@ -149,31 +148,29 @@ func (a *App) openPlugin(pluginPath string) (err error) {
 	shPlugin := new(ShPlugin)
 	shPlugin.Plugin = p
 	shPlugin.Router = router.NewTree("/", "")
-	sym, err := p.Lookup(PLUGIN_METHOD_NAME)
+	sym, err := p.Lookup(PLUGIN_NAME)
 	if err != nil {
 		err = errors.New("OpenPlugin.Lookup:" + err.Error())
 		return
 	}
-	if f, ok := sym.(func() (serverName, pluginName string)); ok {
-		shPlugin.ServerName, shPlugin.PluginName = f()
+	shPluginer, ok := sym.(ShPluginer)
+	if ok {
+		shPlugin.ServerName, shPlugin.PluginName = shPluginer.Name()
 
 	} else {
-		err = errors.New("The PLUGIN_METHOD_NAME function of this plugin is not 'func() (string,string)'")
+		err = fmt.Errorf("the plugin:%s does not implement ShPluginer ", shPlugin.PluginName)
 		return err
 	}
-	sym, err = p.Lookup(PLUGIN_METHOD_GET_ROUTERE)
-	if f, ok := sym.(func() map[string]string); ok {
-		routers := f()
-		for k, r := range routers {
-			point := strings.Index(k, ":")
-			method := k[0:point]
-			shPlugin.Router.Add(k[point+1:], method, r)
-		}
-		a.plugin.pluginMap[shPlugin.PluginName] = shPlugin
 
-	} else {
-		err = errors.New("The PLUGIN_METHOD_GET_ROUTERE function of this plugin is not 'func()map[string]string '")
+	shPluginer.GetRouter()
+
+	for k, r := range shPluginer.GetRouter() {
+		point := strings.Index(k, ":")
+		method := k[0:point]
+		shPlugin.Router.Add(k[point+1:], method, r)
 	}
+	a.plugin.pluginMap[shPlugin.PluginName] = shPlugin
+
 	return
 }
 
@@ -191,41 +188,6 @@ func ParesRequest(ctx *gin.Context, urlPrefix string) (pluginName, reqPath, meth
 	reqPath = strings.Trim(strings.TrimLeft(path.Clean(ctx.Request.URL.Path), urlPrefix), "/")
 	return helper.SubstrLeft(reqPath, "/"), helper.SubstrRight(reqPath, "/"), ctx.Request.Method
 
-}
-
-func ParesRequest1(ctx *gin.Context, urlPrefix string) (pluginName, method string, err error) {
-	ctx.FullPath()
-
-	reqPath := strings.Trim(strings.TrimLeft(path.Clean(ctx.Request.URL.Path), urlPrefix), "/")
-	req := strings.Split(reqPath, "/")
-	if len(req) < 2 {
-		err = errors.New("the request url is not autoRoute")
-		return
-	}
-	m := methodMap[ctx.Request.Method]
-
-	if len(req) > 2 && len(req[2]) < 32 && !IsNum(req[2]) {
-		m = req[2]
-	} else {
-
-		if ctx.Request.Method == "GET" {
-			if len(req) > 2 { // info
-				ctx.Params = append(ctx.Params, gin.Param{Key: "pk", Value: req[2]})
-				m = "Info"
-			} else {
-				m = "List"
-			}
-		}
-
-		if (ctx.Request.Method == "PUT" || ctx.Request.Method == "DELETE") && len(req) > 2 {
-
-			ctx.Params = append(ctx.Params, gin.Param{Key: "pk", Value: req[2]})
-		}
-	}
-
-	pluginName = req[0]
-	method = "/" + req[0] + "." + req[1] + "/" + m
-	return
 }
 
 func IsNum(s string) bool {
