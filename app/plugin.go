@@ -146,7 +146,6 @@ func (a *App) openPlugin(pluginPath string) (err error) {
 		return
 	}
 	shPlugin := new(ShPlugin)
-	shPlugin.Plugin = p
 	shPlugin.Router = router.NewTree("/", "")
 	sym, err := p.Lookup(PLUGIN_NAME)
 	if err != nil {
@@ -155,6 +154,7 @@ func (a *App) openPlugin(pluginPath string) (err error) {
 	}
 	shPluginer, ok := sym.(ShPluginer)
 	if ok {
+		shPlugin.pluginer = shPluginer
 		shPlugin.ServerName, shPlugin.PluginName = shPluginer.Name()
 
 	} else {
