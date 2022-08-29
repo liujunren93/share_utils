@@ -40,10 +40,10 @@ func init() {
 }
 
 type appConfigOption struct {
-	LocalConf   *entity.LocalBase      // 启动app基础配置
-	defaultConf entity.DefaultConfiger // 配置中心默认配置
-	Cloud       cfg.Configer           // 配置中心
-	Local       cfg.Configer           // 本地配置
+	LocalConf   *entity.LocalBase   // 启动app基础配置
+	defaultConf entity.BaseConfiger // 配置中心默认配置
+	Cloud       cfg.Configer        // 配置中心
+	Local       cfg.Configer        // 本地配置
 
 }
 type App struct {
@@ -52,10 +52,9 @@ type App struct {
 	shareGrpcClient  *client.Client
 	monitorsCh       chan *config.Monitor
 	localMonitorOnce *sync.Once
-	plugin           *Plugin
 }
 
-func NewApp(defaultConfig entity.DefaultConfiger) *App {
+func NewApp(defaultConfig entity.BaseConfiger) *App {
 	app := &App{
 		ctx: context.TODO(),
 		appConfigOption: appConfigOption{
@@ -71,7 +70,7 @@ func NewApp(defaultConfig entity.DefaultConfiger) *App {
 	return app
 }
 
-func (a *App) GetDefaultConfig() entity.DefaultConfiger {
+func (a *App) GetDefaultConfig() entity.BaseConfiger {
 	if a.defaultConf.GetVersion() == "" {
 		panic("cloud config was not init")
 	}
@@ -203,16 +202,10 @@ func (a *App) RunGw(f func(*gin.Engine) (shareRouter.Router, error)) error {
 	if a.LocalConf.RunMode == "debug" {
 		gin.SetMode(gin.DebugMode)
 	}
-	router, err := f(eng)
-	if err != nil {
-		return err
-	}
-	if a.LocalConf.EnableAutoRoute && a.LocalConf.PluginPath != "" {
-		a.initPlugins()
-	}
+
 	if a.LocalConf.EnableAutoRoute {
-		a.AutoRoute(router)
 	}
+
 	return eng.Run(a.LocalConf.HttpHost)
 }
 

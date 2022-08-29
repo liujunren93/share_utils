@@ -23,7 +23,7 @@ func NewRedis(conf *Config) (*re.Client, error) {
 }
 
 type Config struct {
-	Network  string
+	Network  string `js`
 	Addr     string
 	Username string
 	Password string
