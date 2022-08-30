@@ -7,8 +7,8 @@ import (
 	"github.com/liujunren93/share_utils/log"
 
 	// "github.com/go-redis/redis/v8"
-	"github.com/liujunren93/share_utils/db/redis"
 	"github.com/liujunren93/share_utils/common/config"
+	"github.com/liujunren93/share_utils/db/redis"
 )
 
 type Redis struct {
@@ -45,7 +45,6 @@ func (r *Redis) GetConfig(ctx context.Context, confName, group string, callback 
 
 func (r *Redis) ListenConfig(ctx context.Context, confName, group string, callback config.Callback) error {
 	tpkey, _ := r.GetKey(confName, group)
-	r.redis.
 	pubsub := r.redis.Subscribe(ctx, tpkey)
 	ch := pubsub.Channel()
 	for {

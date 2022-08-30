@@ -65,7 +65,7 @@ type Cmdable interface {
 	MSet(ctx context.Context, values ...interface{}) *re.StatusCmd
 	MSetNX(ctx context.Context, values ...interface{}) *re.BoolCmd
 	Set(ctx context.Context, key string, value interface{}, expiration time.Duration) *re.StatusCmd
-	SetArgs(ctx context.Context, key string, value interface{}, a SetArgs) *re.StatusCmd
+	SetArgs(ctx context.Context, key string, value interface{}, a re.SetArgs) *re.StatusCmd
 	// TODO: rename to SetEx
 	SetEX(ctx context.Context, key string, value interface{}, expiration time.Duration) *re.StatusCmd
 	SetNX(ctx context.Context, key string, value interface{}, expiration time.Duration) *re.BoolCmd
@@ -76,19 +76,19 @@ type Cmdable interface {
 
 	GetBit(ctx context.Context, key string, offset int64) *re.IntCmd
 	SetBit(ctx context.Context, key string, offset int64, value int) *re.IntCmd
-	BitCount(ctx context.Context, key string, bitCount *BitCount) *re.IntCmd
+	BitCount(ctx context.Context, key string, bitCount *re.BitCount) *re.IntCmd
 	BitOpAnd(ctx context.Context, destKey string, keys ...string) *re.IntCmd
 	BitOpOr(ctx context.Context, destKey string, keys ...string) *re.IntCmd
 	BitOpXor(ctx context.Context, destKey string, keys ...string) *re.IntCmd
 	BitOpNot(ctx context.Context, destKey string, key string) *re.IntCmd
 	BitPos(ctx context.Context, key string, bit int64, pos ...int64) *re.IntCmd
-	BitField(ctx context.Context, key string, args ...interface{}) *IntSliceCmd
+	BitField(ctx context.Context, key string, args ...interface{}) *re.IntSliceCmd
 
-	Scan(ctx context.Context, cursor uint64, match string, count int64) *ScanCmd
-	ScanType(ctx context.Context, cursor uint64, match string, count int64, keyType string) *ScanCmd
-	SScan(ctx context.Context, key string, cursor uint64, match string, count int64) *ScanCmd
-	HScan(ctx context.Context, key string, cursor uint64, match string, count int64) *ScanCmd
-	ZScan(ctx context.Context, key string, cursor uint64, match string, count int64) *ScanCmd
+	Scan(ctx context.Context, cursor uint64, match string, count int64) *re.ScanCmd
+	ScanType(ctx context.Context, cursor uint64, match string, count int64, keyType string) *re.ScanCmd
+	SScan(ctx context.Context, key string, cursor uint64, match string, count int64) *re.ScanCmd
+	HScan(ctx context.Context, key string, cursor uint64, match string, count int64) *re.ScanCmd
+	ZScan(ctx context.Context, key string, cursor uint64, match string, count int64) *re.ScanCmd
 
 	HDel(ctx context.Context, key string, fields ...string) *re.IntCmd
 	HExists(ctx context.Context, key, field string) *re.BoolCmd
@@ -115,8 +115,8 @@ type Cmdable interface {
 	LLen(ctx context.Context, key string) *re.IntCmd
 	LPop(ctx context.Context, key string) *re.StringCmd
 	LPopCount(ctx context.Context, key string, count int) *re.StringSliceCmd
-	LPos(ctx context.Context, key string, value string, args LPosArgs) *re.IntCmd
-	LPosCount(ctx context.Context, key string, value string, count int64, args LPosArgs) *IntSliceCmd
+	LPos(ctx context.Context, key string, value string, args re.LPosArgs) *re.IntCmd
+	LPosCount(ctx context.Context, key string, value string, count int64, args re.LPosArgs) *re.IntSliceCmd
 	LPush(ctx context.Context, key string, values ...interface{}) *re.IntCmd
 	LPushX(ctx context.Context, key string, values ...interface{}) *re.IntCmd
 	LRange(ctx context.Context, key string, start, stop int64) *re.StringSliceCmd
@@ -150,29 +150,29 @@ type Cmdable interface {
 	SUnion(ctx context.Context, keys ...string) *re.StringSliceCmd
 	SUnionStore(ctx context.Context, destination string, keys ...string) *re.IntCmd
 
-	XAdd(ctx context.Context, a *XAddArgs) *re.StringCmd
+	XAdd(ctx context.Context, a *re.XAddArgs) *re.StringCmd
 	XDel(ctx context.Context, stream string, ids ...string) *re.IntCmd
 	XLen(ctx context.Context, stream string) *re.IntCmd
-	XRange(ctx context.Context, stream, start, stop string) *XMessageSliceCmd
-	XRangeN(ctx context.Context, stream, start, stop string, count int64) *XMessageSliceCmd
-	XRevRange(ctx context.Context, stream string, start, stop string) *XMessageSliceCmd
-	XRevRangeN(ctx context.Context, stream string, start, stop string, count int64) *XMessageSliceCmd
-	XRead(ctx context.Context, a *XReadArgs) *XStreamSliceCmd
-	XReadStreams(ctx context.Context, streams ...string) *XStreamSliceCmd
+	XRange(ctx context.Context, stream, start, stop string) *re.XMessageSliceCmd
+	XRangeN(ctx context.Context, stream, start, stop string, count int64) *re.XMessageSliceCmd
+	XRevRange(ctx context.Context, stream string, start, stop string) *re.XMessageSliceCmd
+	XRevRangeN(ctx context.Context, stream string, start, stop string, count int64) *re.XMessageSliceCmd
+	XRead(ctx context.Context, a *re.XReadArgs) *re.XStreamSliceCmd
+	XReadStreams(ctx context.Context, streams ...string) *re.XStreamSliceCmd
 	XGroupCreate(ctx context.Context, stream, group, start string) *re.StatusCmd
 	XGroupCreateMkStream(ctx context.Context, stream, group, start string) *re.StatusCmd
 	XGroupSetID(ctx context.Context, stream, group, start string) *re.StatusCmd
 	XGroupDestroy(ctx context.Context, stream, group string) *re.IntCmd
 	XGroupCreateConsumer(ctx context.Context, stream, group, consumer string) *re.IntCmd
 	XGroupDelConsumer(ctx context.Context, stream, group, consumer string) *re.IntCmd
-	XReadGroup(ctx context.Context, a *XReadGroupArgs) *XStreamSliceCmd
+	XReadGroup(ctx context.Context, a *re.XReadGroupArgs) *re.XStreamSliceCmd
 	XAck(ctx context.Context, stream, group string, ids ...string) *re.IntCmd
-	XPending(ctx context.Context, stream, group string) *XPendingCmd
-	XPendingExt(ctx context.Context, a *XPendingExtArgs) *XPendingExtCmd
-	XClaim(ctx context.Context, a *XClaimArgs) *XMessageSliceCmd
-	XClaimJustID(ctx context.Context, a *XClaimArgs) *re.StringSliceCmd
-	XAutoClaim(ctx context.Context, a *XAutoClaimArgs) *XAutoClaimCmd
-	XAutoClaimJustID(ctx context.Context, a *XAutoClaimArgs) *XAutoClaimJustIDCmd
+	XPending(ctx context.Context, stream, group string) *re.XPendingCmd
+	XPendingExt(ctx context.Context, a *re.XPendingExtArgs) *re.XPendingExtCmd
+	XClaim(ctx context.Context, a *re.XClaimArgs) *re.XMessageSliceCmd
+	XClaimJustID(ctx context.Context, a *re.XClaimArgs) *re.StringSliceCmd
+	XAutoClaim(ctx context.Context, a *re.XAutoClaimArgs) *re.XAutoClaimCmd
+	XAutoClaimJustID(ctx context.Context, a *re.XAutoClaimArgs) *re.XAutoClaimJustIDCmd
 
 	// TODO: XTrim and XTrimApprox remove in v9.
 	XTrim(ctx context.Context, key string, maxLen int64) *re.IntCmd
@@ -181,13 +181,13 @@ type Cmdable interface {
 	XTrimMaxLenApprox(ctx context.Context, key string, maxLen, limit int64) *re.IntCmd
 	XTrimMinID(ctx context.Context, key string, minID string) *re.IntCmd
 	XTrimMinIDApprox(ctx context.Context, key string, minID string, limit int64) *re.IntCmd
-	XInfoGroups(ctx context.Context, key string) *XInfoGroupsCmd
-	XInfoStream(ctx context.Context, key string) *XInfoStreamCmd
-	XInfoStreamFull(ctx context.Context, key string, count int) *XInfoStreamFullCmd
-	XInfoConsumers(ctx context.Context, key string, group string) *XInfoConsumersCmd
+	XInfoGroups(ctx context.Context, key string) *re.XInfoGroupsCmd
+	XInfoStream(ctx context.Context, key string) *re.XInfoStreamCmd
+	XInfoStreamFull(ctx context.Context, key string, count int) *re.XInfoStreamFullCmd
+	XInfoConsumers(ctx context.Context, key string, group string) *re.XInfoConsumersCmd
 
-	BZPopMax(ctx context.Context, timeout time.Duration, keys ...string) *ZWithKeyCmd
-	BZPopMin(ctx context.Context, timeout time.Duration, keys ...string) *ZWithKeyCmd
+	BZPopMax(ctx context.Context, timeout time.Duration, keys ...string) *re.ZWithKeyCmd
+	BZPopMin(ctx context.Context, timeout time.Duration, keys ...string) *re.ZWithKeyCmd
 
 	// TODO: remove
 	//		ZAddCh
@@ -199,17 +199,17 @@ type Cmdable interface {
 	// 	in v9.
 	// 	use ZAddArgs and ZAddArgsIncr.
 
-	ZAdd(ctx context.Context, key string, members ...*Z) *re.IntCmd
-	ZAddNX(ctx context.Context, key string, members ...*Z) *re.IntCmd
-	ZAddXX(ctx context.Context, key string, members ...*Z) *re.IntCmd
-	ZAddCh(ctx context.Context, key string, members ...*Z) *re.IntCmd
-	ZAddNXCh(ctx context.Context, key string, members ...*Z) *re.IntCmd
-	ZAddXXCh(ctx context.Context, key string, members ...*Z) *re.IntCmd
-	ZAddArgs(ctx context.Context, key string, args ZAddArgs) *re.IntCmd
-	ZAddArgsIncr(ctx context.Context, key string, args ZAddArgs) *re.FloatCmd
-	ZIncr(ctx context.Context, key string, member *Z) *re.FloatCmd
-	ZIncrNX(ctx context.Context, key string, member *Z) *re.FloatCmd
-	ZIncrXX(ctx context.Context, key string, member *Z) *re.FloatCmd
+	ZAdd(ctx context.Context, key string, members ...*re.Z) *re.IntCmd
+	ZAddNX(ctx context.Context, key string, members ...*re.Z) *re.IntCmd
+	ZAddXX(ctx context.Context, key string, members ...*re.Z) *re.IntCmd
+	ZAddCh(ctx context.Context, key string, members ...*re.Z) *re.IntCmd
+	ZAddNXCh(ctx context.Context, key string, members ...*re.Z) *re.IntCmd
+	ZAddXXCh(ctx context.Context, key string, members ...*re.Z) *re.IntCmd
+	ZAddArgs(ctx context.Context, key string, args re.ZAddArgs) *re.IntCmd
+	ZAddArgsIncr(ctx context.Context, key string, args re.ZAddArgs) *re.FloatCmd
+	ZIncr(ctx context.Context, key string, member *re.Z) *re.FloatCmd
+	ZIncrNX(ctx context.Context, key string, member *re.Z) *re.FloatCmd
+	ZIncrXX(ctx context.Context, key string, member *re.Z) *re.FloatCmd
 	ZCard(ctx context.Context, key string) *re.IntCmd
 	ZCount(ctx context.Context, key, min, max string) *re.IntCmd
 	ZLexCount(ctx context.Context, key, min, max string) *re.IntCmd
@@ -275,7 +275,7 @@ type Cmdable interface {
 	ShutdownSave(ctx context.Context) *re.StatusCmd
 	ShutdownNoSave(ctx context.Context) *re.StatusCmd
 	SlaveOf(ctx context.Context, host, port string) *re.StatusCmd
-	Time(ctx context.Context) *TimeCmd
+	Time(ctx context.Context) *re.TimeCmd
 	DebugObject(ctx context.Context, key string) *re.StringCmd
 	ReadOnly(ctx context.Context) *re.StatusCmd
 	ReadWrite(ctx context.Context) *re.StatusCmd

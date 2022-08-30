@@ -64,8 +64,7 @@ func NewClient(conf Configer) (*Client, error) {
 func newClient(conf Configer) (Cmdable, error) {
 	switch conf.GetMode() {
 	case 1:
-		c, err := newGeneralClient(conf.(*Config))
-		return c, err
+		return newGeneralClient(conf.(*Config))
 
 	case 2:
 		return newClusterClient(conf.(*ClusterConfig))
