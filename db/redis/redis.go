@@ -3,6 +3,7 @@ package redis
 import (
 	"context"
 	"time"
+
 	re "github.com/go-redis/redis/v8"
 )
 
@@ -241,7 +242,7 @@ type Cmdable interface {
 	ZScore(ctx context.Context, key, member string) *re.FloatCmd
 	ZUnionStore(ctx context.Context, dest string, store *re.ZStore) *re.IntCmd
 	ZUnion(ctx context.Context, store re.ZStore) *re.StringSliceCmd
-	ZUnionWithScores(ctx context.Context, store re,ZStore) *re.ZSliceCmd
+	ZUnionWithScores(ctx context.Context, store re.ZStore) *re.ZSliceCmd
 	ZRandMember(ctx context.Context, key string, count int, withScores bool) *re.StringSliceCmd
 	ZDiff(ctx context.Context, keys ...string) *re.StringSliceCmd
 	ZDiffWithScores(ctx context.Context, keys ...string) *re.ZSliceCmd
@@ -324,10 +325,8 @@ type Cmdable interface {
 	GeoDist(ctx context.Context, key string, member1, member2, unit string) *re.FloatCmd
 	GeoHash(ctx context.Context, key string, members ...string) *re.StringSliceCmd
 
-
-
 	///configCenter
 
-	Subscribe(ctx context.Context, channels ...string)*re.PubSub
-	PSubscribe(ctx context.Context, channels ...string) *re.PubSub 
+	Subscribe(ctx context.Context, channels ...string) *re.PubSub
+	PSubscribe(ctx context.Context, channels ...string) *re.PubSub
 }
