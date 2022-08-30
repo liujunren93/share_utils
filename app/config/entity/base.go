@@ -1,13 +1,17 @@
 package entity
 
 import (
-	"github.com/liujunren93/share_utils/databases/gorm"
-	"github.com/liujunren93/share_utils/databases/redis"
+	"github.com/liujunren93/share_utils/db/gorm"
+	"github.com/liujunren93/share_utils/db/redis"
 	"github.com/liujunren93/share_utils/log"
 	"github.com/mitchellh/mapstructure"
 )
 
 type ConfMap map[string]interface{}
+
+func (c ConfMap) ConfMap(dest interface{}) error {
+	return mapstructure.Decode(c, dest)
+}
 
 type BaseConfiger interface {
 	GetVersion() string
@@ -42,10 +46,6 @@ type ConfigCenter struct {
 	ConfName string  `mapstructure:"conf_name"` // 配置名
 	Group    string  `mapstructure:"group"`     // debug product
 	Config   ConfMap `mapstructure:"config"`
-}
-
-func (c *ConfigCenter) ToConfig(dest interface{}) error {
-	return mapstructure.Decode(c.Config, &dest)
 }
 
 type Config struct {

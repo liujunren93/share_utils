@@ -17,7 +17,7 @@ import (
 	cfg "github.com/liujunren93/share_utils/common/config"
 	"github.com/liujunren93/share_utils/common/config/store"
 	shareRouter "github.com/liujunren93/share_utils/common/gin/router"
-	"github.com/liujunren93/share_utils/databases/redis"
+	"github.com/liujunren93/share_utils/db/redis"
 	"github.com/liujunren93/share_utils/log"
 	"github.com/liujunren93/share_utils/middleware"
 	utilsServer "github.com/liujunren93/share_utils/server"
@@ -150,9 +150,20 @@ func (a *App) GetConfig(ct confType, ctx context.Context, confName, group string
 func (a *App) initConfCenter() {
 	switch a.LocalConf.ConfCenter.Type {
 	case "redis":
-		var conf redis.Config
-		a.LocalConf.ConfCenter.ToConfig(&conf)
-		client, err := redis.NewRedis(&conf)
+		var base redis.Base
+		var conf redis.Configer
+		a.LocalConf.ConfCenter.Config.ConfMap(&base)
+		if base.GetMode() == 1 {
+			conf = redis.Config{}
+		} else if base.GetMode() == 2 {
+			conf = redis.ClusterConfig{}
+		} else if base.GetMode() == 3 {
+			conf = redis.SentinelConfig{}
+		} else {
+			panic("ConfCenter redis config mod err ")
+		}
+		a.LocalConf.ConfCenter.Config.ConfMap(&conf)
+		client, err := redis.NewClient(conf)
 		if err != nil {
 			panic(err)
 		}
