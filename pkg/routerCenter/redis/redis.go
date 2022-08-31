@@ -5,22 +5,27 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/go-redis/redis/v8"
+	re "github.com/go-redis/redis/v8"
+	"github.com/liujunren93/share_utils/db/redis"
 	router "github.com/liujunren93/share_utils/pkg/routerCenter"
 )
 
-type Redis struct {
+type RouteCenter struct {
 	router.RouterCentry
 	client *redis.Client
 }
 
-func (r *Redis) GetSubChannel(key string) string {
-	return r.GetKey(key) + "/" + "subscribe"
+func NewRouteCenter(cli *redis.Client) *RouteCenter {
+	return &RouteCenter{client: cli}
 }
 
-func (r *Redis) GetRouter(ctx context.Context, key string) (routers map[string]router.Router, err error) {
-	res := r.client.Get(ctx, r.GetKey(key))
-	if res.Err() != nil && res.Err() != redis.Nil {
+func (r *RouteCenter) GetSubChannel(app string) string {
+	return r.GetKey(app) + "/" + "subscribe"
+}
+
+func (r *RouteCenter) GetRouter(ctx context.Context, app string) (routers map[string]router.Router, err error) {
+	res := r.client.Get(ctx, r.GetKey(app))
+	if res.Err() != nil && res.Err() != re.Nil {
 		return nil, res.Err()
 	}
 	data, err := res.Bytes()
@@ -31,28 +36,28 @@ func (r *Redis) GetRouter(ctx context.Context, key string) (routers map[string]r
 	return
 }
 
-func (r *Redis) Registry(ctx context.Context, key string, router map[string]router.Router) error {
+func (r *RouteCenter) Registry(ctx context.Context, app string, router map[string]router.Router) error {
 	data, err := json.Marshal(router)
 	if err != nil {
 		return err
 	}
-	err = r.client.Set(ctx, r.GetKey(key), string(data), time.Minute*30).Err()
+	err = r.client.Set(ctx, r.GetKey(app), string(data), time.Minute*30).Err()
 	if err != nil {
 		return err
 	}
-	err = r.client.Publish(ctx, r.GetSubChannel(key), "1").Err()
+	err = r.client.Publish(ctx, r.GetSubChannel(app), "1").Err()
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (r *Redis) DelRouter(ctx context.Context, key string) error {
-	err := r.client.Del(ctx, r.GetKey(key)).Err()
+func (r *RouteCenter) DelRouter(ctx context.Context, app string) error {
+	err := r.client.Del(ctx, r.GetKey(app)).Err()
 	if err != nil {
 		return err
 	}
-	err = r.client.Publish(ctx, r.GetSubChannel(key), "-1").Err()
+	err = r.client.Publish(ctx, r.GetSubChannel(app), "-1").Err()
 	if err != nil {
 		return err
 	}
@@ -60,15 +65,15 @@ func (r *Redis) DelRouter(ctx context.Context, key string) error {
 
 }
 
-func (r *Redis) Watch(ctx context.Context, key string, callback func(router map[string]router.Router, err error)) {
-	pub := r.client.Subscribe(ctx, key)
+func (r *RouteCenter) Watch(ctx context.Context, app string, callback func(router map[string]router.Router, err error)) {
+	pub := r.client.Subscribe(ctx, app)
 	for {
 		select {
 		case msg := <-pub.Channel():
 
 			if msg.Payload == "1" { //add
 				tctx, _ := context.WithTimeout(ctx, time.Second*3)
-				callback(r.GetRouter(tctx, key))
+				callback(r.GetRouter(tctx, app))
 			} else { // del
 				callback(nil, nil)
 			}
@@ -76,8 +81,4 @@ func (r *Redis) Watch(ctx context.Context, key string, callback func(router map[
 			return
 		}
 	}
-}
-
-func NewRedis(cli *redis.Client) *Redis {
-	return &Redis{client: cli}
 }

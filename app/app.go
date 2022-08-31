@@ -52,6 +52,7 @@ type App struct {
 	shareGrpcClient  *client.Client
 	monitorsCh       chan *config.Monitor
 	localMonitorOnce *sync.Once
+	appRouter        *shareRouter.Node
 }
 
 func NewApp(defaultConfig entity.BaseConfiger) *App {
@@ -150,20 +151,8 @@ func (a *App) GetConfig(ct confType, ctx context.Context, confName, group string
 func (a *App) initConfCenter() {
 	switch a.LocalConf.ConfCenter.Type {
 	case "redis":
-		var base redis.Base
-		var conf redis.Configer
-		a.LocalConf.ConfCenter.Config.ConfMap(&base)
-		if base.GetMode() == 1 {
-			conf = redis.Config{}
-		} else if base.GetMode() == 2 {
-			conf = redis.ClusterConfig{}
-		} else if base.GetMode() == 3 {
-			conf = redis.SentinelConfig{}
-		} else {
-			panic("ConfCenter redis config mod err ")
-		}
-		a.LocalConf.ConfCenter.Config.ConfMap(&conf)
-		client, err := redis.NewClient(conf)
+
+		client, err := redis.NewClient(a.LocalConf.ConfCenter.Config)
 		if err != nil {
 			panic(err)
 		}
@@ -214,8 +203,8 @@ func (a *App) RunGw(f func(*gin.Engine) (shareRouter.Router, error)) error {
 		gin.SetMode(gin.DebugMode)
 	}
 
-	if a.LocalConf.EnableAutoRoute {
-	}
+	routerCenter := a.getRouterCenter()
+	routerCenter.GetRouter(context.TODO())
 
 	return eng.Run(a.LocalConf.HttpHost)
 }

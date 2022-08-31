@@ -6,6 +6,7 @@ import (
 	"time"
 
 	re "github.com/go-redis/redis/v8"
+	"github.com/mitchellh/mapstructure"
 )
 
 type Client struct {
@@ -51,7 +52,23 @@ type SentinelConfig struct {
 	Password         string   `json:"password" yaml:"password"`
 }
 
-func NewClient(conf Configer) (*Client, error) {
+func NewClient(redisConf map[string]interface{}) (*Client, error) {
+	var base Base
+	var conf Configer
+	err := mapstructure.Decode(redisConf, &base)
+	if err != nil {
+		return nil, err
+	}
+	if base.GetMode() == 1 {
+		conf = Config{}
+	} else if base.GetMode() == 2 {
+		conf = ClusterConfig{}
+	} else if base.GetMode() == 3 {
+		conf = SentinelConfig{}
+	} else {
+		panic("ConfCenter redis config mod err ")
+	}
+	mapstructure.Decode(conf, conf)
 	var cli = new(Client)
 	cmd, err := newClient(conf)
 	if err != nil {
