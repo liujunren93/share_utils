@@ -51,6 +51,7 @@ func (app *App) initRouter() {
 	app.appRouter = tree
 
 	rc.Watch(app.ctx, func(router map[string]routerCenter.Router, error error) {
+
 	})
 
 }
