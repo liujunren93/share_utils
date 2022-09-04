@@ -9,23 +9,24 @@ import (
 )
 
 type Node struct {
-	Path     string
-	GrpcPath string
-	Method   string
-	Childs   []*Node
+	Path      string
+	GrpcPath  string
+	Method    string
+	ReqParams map[string]interface{} `json:"req_params" yaml:"req_params"`
+	Childs    []*Node
 }
 
 func NewTree(root, grpcPath string) *Node {
 	return &Node{Path: root, GrpcPath: grpcPath}
 }
-func (node *Node) Add(reqPath string, method, grpcPath string) {
+func (node *Node) Add(reqPath string, method, grpcPath string, reqParams map[string]interface{}) {
 	method = strings.ToUpper(method)
 	reqPath = path.Clean(reqPath)
 	reqPath = strings.Trim(reqPath, "/")
-	node.add(strings.Split(reqPath, "/"), method, grpcPath)
+	node.add(strings.Split(reqPath, "/"), method, grpcPath, reqParams)
 }
 
-func (node *Node) add(paths []string, method, grpcPath string) {
+func (node *Node) add(paths []string, method, grpcPath string, reqParams map[string]interface{}) {
 	var isNew = true
 	var tmpNode *Node
 	var cpath = paths[0]
@@ -35,6 +36,7 @@ func (node *Node) add(paths []string, method, grpcPath string) {
 				if v.Method == method {
 					tmpNode = v
 					tmpNode.GrpcPath = grpcPath
+					tmpNode.ReqParams = reqParams
 					isNew = false
 					break
 				}
@@ -43,7 +45,6 @@ func (node *Node) add(paths []string, method, grpcPath string) {
 				isNew = false
 				break
 			}
-
 		}
 	}
 	if tmpNode == nil {
@@ -51,12 +52,13 @@ func (node *Node) add(paths []string, method, grpcPath string) {
 		tmpNode.Path = cpath
 	}
 	if len(paths) > 1 {
-		tmpNode.add(paths[1:], method, grpcPath)
+		tmpNode.add(paths[1:], method, grpcPath, reqParams)
 	}
 
 	if len(paths) == 1 {
 		tmpNode.GrpcPath = grpcPath
 		tmpNode.Method = method
+		tmpNode.ReqParams = reqParams
 
 	}
 

@@ -2,7 +2,6 @@ package entity
 
 import (
 	"github.com/liujunren93/share_utils/db/gorm"
-	"github.com/liujunren93/share_utils/db/redis"
 	"github.com/liujunren93/share_utils/log"
 	"github.com/mitchellh/mapstructure"
 )
@@ -51,7 +50,7 @@ type ConfigCenter struct {
 type Config struct {
 	Version          string            `json:"version" yaml:"version"` //配置版本
 	Log              *log.Config       `json:"log" yaml:"log"`
-	Redis            *redis.Config     `json:"redis" yaml:"redis"`
+	Redis            ConfMap           `json:"redis" yaml:"redis"`
 	Mysql            *gorm.Mysql       `json:"mysql" yaml:"mysql"`
 	Registry         *Registry         `json:"registry" yaml:"registry"`
 	RouterCenterConf *RouterCenterConf `json:"router_center_conf" yaml:"router_center_conf"`

@@ -20,6 +20,7 @@ import (
 	"github.com/liujunren93/share_utils/db/redis"
 	"github.com/liujunren93/share_utils/log"
 	"github.com/liujunren93/share_utils/middleware"
+	"github.com/liujunren93/share_utils/pkg/routerCenter"
 	utilsServer "github.com/liujunren93/share_utils/server"
 	"github.com/mitchellh/mapstructure"
 )
@@ -52,7 +53,7 @@ type App struct {
 	shareGrpcClient  *client.Client
 	monitorsCh       chan *config.Monitor
 	localMonitorOnce *sync.Once
-	appRouter        *shareRouter.Node
+	appRouter        map[string]*shareRouter.Node
 }
 
 func NewApp(defaultConfig entity.BaseConfiger) *App {
@@ -69,6 +70,10 @@ func NewApp(defaultConfig entity.BaseConfiger) *App {
 	}
 	app.initConfig()
 	return app
+}
+
+func (a *App) GetAppName() string {
+	return a.LocalConf.AppName
 }
 
 func (a *App) GetDefaultConfig() entity.BaseConfiger {
@@ -202,14 +207,15 @@ func (a *App) RunGw(f func(*gin.Engine) (shareRouter.Router, error)) error {
 	if a.LocalConf.RunMode == "debug" {
 		gin.SetMode(gin.DebugMode)
 	}
-
-	routerCenter := a.getRouterCenter()
-	routerCenter.GetRouter(context.TODO())
-
+	router, err := f(eng)
+	if err != nil {
+		return err
+	}
+	a.AutoRoute(router)
 	return eng.Run(a.LocalConf.HttpHost)
 }
 
-func (a *App) RunRpc(registryAddr []string, f func(ser *server.GrpcServer) error) error {
+func (a *App) RunRpc(registryAddr []string, f func(ser *server.GrpcServer, rc routerCenter.RouterCenter) error) error {
 	s := utilsServer.Server{Address: a.LocalConf.HttpHost, Mode: a.LocalConf.RunMode, Namespace: a.LocalConf.Namespace, ServerName: a.LocalConf.AppName}
 	s.RegistryAddr = registryAddr
 	gs, err := s.NewServer()
@@ -217,11 +223,12 @@ func (a *App) RunRpc(registryAddr []string, f func(ser *server.GrpcServer) error
 		log.Logger.Error(err)
 		return err
 	}
-	err = f(gs)
+	err = f(gs, a.GetRouterCenter())
 	if err != nil {
 		log.Logger.Error(err)
 		return err
 	}
+
 	return gs.Run()
 
 }

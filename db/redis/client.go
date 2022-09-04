@@ -15,14 +15,18 @@ type Client struct {
 }
 type Configer interface {
 	GetMode() int8 // general:0 cluster:
+	SetMode(int8)
 }
 
 type Base struct {
 	Mode int8 `json:"mode" yaml:"mode"` // general:1 cluster:2 sentinel:3
 }
 
-func (c Base) GetMode() int8 {
+func (c *Base) GetMode() int8 {
 	return c.Mode
+}
+func (c *Base) SetMode(mode int8) {
+	c.Mode = mode
 }
 
 type Config struct {
@@ -60,15 +64,16 @@ func NewClient(redisConf map[string]interface{}) (*Client, error) {
 		return nil, err
 	}
 	if base.GetMode() == 1 {
-		conf = Config{}
+		conf = &Config{}
 	} else if base.GetMode() == 2 {
-		conf = ClusterConfig{}
+		conf = &ClusterConfig{}
 	} else if base.GetMode() == 3 {
-		conf = SentinelConfig{}
+		conf = &SentinelConfig{}
 	} else {
 		panic("ConfCenter redis config mod err ")
 	}
-	mapstructure.Decode(conf, conf)
+	conf.SetMode(base.GetMode())
+	mapstructure.Decode(redisConf, conf)
 	var cli = new(Client)
 	cmd, err := newClient(conf)
 	if err != nil {
