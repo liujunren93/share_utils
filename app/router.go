@@ -27,7 +27,7 @@ import (
 
 func (app *App) GetRouterCenter() routerCenter.RouterCenter {
 	var rc routerCenter.RouterCenter
-	routerConfig := app.defaultConf.GetRouterCenter()
+	routerConfig := app.baseConfig.GetRouterCenter()
 	if routerConfig == nil {
 		return nil
 		// panic("You must set router center config")

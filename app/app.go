@@ -41,10 +41,10 @@ func init() {
 }
 
 type appConfigOption struct {
-	LocalConf   *entity.LocalBase   // 启动app基础配置
-	defaultConf entity.BaseConfiger // 配置中心默认配置
-	Cloud       cfg.Configer        // 配置中心
-	Local       cfg.Configer        // 本地配置
+	LocalConf  *entity.LocalBase   // 启动app基础配置
+	baseConfig entity.BaseConfiger // 配置中心默认配置
+	Cloud      cfg.Configer        // 配置中心
+	Local      cfg.Configer        // 本地配置
 
 }
 type App struct {
@@ -60,13 +60,13 @@ func NewApp(defaultConfig entity.BaseConfiger) *App {
 	app := &App{
 		ctx: context.TODO(),
 		appConfigOption: appConfigOption{
-			defaultConf: defaultConfig,
+			baseConfig: defaultConfig,
 		},
 		monitorsCh:       config.InitRegistryMonitor(),
 		localMonitorOnce: &sync.Once{},
 	}
-	if app.appConfigOption.defaultConf == nil {
-		app.appConfigOption.defaultConf = entity.DefaultConfig
+	if app.appConfigOption.baseConfig == nil {
+		app.appConfigOption.baseConfig = entity.DefaultConfig
 	}
 	app.initConfig()
 	return app
@@ -76,11 +76,11 @@ func (a *App) GetAppName() string {
 	return a.LocalConf.AppName
 }
 
-func (a *App) GetDefaultConfig() entity.BaseConfiger {
-	if a.defaultConf.GetVersion() == "" {
+func (a *App) GetBaseConfig() entity.BaseConfiger {
+	if a.baseConfig.GetVersion() == "" {
 		panic("cloud config was not init")
 	}
-	return a.defaultConf
+	return a.baseConfig
 }
 
 func (a *App) CloudConfigMonitor(confName, group, fieldName string, callbacks ...func()) {
@@ -127,7 +127,7 @@ func (a *App) initConfig() {
 		a.initConfCenter()
 	}
 	ctx, _ := context.WithTimeout(context.Background(), 3*time.Second)
-	err = a.Cloud.GetConfig(ctx, a.LocalConf.ConfCenter.ConfName, a.LocalConf.ConfCenter.Group, config.DescConfig(a.defaultConf))
+	err = a.Cloud.GetConfig(ctx, a.LocalConf.ConfCenter.ConfName, a.LocalConf.ConfCenter.Group, config.DescConfig(a.baseConfig))
 	if err != nil {
 		fmt.Println("get Config from cloud err:" + err.Error())
 		panic("get Config from cloud err:" + err.Error())
@@ -135,7 +135,7 @@ func (a *App) initConfig() {
 	}
 	a.initLogger()
 	go func() {
-		err := a.Cloud.ListenConfig(a.ctx, a.LocalConf.ConfCenter.ConfName, a.LocalConf.ConfCenter.Group, config.DescConfigAndCallbacks(a.defaultConf))
+		err := a.Cloud.ListenConfig(a.ctx, a.LocalConf.ConfCenter.ConfName, a.LocalConf.ConfCenter.Group, config.DescConfigAndCallbacks(a.baseConfig))
 		if err != nil {
 			log.Logger.Error(err)
 		}
@@ -166,12 +166,12 @@ func (a *App) initConfCenter() {
 }
 
 func (a *App) initLogger() {
-	if logConf, ok := a.defaultConf.GetLogConfig(); ok {
+	if logConf, ok := a.baseConfig.GetLogConfig(); ok {
 		log.Init(logConf)
 	}
 	shLog.Logger = log.Logger
 	a.CloudConfigMonitor(a.LocalConf.ConfCenter.ConfName, a.LocalConf.ConfCenter.Group, "Log", func() {
-		if logConf, ok := a.defaultConf.GetLogConfig(); ok {
+		if logConf, ok := a.baseConfig.GetLogConfig(); ok {
 			log.Upgrade(logConf)
 		}
 
@@ -181,7 +181,7 @@ func (a *App) initLogger() {
 func (a *App) GetGrpcClient(targetUrl string) (*client.Client, error) {
 	if a.shareGrpcClient == nil {
 		var utilsGrpcClient *grpc.Client
-		registryConf, ok := a.defaultConf.GetRegistryConfig()
+		registryConf, ok := a.baseConfig.GetRegistryConfig()
 		if ok || registryConf.Enable {
 			utilsGrpcClient = grpc.NewClient(grpc.WithEtcdAddr(registryConf.Etcd.Endpoints...))
 		} else {
