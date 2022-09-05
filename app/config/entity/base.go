@@ -26,7 +26,7 @@ var DefaultConfig = &Config{
 		SetReportCaller: true,
 		Level:           "debug",
 	},
-	RouterCenterConf: nil,
+	RouterCenter: nil,
 }
 
 type LocalBase struct {
@@ -48,12 +48,12 @@ type ConfigCenter struct {
 }
 
 type Config struct {
-	Version          string            `json:"version" yaml:"version"` //配置版本
-	Log              *log.Config       `json:"log" yaml:"log"`
-	Redis            ConfMap           `json:"redis" yaml:"redis"`
-	Mysql            *gorm.Mysql       `json:"mysql" yaml:"mysql"`
-	Registry         *Registry         `json:"registry" yaml:"registry"`
-	RouterCenterConf *RouterCenterConf `json:"router_center_conf" yaml:"router_center_conf"`
+	Version      string            `json:"version" yaml:"version"` //配置版本
+	Log          *log.Config       `json:"log" yaml:"log"`
+	Redis        ConfMap           `json:"redis" yaml:"redis"`
+	Mysql        *gorm.Mysql       `json:"mysql" yaml:"mysql"`
+	Registry     *Registry         `json:"registry" yaml:"registry"`
+	RouterCenter *RouterCenterConf `json:"router_center" yaml:"router_center"`
 }
 
 func (c *Config) GetVersion() string {
@@ -72,8 +72,7 @@ func (c *Config) GetRegistryConfig() (*Registry, bool) {
 	return c.Registry, true
 }
 func (c *Config) GetRouterCenter() *RouterCenterConf {
-
-	return c.RouterCenterConf
+	return c.RouterCenter
 }
 
 // 自动路由配置
