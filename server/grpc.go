@@ -16,7 +16,7 @@ type Server struct {
 	Namespace    string
 	OpenTrace    string
 	Weight       int // 权重
-	Address      string
+	ListenAddr   string
 	opts         []server.Option
 }
 
@@ -29,8 +29,8 @@ func (s *Server) NewServer(opts ...server.Option) (*server.GrpcServer, error) {
 	if s.Namespace != "" {
 		s.opts = append(s.opts, server.WithNamespace(s.Namespace))
 	}
-	if s.Address != "" {
-		s.opts = append(s.opts, server.WithAddress(s.Address))
+	if s.ListenAddr != "" {
+		s.opts = append(s.opts, server.WithListenAddr(s.ListenAddr))
 	}
 	grpcServer := server.NewGrpcServer(s.opts...)
 	//注册中心

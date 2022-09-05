@@ -34,7 +34,7 @@ type LocalBase struct {
 	Namespace       string       `mapstructure:"namespace"`
 	ConfCenter      ConfigCenter `mapstructure:"conf_center"` //redis etcd
 	RunMode         string       `mapstructure:"run_mode"`    //debug product
-	HttpHost        string       `mapstructure:"http_host"`
+	ListenAddr      string       `mapstructure:"listen_adr" `
 	EnableAutoRoute bool         `json:"enable_auto_route" mapstructure:"enable_auto_route"` // gateway 生效
 	ApiPrefix       string       `json:"api_prefix" mapstructure:"api_prefix"`
 }

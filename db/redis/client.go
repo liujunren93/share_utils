@@ -73,7 +73,7 @@ func NewClient(redisConf map[string]interface{}) (*Client, error) {
 		panic("ConfCenter redis config mod err ")
 	}
 	conf.SetMode(base.GetMode())
-	mapstructure.Decode(redisConf, conf)
+	mapstructure.Decode(redisConf, &conf)
 	var cli = new(Client)
 	cmd, err := newClient(conf)
 	if err != nil {

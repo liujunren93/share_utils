@@ -212,11 +212,11 @@ func (a *App) RunGw(f func(*gin.Engine) (shareRouter.Router, error)) error {
 		return err
 	}
 	a.AutoRoute(router)
-	return eng.Run(a.LocalConf.HttpHost)
+	return eng.Run(a.LocalConf.ListenAddr)
 }
 
 func (a *App) RunRpc(registryAddr []string, f func(ser *server.GrpcServer, rc routerCenter.RouterCenter) error) error {
-	s := utilsServer.Server{Address: a.LocalConf.HttpHost, Mode: a.LocalConf.RunMode, Namespace: a.LocalConf.Namespace, ServerName: a.LocalConf.AppName}
+	s := utilsServer.Server{ListenAddr: a.LocalConf.ListenAddr, Mode: a.LocalConf.RunMode, Namespace: a.LocalConf.Namespace, ServerName: a.LocalConf.AppName}
 	s.RegistryAddr = registryAddr
 	gs, err := s.NewServer()
 	if err != nil {

@@ -32,13 +32,13 @@ func (r *RouteCenter) GetSubChannelReg() string {
 func (r *RouteCenter) GetSubChannelDel() string {
 	return r.GetKey("") + "subscribeDel"
 }
-func (r *RouteCenter) GetAllRouter(ctx context.Context) map[string]map[string]router.Router {
-	var resData = make(map[string]map[string]router.Router)
+func (r *RouteCenter) GetAllRouter(ctx context.Context) map[string]map[string]*router.Router {
+	var resData = make(map[string]map[string]*router.Router)
 	res := r.client.Keys(ctx, r.GetKeys(""))
 	keys := res.Val()
 	// var routerDatas = make(map[string]map[string]router.Router)
 	for _, v := range keys {
-		var data map[string]router.Router
+		var data map[string]*router.Router
 		re := r.client.Get(ctx, v)
 		if re.Err() != nil {
 			continue
@@ -51,7 +51,7 @@ func (r *RouteCenter) GetAllRouter(ctx context.Context) map[string]map[string]ro
 	return resData
 }
 
-func (r *RouteCenter) GetRouter(ctx context.Context, app string) (routers map[string]router.Router, err error) {
+func (r *RouteCenter) GetRouter(ctx context.Context, app string) (routers map[string]*router.Router, err error) {
 	res := r.client.Get(ctx, r.GetKey(app))
 	if res.Err() != nil && res.Err() != re.Nil {
 		return nil, res.Err()
@@ -64,7 +64,7 @@ func (r *RouteCenter) GetRouter(ctx context.Context, app string) (routers map[st
 	return
 }
 
-func (r *RouteCenter) Registry(ctx context.Context, app string, router map[string]router.Router) error {
+func (r *RouteCenter) Registry(ctx context.Context, app string, router map[string]*router.Router) error {
 	data, err := json.Marshal(router)
 	if err != nil {
 		return err
@@ -93,7 +93,7 @@ func (r *RouteCenter) DelRouter(ctx context.Context, app string) error {
 
 }
 
-func (r *RouteCenter) Watch(ctx context.Context, callback func(app string, router map[string]router.Router, err error)) {
+func (r *RouteCenter) Watch(ctx context.Context, callback func(app string, router map[string]*router.Router, err error)) {
 	go func() {
 		pub := r.client.Subscribe(ctx, r.GetSubChannelReg())
 		for {
@@ -148,22 +148,22 @@ func (r *RouteCenter) Watch(ctx context.Context, callback func(app string, route
 // 		}
 // 	}
 
-	// go func() {
-	// 	pub := r.client.Subscribe(ctx, r.GetSubChannelDel())
-	// 	for {
-	// 		for {
-	// 			select {
-	// 			case msg := <-pub.Channel():
+// go func() {
+// 	pub := r.client.Subscribe(ctx, r.GetSubChannelDel())
+// 	for {
+// 		for {
+// 			select {
+// 			case msg := <-pub.Channel():
 
-	// 				callback(msg.Payload, nil, nil)
+// 				callback(msg.Payload, nil, nil)
 
-	// 			case <-ctx.Done():
-	// 				return
-	// 			}
-	// 		}
+// 			case <-ctx.Done():
+// 				return
+// 			}
+// 		}
 
-	// 	}
+// 	}
 
-	// }()
+// }()
 
-}
+// }

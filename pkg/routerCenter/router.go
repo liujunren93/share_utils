@@ -42,9 +42,9 @@ func (r *RouterCentry) GetKeys(app string) string {
 }
 
 type RouterCenter interface {
-	GetAllRouter(ctx context.Context) map[string]map[string]Router        //map[app]map[apiPath]Router
-	GetRouter(ctx context.Context, app string) (map[string]Router, error) //map[apiPath]map[]
-	Registry(ctx context.Context, app string, router map[string]Router) error
+	GetAllRouter(ctx context.Context) map[string]map[string]*Router        //map[app]map[apiPath]Router
+	GetRouter(ctx context.Context, app string) (map[string]*Router, error) //map[apiPath]map[]
+	Registry(ctx context.Context, app string, router map[string]*Router) error
 	DelRouter(ctx context.Context, app string) error
-	Watch(ctx context.Context, callback func(app string, router map[string]Router, err error))
+	Watch(ctx context.Context, callback func(app string, router map[string]*Router, err error))
 }
