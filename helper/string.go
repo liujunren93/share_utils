@@ -71,10 +71,26 @@ func SnakeString(s string) string {
 
 // keep substr left
 func SubstrLeft(s, substr string) string {
+	strLen := len(s)
+	if strLen == 0 {
+		return s
+	}
+	index := strings.Index(s, substr)
+	if index < 0 {
+		return s
+	}
 	return s[:strings.Index(s, substr)]
 }
 
 // keep substr right
 func SubstrRight(s, substr string) string {
+	strLen := len(s)
+	if strLen == 0 {
+		return s
+	}
+	index := strings.Index(s, substr) + 1
+	if strLen < index {
+		return s
+	}
 	return s[strings.Index(s, substr)+1:]
 }

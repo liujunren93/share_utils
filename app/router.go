@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"path"
-	"reflect"
 	"strings"
 	"sync"
 	"time"
@@ -25,7 +24,7 @@ import (
 	"google.golang.org/grpc"
 )
 
-func (app *App) GetRouterCenter() routerCenter.RouterCenter {
+func (app *App) getRouterCenter() routerCenter.RouterCenter {
 	var rc routerCenter.RouterCenter
 	routerConfig := app.baseConfig.GetRouterCenter()
 	if routerConfig == nil {
@@ -49,10 +48,11 @@ func (app *App) GetRouterCenter() routerCenter.RouterCenter {
 }
 
 func (app *App) initRouter() {
-	rc := app.GetRouterCenter()
+	rc := app.getRouterCenter()
 	if rc == nil {
 		return
 	}
+	app.rc = rc
 	ctx, _ := context.WithTimeout(app.ctx, time.Second*3)
 	routerMap := rc.GetAllRouter(ctx)
 	if app.appRouter == nil {
@@ -109,6 +109,7 @@ func (a *App) AutoRoute(r shareRouter.Router) error {
 			}
 			log.Logger.Debug("AutoRoute.method", p.ReqParams)
 			var req map[string]interface{}
+
 			if err := ctx.ShouldBindJSON(&req); err != nil {
 				netHelper.Response(ctx, shErr.NewBadRequest(err), err, nil)
 				return
@@ -137,57 +138,28 @@ func (a *App) AutoRoute(r shareRouter.Router) error {
 	return nil
 }
 
+func (a *App) RegistryRouter(rcMap map[string]*routerCenter.Router) {
+	if len(rcMap) == 0 {
+		return
+	}
+	if a.rc == nil {
+		rc := a.getRouterCenter()
+		if rc == nil {
+			panic("init routerCenter failed")
+		}
+		a.rc = rc
+	}
+	ctx, _ := context.WithTimeout(a.ctx, time.Second*10)
+	appName := a.GetAppName()
+	appnames := strings.Split(appName, "_")
+	appName = appnames[len(appnames)-1]
+
+	a.rc.Registry(ctx, appName, rcMap)
+}
 func ParesRequest(ctx *gin.Context, urlPrefix string) (pluginName, reqPath, method string) {
 	ctx.FullPath()
 
 	reqPath = strings.Trim(strings.TrimLeft(path.Clean(ctx.Request.URL.Path), urlPrefix), "/")
 	return helper.SubstrLeft(reqPath, "/"), helper.SubstrRight(reqPath, "/"), ctx.Request.Method
 
-}
-
-func BuildRouter(method, grpcMethod string, req interface{}) *routerCenter.Router {
-	var router = routerCenter.Router{
-		Method:      method,
-		GrpcMenthod: grpcMethod,
-		ReqParams:   map[string]interface{}{},
-	}
-	var reqParams = make(map[string]interface{})
-	t := reflect.TypeOf(req)
-	if t.Kind() == reflect.Ptr {
-		t = t.Elem()
-	}
-	if t.Kind() != reflect.Struct {
-		fmt.Println("Check type error not Struct")
-		return nil
-	}
-	fieldNum := t.NumField()
-	for i := 0; i < fieldNum; i++ {
-		if t.Field(i).Name[0] >= 97 {
-			continue
-		}
-		if t.Field(i).Tag.Get("json") == "-" {
-			continue
-		}
-		fmt.Println(t.Field(i).Name, t.Field(i).Tag.Get("json"), t.Field(i).Tag.Get("binding"))
-		validate := t.Field(i).Tag.Get("binding")
-		if validate != "" {
-			reqParams[helper.SnakeString(t.Field(i).Name)] = validate
-		}
-
-		// validate := t.Field(i).Tag.Get("binding")
-		// if v.Kind() == reflect.Ptr {
-		// 	field := v.Elem().Field(i)
-		// 	if !field.IsZero() {
-		// 		reqParams[helper.SnakeString(t.Field(i).Name)] = validate
-		// 	}
-		// } else {
-		// 	field := v.Field(i)
-		// 	if !field.IsZero() {
-		// 		reqParams[helper.SnakeString(t.Field(i).Name)] = validate
-		// 	}
-		// }
-
-	}
-	router.ReqParams = reqParams
-	return &router
 }

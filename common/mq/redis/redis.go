@@ -3,8 +3,9 @@ package redis
 import (
 	"context"
 
-	re "github.com/go-redis/redis/v8"
+	red "github.com/go-redis/redis/v8"
 	"github.com/liujunren93/share_utils/common/mq"
+	re "github.com/liujunren93/share_utils/db/redis"
 )
 
 type redisMq struct {
@@ -40,7 +41,7 @@ func (r *redisMq) Subscribe(ctx context.Context, topics ...string) (ch chan *mq.
 	go func() {
 		for {
 			select {
-			case msg := <-res.Channel(re.WithChannelSize(r.opt.MsgSize)):
+			case msg := <-res.Channel(red.WithChannelSize(r.opt.MsgSize)):
 				ch <- &mq.Msg{
 					Topic: msg.Channel,
 					Data:  msg.Payload,

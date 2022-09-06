@@ -54,6 +54,7 @@ type App struct {
 	monitorsCh       chan *config.Monitor
 	localMonitorOnce *sync.Once
 	appRouter        map[string]*shareRouter.Node
+	rc               routerCenter.RouterCenter
 }
 
 func NewApp(defaultConfig entity.BaseConfiger) *App {
@@ -215,7 +216,7 @@ func (a *App) RunGw(f func(*gin.Engine) (shareRouter.Router, error)) error {
 	return eng.Run(a.LocalConf.ListenAddr)
 }
 
-func (a *App) RunRpc(registryAddr []string, f func(ser *server.GrpcServer, rc routerCenter.RouterCenter) error) error {
+func (a *App) RunRpc(registryAddr []string, f func(ser *server.GrpcServer) error) error {
 	s := utilsServer.Server{ListenAddr: a.LocalConf.ListenAddr, Mode: a.LocalConf.RunMode, Namespace: a.LocalConf.Namespace, ServerName: a.LocalConf.AppName}
 	s.RegistryAddr = registryAddr
 	gs, err := s.NewServer()
@@ -223,7 +224,7 @@ func (a *App) RunRpc(registryAddr []string, f func(ser *server.GrpcServer, rc ro
 		log.Logger.Error(err)
 		return err
 	}
-	err = f(gs, a.GetRouterCenter())
+	err = f(gs)
 	if err != nil {
 		log.Logger.Error(err)
 		return err
