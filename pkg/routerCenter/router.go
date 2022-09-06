@@ -16,7 +16,6 @@ const (
 )
 
 type Router struct {
-	Method      string                 `json:"method" yaml:"method"` // http mehtod
 	GrpcMenthod string                 `json:"grpc_method" yaml:"grpc_method"`
 	Codes       Binding                `json:"codes" yaml:"codes"`
 	ReqParams   map[string]interface{} `json:"req_params" yaml:"req_params"`
@@ -61,9 +60,8 @@ type RouterCenter interface {
 	Watch(ctx context.Context, callback func(app string, router map[string]*Router, err error))
 }
 
-func BuildRouter(method, grpcMethod string, req interface{}) *Router {
+func BuildRouter(grpcMethod string, req interface{}) *Router {
 	var router = Router{
-		Method:      method,
 		GrpcMenthod: grpcMethod,
 		ReqParams:   map[string]interface{}{},
 	}

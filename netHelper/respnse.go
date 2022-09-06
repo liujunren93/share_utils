@@ -27,6 +27,51 @@ func ResponseOk(ctx *gin.Context, data interface{}) {
 	Response(ctx, errors.StatusOK, nil, data)
 }
 
+func ResponseJson(ctx *gin.Context, res map[string]interface{}, err error, data interface{}) {
+	var code int32 = 200
+	var msg = "ok"
+
+	if res != nil {
+		code = int32(res["code"].(float64))
+		msg = res["msg"].(string)
+		if data == nil {
+			data = res["data"]
+
+		}
+	}
+
+	if err != nil {
+		msg = err.Error()
+		if e, ok := status.FromError(err); ok || code == 0 {
+			fmt.Println("Response", e)
+
+			code = int32(errors.StatusInternalServerError)
+			msg = errors.StatusInternalServerError.GetMsg()
+
+		}
+	}
+	if s, ok := data.(string); ok {
+		var da interface{}
+		json.Unmarshal([]byte(s), &da)
+		data = da
+	}
+	if code > 10000 && code&1 == 0 {
+		code = int32(errors.StatusInternalServerError)
+		msg = errors.StatusInternalServerError.GetMsg()
+	}
+	resData := HttpResponse{
+		Code: errors.Status(code),
+		Msg:  msg,
+		Data: data,
+	}
+	if msg != "" {
+		resData.Msg = msg
+	}
+
+	ctx.JSON(200, resData)
+	ctx.Abort()
+}
+
 //Response
 //Response
 func Response(ctx *gin.Context, res Responser, err error, data interface{}) {

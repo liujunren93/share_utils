@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"path"
 	"strings"
 	"sync"
@@ -77,10 +78,13 @@ func (app *App) initRouter() {
 
 }
 
-func routerMap2Tree(router map[string]*routerCenter.Router) *shareRouter.Node {
+func routerMap2Tree(routerMap map[string]*routerCenter.Router) *shareRouter.Node {
 	tree := shareRouter.NewTree("/", "")
-	for apipath, router := range router {
-		tree.Add(apipath, router.Method, router.GrpcMenthod, router.ReqParams)
+	for apipath, router := range routerMap {
+		index := strings.Index(apipath, ":")
+		method := apipath[:index]
+		apipath := apipath[index+1:]
+		tree.Add(apipath, method, router.GrpcMenthod, router.ReqParams)
 	}
 	return tree
 }
@@ -92,9 +96,10 @@ func (a *App) AutoRoute(r shareRouter.Router) error {
 	validate = validator.New()
 	log.Logger.Debug("AutoRoute")
 	r.NoRoute(func(ctx *gin.Context) {
+
 		appName, reqPath, method := ParesRequest(ctx, a.LocalConf.ApiPrefix)
 		fmt.Println("AutoRoute.ParesRequest", appName, method)
-
+		appName = a.baseConfig.GetRouterCenter().AppPrefix + "_" + appName
 		// 	isRetry := false
 		// retry:
 		p, ok := a.appRouter[appName]
@@ -109,11 +114,20 @@ func (a *App) AutoRoute(r shareRouter.Router) error {
 			}
 			log.Logger.Debug("AutoRoute.method", p.ReqParams)
 			var req map[string]interface{}
-
-			if err := ctx.ShouldBindJSON(&req); err != nil {
+			buf, err := io.ReadAll(ctx.Request.Body)
+			if err != nil {
 				netHelper.Response(ctx, shErr.NewBadRequest(err), err, nil)
 				return
 			}
+			defer ctx.Request.Body.Close()
+			if len(buf) > 0 {
+				err = json.Unmarshal(buf, &req)
+				if err != nil {
+					netHelper.Response(ctx, shErr.NewBadRequest(err), err, nil)
+					return
+				}
+			}
+
 			checkRes := validate.ValidateMap(req, p.ReqParams)
 			if len(checkRes) != 0 {
 				re, _ := json.Marshal(checkRes)
@@ -127,8 +141,9 @@ func (a *App) AutoRoute(r shareRouter.Router) error {
 				return
 			}
 			var res interface{}
-			err = a.shareGrpcClient.Invoke(ctx, node.GrpcPath, req, &res, cc, grpc.CallContentSubtype(codesJson.Name))
-			netHelper.Response(ctx, res.(netHelper.Responser), err, nil)
+			err = a.shareGrpcClient.Invoke(ctx, node.GrpcPath, buf, &res, cc, grpc.CallContentSubtype(codesJson.Name))
+			fmt.Println(err)
+			netHelper.ResponseJson(ctx, res.(map[string]interface{}), err, nil)
 		} else {
 			netHelper.Response(ctx, shErr.NewStatusNotFound(""), nil, nil)
 			return
@@ -151,12 +166,12 @@ func (a *App) RegistryRouter(rcMap map[string]*routerCenter.Router) {
 	}
 	ctx, _ := context.WithTimeout(a.ctx, time.Second*10)
 	appName := a.GetAppName()
-	appnames := strings.Split(appName, "_")
-	appName = appnames[len(appnames)-1]
+	// appnames := strings.Split(appName, "_")
+	// appName = appnames[len(appnames)-1]
 
 	a.rc.Registry(ctx, appName, rcMap)
 }
-func ParesRequest(ctx *gin.Context, urlPrefix string) (pluginName, reqPath, method string) {
+func ParesRequest(ctx *gin.Context, urlPrefix string) (appName, reqPath, method string) {
 	ctx.FullPath()
 
 	reqPath = strings.Trim(strings.TrimLeft(path.Clean(ctx.Request.URL.Path), urlPrefix), "/")
