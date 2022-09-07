@@ -250,11 +250,13 @@ func (a *App) RunGw(f func(*gin.Engine) (shareRouter.Router, error)) error {
 func (a *App) RunRpc(registryAddr []string, f func(ser *server.GrpcServer) error) error {
 	s := utilsServer.Server{ListenAddr: a.LocalConf.ListenAddr, Mode: a.LocalConf.RunMode, Namespace: a.LocalConf.Namespace, ServerName: a.LocalConf.AppName}
 	s.RegistryAddr = registryAddr
+
 	gs, err := s.NewServer()
 	if err != nil {
 		log.Logger.Error(err)
 		return err
 	}
+
 	err = f(gs)
 	if err != nil {
 		log.Logger.Error(err)

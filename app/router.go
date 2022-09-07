@@ -13,6 +13,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"google.golang.org/grpc"
+
 	codesJson "github.com/liujunren93/share/codes/json"
 	shareRouter "github.com/liujunren93/share_utils/common/gin/router"
 	"github.com/liujunren93/share_utils/db/redis"
@@ -22,7 +24,6 @@ import (
 	"github.com/liujunren93/share_utils/netHelper"
 	"github.com/liujunren93/share_utils/pkg/routerCenter"
 	routerRedis "github.com/liujunren93/share_utils/pkg/routerCenter/redis"
-	"google.golang.org/grpc"
 )
 
 func (app *App) getRouterCenter() routerCenter.RouterCenter {
@@ -154,7 +155,6 @@ func (a *App) AutoRoute(r shareRouter.Router) error {
 			}
 			var res interface{}
 			err = a.shareGrpcClient.Invoke(ctx, node.GrpcPath, buf, &res, cc, grpc.CallContentSubtype(codesJson.Name))
-			fmt.Println(err)
 			netHelper.ResponseJson(ctx, res.(map[string]interface{}), err, nil)
 		} else {
 			netHelper.Response(ctx, shErr.NewStatusNotFound(""), nil, nil)
