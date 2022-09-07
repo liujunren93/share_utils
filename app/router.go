@@ -48,6 +48,16 @@ func (app *App) getRouterCenter() routerCenter.RouterCenter {
 	return rc
 }
 
+func (app *App) delRouter() {
+
+	log.Logger.Info("Application logout from router center")
+	err := app.rc.DelRouter(context.Background(), app.GetAppName())
+	if err != nil {
+		log.Logger.Error("Application logout from router center ", err)
+	}
+
+}
+
 func (app *App) initRouter() {
 	rc := app.getRouterCenter()
 	if rc == nil {
@@ -67,6 +77,8 @@ func (app *App) initRouter() {
 	var mu = sync.Mutex{}
 	rc.Watch(app.ctx, func(appName string, routers map[string]*routerCenter.Router, err error) {
 		mu.Lock()
+		defer mu.Unlock()
+		fmt.Println(appName, routers)
 		if len(routers) == 0 {
 			delete(app.appRouter, appName)
 		} else {
@@ -165,11 +177,11 @@ func (a *App) RegistryRouter(rcMap map[string]*routerCenter.Router) {
 		a.rc = rc
 	}
 	ctx, _ := context.WithTimeout(a.ctx, time.Second*10)
-	appName := a.GetAppName()
 	// appnames := strings.Split(appName, "_")
 	// appName = appnames[len(appnames)-1]
 
-	a.rc.Registry(ctx, appName, rcMap)
+	a.rc.Registry(ctx, a.GetAppName(), rcMap)
+	a.RegistryStopFunc(a.delRouter)
 }
 func ParesRequest(ctx *gin.Context, urlPrefix string) (appName, reqPath, method string) {
 	ctx.FullPath()

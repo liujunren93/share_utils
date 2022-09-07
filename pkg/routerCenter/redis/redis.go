@@ -95,6 +95,7 @@ func (r *RouteCenter) DelRouter(ctx context.Context, app string) error {
 
 func (r *RouteCenter) Watch(ctx context.Context, callback func(app string, router map[string]*router.Router, err error)) {
 	go func() {
+
 		pub := r.client.Subscribe(ctx, r.GetSubChannelReg())
 		for {
 			select {

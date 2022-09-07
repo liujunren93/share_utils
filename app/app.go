@@ -4,7 +4,10 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"os"
+	"os/signal"
 	"sync"
+	"syscall"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -55,6 +58,7 @@ type App struct {
 	localMonitorOnce *sync.Once
 	appRouter        map[string]*shareRouter.Node
 	rc               routerCenter.RouterCenter
+	stopList         []func()
 }
 
 func NewApp(defaultConfig entity.BaseConfiger) *App {
@@ -70,7 +74,34 @@ func NewApp(defaultConfig entity.BaseConfiger) *App {
 		app.appConfigOption.baseConfig = entity.DefaultConfig
 	}
 	app.initConfig()
+	app.watchSignal()
 	return app
+}
+
+func (a *App) RegistryStopFunc(f func()) {
+	a.stopList = append(a.stopList, f)
+}
+func (a *App) watchSignal() {
+	ctx, cancel := context.WithCancel(a.ctx)
+	a.ctx = ctx
+	go func() {
+		ch := make(chan os.Signal, 1)
+		signals := []os.Signal{
+			syscall.SIGTERM, syscall.SIGINT, syscall.SIGQUIT, syscall.SIGKILL,
+		}
+		signal.Notify(ch, signals...)
+		select {
+		// wait on kill signal
+		case sign := <-ch:
+			cancel()
+			for _, stop := range a.stopList {
+				stop()
+			}
+			log.Logger.Info("app exit", sign)
+			os.Exit(0)
+		}
+	}()
+
 }
 
 func (a *App) GetAppName() string {
