@@ -3,21 +3,18 @@ package redis
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"time"
 
-	re "github.com/go-redis/redis/v8"
+	rrdis "github.com/go-redis/redis/v8"
 	"github.com/liujunren93/share_utils/db/redis"
+	"github.com/liujunren93/share_utils/log"
 	router "github.com/liujunren93/share_utils/pkg/routerCenter"
 )
 
 type RouteCenter struct {
 	router.RouterCentry
 	client *redis.Client
-}
-
-type redisEntry struct {
-	Life   int8                      `json:"life"`
-	Router map[string]*router.Router `json:"router"`
 }
 
 func NewRouteCenter(cli *redis.Client, prefix, namespace string) *RouteCenter {
@@ -43,72 +40,90 @@ func (r *RouteCenter) GetAllRouter(ctx context.Context) map[string]map[string]*r
 	keys := res.Val()
 	// var routerDatas = make(map[string]map[string]router.Router)
 	for _, v := range keys {
-		var data map[string]*router.Router
-		re := r.client.Get(ctx, v)
-		if re.Err() != nil {
+
+		tmp, err := r.getRouter(ctx, v)
+		if err != nil {
+			log.Logger.Error(err)
 			continue
 		}
-		json.Unmarshal([]byte(re.Val()), &data)
-		app := v[len(r.GetKey("")):]
-		resData[app] = data
+		resData[v] = tmp
 
 	}
 	return resData
 }
 
-func (r *RouteCenter) GetRouter(ctx context.Context, app string) (routers map[string]*router.Router, err error) {
-	res := r.client.Get(ctx, r.GetKey(app))
-	if res.Err() != nil && res.Err() != re.Nil {
+func (r *RouteCenter) getRouter(ctx context.Context, key string) (routers map[string]*router.Router, err error) {
+	res := r.client.HGet(ctx, key, "router")
+	if res.Err() != nil && res.Err() != rrdis.Nil {
 		return nil, res.Err()
 	}
-	data, err := res.Bytes()
-	if err != nil {
-		return nil, err
-	}
-	err = json.Unmarshal(data, &routers)
+
+	err = json.Unmarshal([]byte(res.Val()), &routers)
 	return
+}
+
+func (r *RouteCenter) GetRouter(ctx context.Context, app string) (routers map[string]*router.Router, err error) {
+	return r.getRouter(ctx, r.GetKey(app))
 }
 
 func (r *RouteCenter) Registry(ctx context.Context, app string, router map[string]*router.Router) error {
 
-	data, err := json.Marshal(redisEntry{
-		Router: router,
-	})
+	data, err := json.Marshal(router)
 	if err != nil {
 		return err
 	}
-	lua := `if (redis.call('EXISTS', KEYS[1]) == 0) then
-						if redis.call('HMSET',KEYS[1],ARGV[1]) then
-		 					redis.call('PUBLISH', KEYS[2],AEGV[2])
-						end
+	lua := `
+		if (redis.call('EXISTS', KEYS[1]) ~= 1) then
+				 		redis.call('HSET',KEYS[1],KEYS[2],ARGV[1]) 
+						redis.call('PUBLISH', KEYS[3],ARGV[2])
 					end
-					redis.call('HINCRBY', KEYS[1],KEYS[3],1)
-				`
-	res := r.client.Eval(ctx, lua, []string{r.GetKey(app), r.GetSubChannelReg(), "life"}, string(data), app)
-	return res.Err()
-	// err = r.client.Set(ctx, r.GetKey(app), string(data), time.Minute*30).Err()
-	// if err != nil {
-	// 	return err
-	// }
-	// err = r.client.Publish(ctx, r.GetSubChannelReg(), app).Err()
-	// if err != nil {
-	// 	return err
-	// }
-	// return nil
+			redis.call('HINCRBY',KEYS[1],'life',1)
+		
+		`
+	//	redis.call('EXPIRE',KEYS[1],120)
+	fmt.Println(r.GetSubChannelReg())
+	res := r.client.Eval(ctx, lua, []string{r.GetKey(app), "router", r.GetSubChannelReg()}, string(data), app)
+	fmt.Println(res.Val(), res.Err())
+	return nil
+
+}
+
+func (r *RouteCenter) Lease(ctx context.Context, app string) error {
+	var err error
+	go func() {
+		for {
+			res := r.client.Expire(context.TODO(), r.GetKey(app), time.Second*60)
+			if res.Err() != nil && res.Err() != rrdis.Nil {
+				err = res.Err()
+				break
+			}
+			fmt.Println(11111)
+			time.Sleep(time.Second * 50)
+		}
+	}()
+	return err
 }
 
 func (r *RouteCenter) DelRouter(ctx context.Context, app string) error {
 
-	err := r.client.Del(ctx, r.GetKey(app)).Err()
-	if err != nil {
-		return err
-	}
-	err = r.client.Publish(ctx, r.GetSubChannelDel(), app).Err()
-	if err != nil {
-		return err
+	lua := `
+			redis.call('HINCRBY',KEYS[1],'life',-1)
+			local cnt= tonumber(redis.call('HGET',KEYS[1],'life'))
+			if (cnt<=0) then
+				redis.call('DEL',KEYS[1])
+		
+			end
+			if (cnt==0)then
+			redis.call('PUBLISH', KEYS[2],ARGV[1])
+			end
+		`
+	fmt.Println(r.GetSubChannelDel())
+	res := r.client.Eval(ctx, lua, []string{r.GetKey(app), r.GetSubChannelDel()}, app)
+	fmt.Println("val", res.Val(), res.Err())
+	if res.Err() != nil {
+		return res.Err()
 	}
 	return nil
-
 }
 
 func (r *RouteCenter) Watch(ctx context.Context, callback func(app string, router map[string]*router.Router, err error)) {

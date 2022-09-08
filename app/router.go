@@ -181,6 +181,7 @@ func (a *App) RegistryRouter(rcMap map[string]*routerCenter.Router) {
 	// appName = appnames[len(appnames)-1]
 
 	a.rc.Registry(ctx, a.GetAppName(), rcMap)
+	a.rc.Lease(ctx, a.GetAppName())
 	a.RegistryStopFunc(a.delRouter)
 }
 func ParesRequest(ctx *gin.Context, urlPrefix string) (appName, reqPath, method string) {
