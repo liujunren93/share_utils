@@ -15,6 +15,11 @@ type RouteCenter struct {
 	client *redis.Client
 }
 
+type redisEntry struct {
+	Life   int8                      `json:"life"`
+	Router map[string]*router.Router `json:"router"`
+}
+
 func NewRouteCenter(cli *redis.Client, prefix, namespace string) *RouteCenter {
 	return &RouteCenter{
 		RouterCentry: router.RouterCentry{
@@ -65,22 +70,35 @@ func (r *RouteCenter) GetRouter(ctx context.Context, app string) (routers map[st
 }
 
 func (r *RouteCenter) Registry(ctx context.Context, app string, router map[string]*router.Router) error {
-	data, err := json.Marshal(router)
+
+	data, err := json.Marshal(redisEntry{
+		Router: router,
+	})
 	if err != nil {
 		return err
 	}
-	err = r.client.Set(ctx, r.GetKey(app), string(data), time.Minute*30).Err()
-	if err != nil {
-		return err
-	}
-	err = r.client.Publish(ctx, r.GetSubChannelReg(), app).Err()
-	if err != nil {
-		return err
-	}
-	return nil
+	lua := `if (redis.call('EXISTS', KEYS[1]) == 0) then
+						if redis.call('HMSET',KEYS[1],ARGV[1]) then
+		 					redis.call('PUBLISH', KEYS[2],AEGV[2])
+						end
+					end
+					redis.call('HINCRBY', KEYS[1],KEYS[3],1)
+				`
+	res := r.client.Eval(ctx, lua, []string{r.GetKey(app), r.GetSubChannelReg(), "life"}, string(data), app)
+	return res.Err()
+	// err = r.client.Set(ctx, r.GetKey(app), string(data), time.Minute*30).Err()
+	// if err != nil {
+	// 	return err
+	// }
+	// err = r.client.Publish(ctx, r.GetSubChannelReg(), app).Err()
+	// if err != nil {
+	// 	return err
+	// }
+	// return nil
 }
 
 func (r *RouteCenter) DelRouter(ctx context.Context, app string) error {
+
 	err := r.client.Del(ctx, r.GetKey(app)).Err()
 	if err != nil {
 		return err
@@ -130,41 +148,3 @@ func (r *RouteCenter) Watch(ctx context.Context, callback func(app string, route
 	}()
 
 }
-
-// func (r *RouteCenter) Watch1(ctx context.Context, callback func(app string, router map[string]router.Router, err error)) {
-// 	pub := r.client.Subscribe(ctx, r.GetSubChannelReg())
-// 	pubDel := r.client.Subscribe(ctx, r.GetSubChannelDel())
-
-// 	for {
-// 		select {
-// 		case msg := <-pub.Channel():
-
-// 			tctx, _ := context.WithTimeout(ctx, time.Second*3)
-// 			data, err := r.GetRouter(tctx, msg.Payload)
-// 			callback(msg.Payload, data, err)
-// 		case msg := <-pubDel.Channel():
-// 			callback(msg.Payload, nil, nil)
-// 		case <-ctx.Done():
-// 			return
-// 		}
-// 	}
-
-// go func() {
-// 	pub := r.client.Subscribe(ctx, r.GetSubChannelDel())
-// 	for {
-// 		for {
-// 			select {
-// 			case msg := <-pub.Channel():
-
-// 				callback(msg.Payload, nil, nil)
-
-// 			case <-ctx.Done():
-// 				return
-// 			}
-// 		}
-
-// 	}
-
-// }()
-
-// }
