@@ -80,11 +80,9 @@ func (r *RouteCenter) Registry(ctx context.Context, app string, router map[strin
 			redis.call('HINCRBY',KEYS[1],'life',1)
 		
 		`
-	//	redis.call('EXPIRE',KEYS[1],120)
 	fmt.Println(r.GetSubChannelReg())
 	res := r.client.Eval(ctx, lua, []string{r.GetKey(app), "router", r.GetSubChannelReg()}, string(data), app)
-	fmt.Println(res.Val(), res.Err())
-	return nil
+	return res.Err()
 
 }
 
@@ -97,7 +95,6 @@ func (r *RouteCenter) Lease(ctx context.Context, app string) error {
 				err = res.Err()
 				break
 			}
-			fmt.Println(11111)
 			time.Sleep(time.Second * 50)
 		}
 	}()
@@ -111,19 +108,14 @@ func (r *RouteCenter) DelRouter(ctx context.Context, app string) error {
 			local cnt= tonumber(redis.call('HGET',KEYS[1],'life'))
 			if (cnt<=0) then
 				redis.call('DEL',KEYS[1])
-		
 			end
 			if (cnt==0)then
 			redis.call('PUBLISH', KEYS[2],ARGV[1])
 			end
 		`
-	fmt.Println(r.GetSubChannelDel())
 	res := r.client.Eval(ctx, lua, []string{r.GetKey(app), r.GetSubChannelDel()}, app)
-	fmt.Println("val", res.Val(), res.Err())
-	if res.Err() != nil {
-		return res.Err()
-	}
-	return nil
+
+	return res.Err()
 }
 
 func (r *RouteCenter) Watch(ctx context.Context, callback func(app string, router map[string]*router.Router, err error)) {

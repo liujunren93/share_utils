@@ -43,7 +43,7 @@ func (app *App) getRouterCenter() routerCenter.RouterCenter {
 		if err != nil {
 			panic("initRouter.redis.NewClient:" + err.Error())
 		}
-		rc = routerRedis.NewRouteCenter(cli, "", "")
+		rc = routerRedis.NewRouteCenter(cli, "", app.LocalConf.Namespace)
 
 	}
 	return rc
@@ -148,6 +148,7 @@ func (a *App) AutoRoute(r shareRouter.Router) error {
 				// log.Logger.Error("noRoute.Prepare", err)
 				return
 			}
+
 			cc, err := a.shareGrpcClient.Client(appName)
 			if err != nil {
 				log.Logger.Error("noRoute.shareGrpcClient.Client", err)

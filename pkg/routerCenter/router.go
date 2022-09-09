@@ -37,10 +37,12 @@ func (r *RouterCentry) GetKey(app string) string {
 	if r.Prefix == "" {
 		r.Prefix = "routerCenter"
 	}
+
 	if r.Namespace == "" {
 		r.Namespace = "default"
 	}
 	key := r.Prefix + "/" + r.Namespace + "/"
+
 	if app != "" {
 		key += app
 	}

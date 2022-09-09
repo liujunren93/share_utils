@@ -32,6 +32,7 @@ func (s *Server) NewServer(opts ...server.Option) (*server.GrpcServer, error) {
 	if s.ListenAddr != "" {
 		s.opts = append(s.opts, server.WithListenAddr(s.ListenAddr))
 	}
+
 	grpcServer := server.NewGrpcServer(s.opts...)
 	//注册中心
 	if len(s.RegistryAddr) > 0 {
