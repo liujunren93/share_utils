@@ -67,6 +67,7 @@ func NewApp(defaultConfig entity.BaseConfiger) *App {
 		appConfigOption: appConfigOption{
 			baseConfig: defaultConfig,
 		},
+
 		monitorsCh:       config.InitRegistryMonitor(),
 		localMonitorOnce: &sync.Once{},
 	}
@@ -113,6 +114,11 @@ func (a *App) GetBaseConfig() entity.BaseConfiger {
 		panic("cloud config was not init")
 	}
 	return a.baseConfig
+}
+
+func (a *App) GetLocalConfig() *entity.LocalBase {
+
+	return a.LocalConf
 }
 
 func (a *App) CloudConfigMonitor(confName, group, fieldName string, callbacks ...func()) {

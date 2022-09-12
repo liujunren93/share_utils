@@ -2,10 +2,11 @@ package shoss
 
 import (
 	"fmt"
-	"github.com/aliyun/aliyun-oss-go-sdk/oss"
 	"io"
 	"net/url"
 	"strings"
+
+	"github.com/aliyun/aliyun-oss-go-sdk/oss"
 )
 
 type OSS struct {
@@ -14,7 +15,6 @@ type OSS struct {
 }
 
 //NewOSS
-
 
 func NewOSS(endpoint, accessKeyId, secret string, option ...oss.ClientOption) (*OSS, error) {
 	client, err := oss.New(endpoint, accessKeyId, secret, option...)
@@ -27,7 +27,7 @@ func (s *OSS) UploadStream() {
 
 }
 
-func NewOSSBySTS()  {
+func NewOSSBySTS() {
 	//client, err := oss.New(endpoint, accessKeyId, secret,)
 }
 

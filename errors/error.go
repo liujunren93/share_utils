@@ -65,6 +65,12 @@ func NewInternalError(err interface{}) Error {
 	return New(StatusInternalServerError, err)
 }
 
+//未知错误public 5000
+func NewInternalPublicError(err interface{}) Error {
+
+	return NewPublic(StatusInternalServerError, err)
+}
+
 // 参数错误 14000
 func NewBadRequest(err interface{}) Error {
 

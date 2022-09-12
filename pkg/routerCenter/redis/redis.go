@@ -8,6 +8,7 @@ import (
 
 	rrdis "github.com/go-redis/redis/v8"
 	"github.com/liujunren93/share_utils/db/redis"
+	"github.com/liujunren93/share_utils/helper"
 	"github.com/liujunren93/share_utils/log"
 	router "github.com/liujunren93/share_utils/pkg/routerCenter"
 )
@@ -40,13 +41,13 @@ func (r *RouteCenter) GetAllRouter(ctx context.Context) map[string]map[string]*r
 	keys := res.Val()
 	// var routerDatas = make(map[string]map[string]router.Router)
 	for _, v := range keys {
-
+		app := helper.SubstrRight(v, r.GetKey(""))
 		tmp, err := r.getRouter(ctx, v)
 		if err != nil {
 			log.Logger.Error(err)
 			continue
 		}
-		resData[v] = tmp
+		resData[app] = tmp
 
 	}
 	return resData

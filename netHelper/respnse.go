@@ -27,17 +27,20 @@ func ResponseOk(ctx *gin.Context, data interface{}) {
 	Response(ctx, errors.StatusOK, nil, data)
 }
 
-func ResponseJson(ctx *gin.Context, res map[string]interface{}, err error, data interface{}) {
+func ResponseJson(ctx *gin.Context, res interface{}, err error, data interface{}) {
 	var code int32 = 200
 	var msg = "ok"
 
 	if res != nil {
-		code = int32(res["code"].(float64))
-		msg = res["msg"].(string)
-		if data == nil {
-			data = res["data"]
+		if redata, ok := res.(map[string]interface{}); ok {
+			code = int32(redata["code"].(float64))
+			msg = redata["msg"].(string)
+			if data == nil {
+				data = redata["data"]
 
+			}
 		}
+
 	}
 
 	if err != nil {

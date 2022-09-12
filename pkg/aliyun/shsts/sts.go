@@ -11,8 +11,11 @@ type STS struct {
 }
 
 //NewOSS
-func NewSTS(accessKeyId, secret string) (*STS, error) {
-	client, err := sts.NewClientWithAccessKey("cn-shanghai", accessKeyId, secret)
+func NewSTS(regionId, accessKeyId, secret string) (*STS, error) {
+	if regionId == "" {
+		regionId = "cn-shanghai"
+	}
+	client, err := sts.NewClientWithAccessKey(regionId, accessKeyId, secret)
 
 	if err != nil {
 		return nil, err

@@ -88,9 +88,9 @@ func SubstrRight(s, substr string) string {
 	if strLen == 0 {
 		return s
 	}
-	index := strings.Index(s, substr) + 1
+	index := strings.Index(s, substr) + len(substr)
 	if strLen < index {
 		return s
 	}
-	return s[strings.Index(s, substr)+1:]
+	return s[index:]
 }

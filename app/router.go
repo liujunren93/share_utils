@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"path"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -65,7 +66,7 @@ func (app *App) initRouter() {
 		return
 	}
 	app.rc = rc
-	ctx, _ := context.WithTimeout(app.ctx, time.Second*3)
+	ctx, _ := context.WithTimeout(app.ctx, time.Second*300)
 	routerMap := rc.GetAllRouter(ctx)
 	if app.appRouter == nil {
 		app.appRouter = make(map[string]*shareRouter.Node)
@@ -110,8 +111,12 @@ func (a *App) AutoRoute(r shareRouter.Router) error {
 	log.Logger.Debug("AutoRoute")
 	r.NoRoute(func(ctx *gin.Context) {
 
-		appName, reqPath, method := ParesRequest(ctx, a.LocalConf.ApiPrefix)
-		fmt.Println("AutoRoute.ParesRequest", appName, method)
+		appName, reqPath, method, reqData, err := ParesRequest(ctx, a.LocalConf.ApiPrefix)
+		if err != nil {
+
+			netHelper.Response(ctx, shErr.NewBadRequest(nil), nil, nil)
+			return
+		}
 		appName = a.baseConfig.GetRouterCenter().AppPrefix + "_" + appName
 		// 	isRetry := false
 		// retry:
@@ -125,16 +130,9 @@ func (a *App) AutoRoute(r shareRouter.Router) error {
 			if len(param.Key) > 0 {
 				ctx.Params = append(ctx.Params, param)
 			}
-			log.Logger.Debug("AutoRoute.method", p.ReqParams)
 			var req map[string]interface{}
-			buf, err := io.ReadAll(ctx.Request.Body)
-			if err != nil {
-				netHelper.Response(ctx, shErr.NewBadRequest(err), err, nil)
-				return
-			}
-			defer ctx.Request.Body.Close()
-			if len(buf) > 0 {
-				err = json.Unmarshal(buf, &req)
+			if len(reqData) > 0 {
+				err = json.Unmarshal(reqData, &req)
 				if err != nil {
 					netHelper.Response(ctx, shErr.NewBadRequest(err), err, nil)
 					return
@@ -155,8 +153,9 @@ func (a *App) AutoRoute(r shareRouter.Router) error {
 				return
 			}
 			var res interface{}
-			err = a.shareGrpcClient.Invoke(ctx, node.GrpcPath, buf, &res, cc, grpc.CallContentSubtype(codesJson.Name))
-			netHelper.ResponseJson(ctx, res.(map[string]interface{}), err, nil)
+			err = a.shareGrpcClient.Invoke(ctx, node.GrpcPath, reqData, &res, cc, grpc.CallContentSubtype(codesJson.Name))
+			fmt.Println(res, err)
+			netHelper.ResponseJson(ctx, res, err, nil)
 		} else {
 			netHelper.Response(ctx, shErr.NewStatusNotFound(""), nil, nil)
 			return
@@ -185,10 +184,35 @@ func (a *App) RegistryRouter(rcMap map[string]*routerCenter.Router) {
 	a.rc.Lease(ctx, a.GetAppName())
 	a.RegistryStopFunc(a.delRouter)
 }
-func ParesRequest(ctx *gin.Context, urlPrefix string) (appName, reqPath, method string) {
-	ctx.FullPath()
+func ParesRequest(ctx *gin.Context, urlPrefix string) (appName, reqPath, method string, body []byte, err error) {
+	method = ctx.Request.Method
 
 	reqPath = strings.Trim(strings.TrimLeft(path.Clean(ctx.Request.URL.Path), urlPrefix), "/")
-	return helper.SubstrLeft(reqPath, "/"), helper.SubstrRight(reqPath, "/"), ctx.Request.Method
+	appName = helper.SubstrLeft(reqPath, "/")
+	reqPath = helper.SubstrRight(reqPath, "/")
+	if method == "GET" {
+		var req = make(map[string]interface{}, len(ctx.Request.URL.Query()))
+		if len(ctx.Request.URL.Query()) != 0 {
+			for k, v := range ctx.Request.URL.Query() {
+				if strings.LastIndex(k, "_str") == len(k)-4 {
+					req[k[:len(k)-4]] = v[0]
+				} else if nv, err := strconv.ParseFloat(v[0], 64); err == nil {
+					req[k] = nv
+				}
+			}
+		}
+		body, err = json.Marshal(req)
+		if err != nil {
+			return
+		}
+	} else {
+		body, err = io.ReadAll(ctx.Request.Body)
+		if err != nil {
+			return
+		}
+		defer ctx.Request.Body.Close()
+	}
+
+	return
 
 }
