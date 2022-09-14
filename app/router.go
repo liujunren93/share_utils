@@ -1,6 +1,7 @@
 package app
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -123,14 +124,14 @@ func (a *App) AutoRoute(r shareRouter.Router) error {
 		p, ok := a.appRouter[appName]
 		if ok {
 			node, param := p.Find(reqPath, method)
+
 			if node == nil {
 				netHelper.Response(ctx, shErr.NewStatusNotFound(""), nil, nil)
 				return
 			}
-			if len(param.Key) > 0 {
-				ctx.Params = append(ctx.Params, param)
-			}
+
 			var req map[string]interface{}
+
 			if len(reqData) > 0 {
 				err = json.Unmarshal(reqData, &req)
 				if err != nil {
@@ -138,11 +139,27 @@ func (a *App) AutoRoute(r shareRouter.Router) error {
 					return
 				}
 			}
+			// param 参数
+			if len(param.Key) > 0 {
+				req["pk"] = param.Value
+				reqData, err = json.Marshal(req)
+				if err != nil {
+					log.Logger.Error("AutoRoute.param.Marshal", err)
+					netHelper.Response(ctx, shErr.NewBadRequest(err), err, nil)
+					return
+				}
+				ctx.Params = append(ctx.Params, param)
+			}
 
-			checkRes := validate.ValidateMap(req, p.ReqParams)
+			checkRes := validate.ValidateMap(req, node.ReqParams)
+
 			if len(checkRes) != 0 {
-				re, _ := json.Marshal(checkRes)
-				netHelper.Response(ctx, shErr.NewBadRequest(errors.New("bad request:"+string(re))), nil, nil)
+				errMsg := bytes.Buffer{}
+				for k, v := range checkRes {
+					errMsg.WriteString(fmt.Sprintf("%s:%v;", k, v))
+				}
+
+				netHelper.Response(ctx, shErr.NewBadRequest(errors.New("bad request:"+errMsg.String())), nil, nil)
 				// log.Logger.Error("noRoute.Prepare", err)
 				return
 			}
@@ -154,7 +171,6 @@ func (a *App) AutoRoute(r shareRouter.Router) error {
 			}
 			var res interface{}
 			err = a.shareGrpcClient.Invoke(ctx, node.GrpcPath, reqData, &res, cc, grpc.CallContentSubtype(codesJson.Name))
-			fmt.Println(res, err)
 			netHelper.ResponseJson(ctx, res, err, nil)
 		} else {
 			netHelper.Response(ctx, shErr.NewStatusNotFound(""), nil, nil)
@@ -201,6 +217,10 @@ func ParesRequest(ctx *gin.Context, urlPrefix string) (appName, reqPath, method 
 				}
 			}
 		}
+		if _, ok := ctx.GetQuery("sort_order_str"); !ok {
+			req["sort_order"] = ""
+		}
+
 		body, err = json.Marshal(req)
 		if err != nil {
 			return
