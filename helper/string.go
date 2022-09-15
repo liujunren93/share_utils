@@ -47,7 +47,13 @@ func Any2String(data any) string {
 }
 
 func SnakeString(s string) string {
-	s = strings.ReplaceAll(s, "ID", "Id")
+	if s == "ID" {
+		s = strings.ReplaceAll(s, "ID", "Id")
+	}
+	if s == "PK" {
+		s = strings.ReplaceAll(s, "PK", "Pk")
+	}
+
 	data := make([]byte, 0, len(s)*2)
 	j := false
 	num := len(s)
