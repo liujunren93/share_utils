@@ -130,7 +130,7 @@ func (a *App) AutoRoute(r shareRouter.Router) error {
 				return
 			}
 
-			var req map[string]interface{}
+			var req = make(map[string]interface{})
 
 			if len(reqData) > 0 {
 				err = json.Unmarshal(reqData, &req)
@@ -141,6 +141,7 @@ func (a *App) AutoRoute(r shareRouter.Router) error {
 			}
 			// param 参数
 			if len(param.Key) > 0 {
+
 				req["pk"] = param.Value
 				reqData, err = json.Marshal(req)
 				if err != nil {

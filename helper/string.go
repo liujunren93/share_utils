@@ -47,10 +47,11 @@ func Any2String(data any) string {
 }
 
 func SnakeString(s string) string {
-	if s == "ID" {
+
+	if strings.Contains(s, "ID") {
 		s = strings.ReplaceAll(s, "ID", "Id")
 	}
-	if s == "PK" {
+	if strings.Contains(s, "PK") {
 		s = strings.ReplaceAll(s, "PK", "Pk")
 	}
 
