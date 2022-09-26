@@ -325,6 +325,7 @@ type Cmdable interface {
 	GeoDist(ctx context.Context, key string, member1, member2, unit string) *re.FloatCmd
 	GeoHash(ctx context.Context, key string, members ...string) *re.StringSliceCmd
 
+	Do(ctx context.Context, args ...interface{}) *re.Cmd
 	///configCenter
 
 	Subscribe(ctx context.Context, channels ...string) *re.PubSub
