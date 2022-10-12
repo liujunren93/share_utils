@@ -4,15 +4,15 @@ import (
 	"fmt"
 )
 
-func PageSize(size int64) int64 {
+func PageSize(size int32) int {
 	if size <= 0 || size > 50 {
 		return 25
 	}
-	return size
+	return int(size)
 }
 
-func Offset(size, page int64) int {
-	size = PageSize(size)
+func Offset(size, page int32) int {
+	size = int32(PageSize(size))
 	return int(size * page)
 }
 

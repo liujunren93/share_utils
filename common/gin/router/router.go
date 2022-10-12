@@ -104,8 +104,8 @@ func (g Router) PUT(relativePath string, handlers ...gin.HandlerFunc) Router {
 }
 
 func (g Router) NoRoute(handlers ...gin.HandlerFunc) {
-	groupHandler := g.group.Handlers
-	handlers = append(groupHandler, handlers...)
+	// groupHandler := g.group.Handlers
+	// handlers = append(groupHandler, handlers...)
 	g.Engine.NoRoute(handlers...)
 }
 
