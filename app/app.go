@@ -249,7 +249,10 @@ func (a *App) RunGw(f func(*gin.Engine) (shareRouter.Router, error)) error {
 	if err != nil {
 		return err
 	}
-	a.AutoRoute(router)
+	if a.baseConfig.GetRouterCenter().Enable {
+		a.AutoRoute(router)
+	}
+
 	return eng.Run(a.LocalConf.ListenAddr)
 }
 

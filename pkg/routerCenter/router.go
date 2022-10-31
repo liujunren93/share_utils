@@ -41,7 +41,7 @@ func (r *RouterCentry) GetKey(app string) string {
 	if r.Namespace == "" {
 		r.Namespace = "default"
 	}
-	key := r.Prefix + "/" + r.Namespace + "/"
+	key := "router/" + r.Namespace + "/" + r.Prefix + "/"
 
 	if app != "" {
 		key += app
@@ -50,7 +50,6 @@ func (r *RouterCentry) GetKey(app string) string {
 }
 
 func (r *RouterCentry) GetKeys(app string) string {
-
 	return r.GetKey(app) + "*"
 }
 

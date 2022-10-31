@@ -106,6 +106,7 @@ func routerMap2Tree(routerMap map[string]*routerCenter.Router) *shareRouter.Node
 var validate *validator.Validate
 
 func (a *App) AutoRoute(r shareRouter.Router) error {
+
 	a.initRouter()
 	validate = validator.New()
 	log.Logger.Debug("AutoRoute")
@@ -117,7 +118,11 @@ func (a *App) AutoRoute(r shareRouter.Router) error {
 			netHelper.Response(ctx, shErr.NewBadRequest(nil), nil, nil)
 			return
 		}
-		appName = a.baseConfig.GetRouterCenter().RouterPrefix + "_" + appName
+		appPrefix := a.baseConfig.GetRouterCenter().AppPrefix
+		if appPrefix == "" {
+			appPrefix = "share_app"
+		}
+		appName = appPrefix + "_" + appName
 		// 	isRetry := false
 		// retry:
 		p, ok := a.appRouter[appName]
