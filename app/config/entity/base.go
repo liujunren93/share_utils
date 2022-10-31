@@ -78,8 +78,8 @@ func (c *Config) GetRouterCenter() *RouterCenterConf {
 
 // 自动路由配置
 type RouterCenterConf struct {
-	Type      int8    `json:"type" yaml:"type"`     // redis etcd
-	Enable    bool    `json:"enable" yaml:"enable"` //
-	AppPrefix string  `json:"app_prefix" yaml:"app_prefix"`
-	RedisConf ConfMap `json:"redis" yaml:"redis"`
+	Type         int8    `json:"type" yaml:"type"`     // redis etcd
+	Enable       bool    `json:"enable" yaml:"enable"` //
+	RouterPrefix string  `json:"router_prefix" yaml:"router_prefix"`
+	RedisConf    ConfMap `json:"redis" yaml:"redis"`
 }

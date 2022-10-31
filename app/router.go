@@ -45,7 +45,7 @@ func (app *App) getRouterCenter() routerCenter.RouterCenter {
 		if err != nil {
 			panic("initRouter.redis.NewClient:" + err.Error())
 		}
-		rc = routerRedis.NewRouteCenter(cli, "", app.LocalConf.Namespace)
+		rc = routerRedis.NewRouteCenter(cli, routerConfig.RouterPrefix, app.LocalConf.Namespace)
 
 	}
 	return rc
@@ -81,7 +81,6 @@ func (app *App) initRouter() {
 	rc.Watch(app.ctx, func(appName string, routers map[string]*routerCenter.Router, err error) {
 		mu.Lock()
 		defer mu.Unlock()
-		fmt.Println(appName, routers)
 		if len(routers) == 0 {
 			delete(app.appRouter, appName)
 		} else {
@@ -118,7 +117,7 @@ func (a *App) AutoRoute(r shareRouter.Router) error {
 			netHelper.Response(ctx, shErr.NewBadRequest(nil), nil, nil)
 			return
 		}
-		appName = a.baseConfig.GetRouterCenter().AppPrefix + "_" + appName
+		appName = a.baseConfig.GetRouterCenter().RouterPrefix + "_" + appName
 		// 	isRetry := false
 		// retry:
 		p, ok := a.appRouter[appName]
