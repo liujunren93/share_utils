@@ -32,6 +32,9 @@ func GetVal(ctx context.Context, key string) (string, bool) {
 	if !ok {
 		return "", ok
 	}
+	if len(md.Get(key)) == 0 {
+		return "", false
+	}
 	return md.Get(key)[0], ok
 }
 

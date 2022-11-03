@@ -55,9 +55,8 @@ func (g Router) White(table string) Router {
 	return g
 }
 
-func (g Router) Use(ms ...gin.HandlerFunc) Router {
+func (g *Router) Use(ms ...gin.HandlerFunc) {
 	g.group.Use(ms...)
-	return g
 
 }
 
@@ -103,10 +102,12 @@ func (g Router) PUT(relativePath string, handlers ...gin.HandlerFunc) Router {
 	return g
 }
 
-func (g Router) NoRoute(handlers ...gin.HandlerFunc) {
+func (g *Router) NoRoute(handlers ...gin.HandlerFunc) {
 	// groupHandler := g.group.Handlers
 	// handlers = append(groupHandler, handlers...)
-	g.Engine.NoRoute(handlers...)
+	hds := g.group.Handlers
+	hds = append(hds, handlers...)
+	g.Engine.NoRoute(hds...)
 }
 
 func (g Router) OPTIONS(relativePath string, handlers ...gin.HandlerFunc) Router {

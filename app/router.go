@@ -110,6 +110,7 @@ func (a *App) AutoRoute(r shareRouter.Router) error {
 	a.initRouter()
 	validate = validator.New()
 	log.Logger.Debug("AutoRoute")
+
 	r.NoRoute(func(ctx *gin.Context) {
 
 		appName, reqPath, method, reqData, err := ParesRequest(ctx, a.LocalConf.ApiPrefix)
