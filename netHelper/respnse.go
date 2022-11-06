@@ -30,7 +30,6 @@ func ResponseOk(ctx *gin.Context, data interface{}) {
 func ResponseJson(ctx *gin.Context, res interface{}, err error, data interface{}) {
 	var code int32 = 200
 	var msg = "ok"
-
 	if res != nil {
 		if redata, ok := res.(map[string]interface{}); ok {
 			code = int32(redata["code"].(float64))
