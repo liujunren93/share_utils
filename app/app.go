@@ -51,7 +51,8 @@ type appConfigOption struct {
 
 }
 type App struct {
-	ctx context.Context
+	ctx        context.Context
+	cancelFunc context.CancelFunc
 	appConfigOption
 	shareGrpcClient  *client.Client
 	monitorsCh       chan *config.Monitor
@@ -62,8 +63,10 @@ type App struct {
 }
 
 func NewApp(defaultConfig entity.BaseConfiger) *App {
+	ctx, cancel := context.WithCancel(context.TODO())
 	app := &App{
-		ctx: context.TODO(),
+		ctx:        ctx,
+		cancelFunc: cancel,
 		appConfigOption: appConfigOption{
 			baseConfig: defaultConfig,
 		},
@@ -75,35 +78,16 @@ func NewApp(defaultConfig entity.BaseConfiger) *App {
 		app.appConfigOption.baseConfig = entity.DefaultConfig
 	}
 	app.initConfig()
-	app.watchSignal()
 	return app
 }
 
 func (a *App) RegistryStopFunc(f func()) {
 	a.stopList = append(a.stopList, f)
 }
-func (a *App) watchSignal() {
-	ctx, cancel := context.WithCancel(a.ctx)
-	a.ctx = ctx
-	go func() {
-		ch := make(chan os.Signal, 1)
-		signals := []os.Signal{
-			syscall.SIGTERM, syscall.SIGINT, syscall.SIGQUIT, syscall.SIGKILL,
-		}
-		signal.Notify(ch, signals...)
-		select {
-		// wait on kill signal
-		case sign := <-ch:
-			cancel()
-			for _, stop := range a.stopList {
-				stop()
-			}
-			log.Logger.Info("app exit", sign)
-			os.Exit(0)
-		}
-	}()
 
-}
+// func (a *App) RegistryTask(f func(ctx context.Context)) {
+// 	a.stopList = append(a.stopList, f)
+// }
 
 func (a *App) GetAppName() string {
 	return a.LocalConf.AppName
@@ -253,7 +237,14 @@ func (a *App) RunGw(f func(*gin.Engine) (shareRouter.Router, error)) error {
 		a.AutoRoute(router)
 	}
 
-	return eng.Run(a.LocalConf.ListenAddr)
+	go func() {
+		err := eng.Run(a.LocalConf.ListenAddr)
+		if err != nil {
+			panic(err)
+		}
+	}()
+	a.watchSignal()
+	return nil
 }
 
 func (a *App) RunRpc(registryAddr []string, f func(ser *server.GrpcServer) error) error {
@@ -272,6 +263,34 @@ func (a *App) RunRpc(registryAddr []string, f func(ser *server.GrpcServer) error
 		return err
 	}
 
-	return gs.Run()
+	go func() {
+		err := gs.Run()
+		if err != nil {
+			panic(err)
+		}
+	}()
+	a.watchSignal()
+	return nil
+
+}
+
+func (a *App) watchSignal() {
+
+	ch := make(chan os.Signal, 1)
+	signals := []os.Signal{
+		syscall.SIGTERM, syscall.SIGINT, syscall.SIGQUIT, syscall.SIGKILL,
+	}
+	signal.Notify(ch, signals...)
+	select {
+	// wait on kill signal
+	case sign := <-ch:
+		a.cancelFunc()
+		for _, stop := range a.stopList {
+			stop()
+		}
+		time.Sleep(time.Second * 10)
+		log.Logger.Info("app exit", sign)
+		os.Exit(0)
+	}
 
 }

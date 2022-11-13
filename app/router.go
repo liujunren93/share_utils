@@ -67,7 +67,7 @@ func (app *App) initRouter() {
 		return
 	}
 	app.rc = rc
-	ctx, _ := context.WithTimeout(app.ctx, time.Second*300)
+	ctx, _ := context.WithTimeout(app.ctx, time.Second*3)
 	routerMap := rc.GetAllRouter(ctx)
 	if app.appRouter == nil {
 		app.appRouter = make(map[string]*shareRouter.Node)

@@ -7,6 +7,20 @@ import (
 	re "github.com/go-redis/redis/v8"
 )
 
+const ZREMRANGEBYSCORE_LUA = `
+   local result =  redis.call('ZRANGEBYSCORE',KEYS[1],ARGV[1],ARGV[2])
+	 		for i=0,#result do	
+			 if result[i] then 
+			 redis.call("ZREM",KEYS[1],result[i])
+			 end 
+			end
+	 return result
+ `
+
+func (c *Client) ZRemRangeByScoreWithVals(ctx context.Context, key string, opt *re.ZRangeBy) *re.Cmd {
+	return c.Eval(ctx, ZREMRANGEBYSCORE_LUA, []string{key}, opt.Min, opt.Max)
+}
+
 type Cmdable interface {
 	Pipeline() re.Pipeliner
 	Pipelined(ctx context.Context, fn func(re.Pipeliner) error) ([]re.Cmder, error)
