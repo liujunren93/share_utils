@@ -21,7 +21,7 @@ type Config struct {
 	SetReportCaller bool    `json:"set_report_caller" yaml:"set_report_caller"` //是否打印文件
 	Level           string  `json:"level" yaml:"level"`                         //required
 	Rotate          *Rotate `json:"rotate" yaml:"rotate"`
-	Remote          *Remote `yaml:"remote"`
+	Remote          *Remote `yaml:"remote" json:"remote"`
 }
 
 type Rotate struct {

@@ -25,6 +25,7 @@ import (
 	"github.com/liujunren93/share_utils/middleware"
 	"github.com/liujunren93/share_utils/pkg/routerCenter"
 	utilsServer "github.com/liujunren93/share_utils/server"
+	"github.com/liujunren93/share_utils/wrapper/recover"
 	"github.com/mitchellh/mapstructure"
 )
 
@@ -128,7 +129,6 @@ func (a *App) LocalConfigMonitor(fileType, fileName, fieldName string, dest inte
 	}
 }
 
-//
 func (a *App) initConfig() {
 	if !flag.Parsed() {
 		flag.Parse()
@@ -251,7 +251,7 @@ func (a *App) RunRpc(registryAddr []string, f func(ser *server.GrpcServer) error
 	s := utilsServer.Server{ListenAddr: a.LocalConf.ListenAddr, Mode: a.LocalConf.RunMode, Namespace: a.LocalConf.Namespace, ServerName: a.LocalConf.AppName}
 	s.RegistryAddr = registryAddr
 
-	gs, err := s.NewServer()
+	gs, err := s.NewServer(server.WithHdlrWrappers(recover.Recover()))
 	if err != nil {
 		log.Logger.Error(err)
 		return err

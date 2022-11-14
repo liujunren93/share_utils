@@ -32,7 +32,7 @@ func NewDBNoData(msg string) Error {
 	return NewPublic(StatusDBNotFound, msg)
 }
 
-//数据重复 420
+// 数据重复 420
 func NewDBDuplication(key string) Error {
 	return NewPublic(StatusDBDuplication, StatusDBDuplication.GetMsg()+" for "+key)
 }
@@ -42,30 +42,30 @@ func NewDBInternal(err interface{}) Error {
 	return New(StatusDBInternalErr, err)
 }
 
-//账户类错误  4001
+// 账户类错误  4001
 func NewUnauthorized(msg interface{}) Error {
 	return NewPublic(StatusUnauthorized, msg)
 }
 
-//数据权限 4003
+// 数据权限 4003
 func NewForbidden(msg interface{}) Error {
 
 	return NewPublic(StatusForbidden, msg)
 }
 
-//数据权限 4004
+// 数据权限 4004
 func NewStatusNotFound(msg interface{}) Error {
 
 	return NewPublic(StatusNotFound, msg)
 }
 
-//未知错误 5000
+// 未知错误 5000
 func NewInternalError(err interface{}) Error {
 
 	return New(StatusInternalServerError, err)
 }
 
-//未知错误public 5000
+// 未知错误public 5000
 func NewInternalPublicError(err interface{}) Error {
 
 	return NewPublic(StatusInternalServerError, err)
@@ -77,7 +77,7 @@ func NewBadRequest(err interface{}) Error {
 	return NewPublic(StatusBadRequest, err)
 }
 
-//database
+// database
 func New(code Status, err interface{}) Error {
 	if er, ok := err.(Error); ok {
 		return er
