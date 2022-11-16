@@ -202,8 +202,14 @@ func (a *App) RegistryRouter(rcMap map[string]*routerCenter.Router) {
 	// appnames := strings.Split(appName, "_")
 	// appName = appnames[len(appnames)-1]
 
-	a.rc.Registry(ctx, a.GetAppName(), rcMap)
-	a.rc.Lease(ctx, a.GetAppName())
+	err := a.rc.Registry(ctx, a.GetAppName(), rcMap)
+	if err != nil {
+		panic("registry router failed:" + err.Error())
+	}
+	err = a.rc.Lease(ctx, a.GetAppName())
+	if err != nil {
+		panic("registry router.Lease failed:" + err.Error())
+	}
 	a.RegistryStopFunc(a.delRouter)
 }
 func ParesRequest(ctx *gin.Context, urlPrefix string) (appName, reqPath, method string, body []byte, err error) {

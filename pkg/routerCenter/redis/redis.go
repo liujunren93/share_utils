@@ -83,6 +83,9 @@ func (r *RouteCenter) Registry(ctx context.Context, app string, router map[strin
 		`
 	fmt.Println(r.GetSubChannelReg())
 	res := r.client.Eval(ctx, lua, []string{r.GetKey(app), "router", r.GetSubChannelReg()}, string(data), app)
+	if res.Err() == rrdis.Nil {
+		return nil
+	}
 	return res.Err()
 
 }
@@ -115,7 +118,9 @@ func (r *RouteCenter) DelRouter(ctx context.Context, app string) error {
 			end
 		`
 	res := r.client.Eval(ctx, lua, []string{r.GetKey(app), r.GetSubChannelDel()}, app)
-
+	if res.Err() == rrdis.Nil {
+		return nil
+	}
 	return res.Err()
 }
 

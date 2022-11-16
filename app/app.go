@@ -55,7 +55,7 @@ type App struct {
 	ctx        context.Context
 	cancelFunc context.CancelFunc
 	appConfigOption
-	shareGrpcClient  *client.Client
+	shareGrpcClient  *client.Client // 同意grpc client
 	monitorsCh       chan *config.Monitor
 	localMonitorOnce *sync.Once
 	appRouter        map[string]*shareRouter.Node
@@ -218,6 +218,9 @@ func (a *App) GetGrpcClient(targetUrl string) (*client.Client, error) {
 	}
 	if a.LocalConf.RunMode == "debug" {
 		a.shareGrpcClient.AddOptions(client.WithTimeout(time.Second * 30))
+	}
+	if a.LocalConf.Namespace != "" {
+		a.shareGrpcClient.AddOptions(client.WithNamespace(a.LocalConf.Namespace))
 	}
 	return a.shareGrpcClient, nil
 
