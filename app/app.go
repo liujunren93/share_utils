@@ -288,7 +288,8 @@ func (a *App) watchSignal() {
 		for _, stop := range a.stopList {
 			stop()
 		}
-		time.Sleep(time.Second * 10)
+
+		time.Sleep(time.Second * 4)
 		log.Logger.Info("app exit", sign)
 		os.Exit(0)
 	}

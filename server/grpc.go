@@ -38,7 +38,7 @@ func (s *Server) NewServer(opts ...server.Option) (*server.GrpcServer, error) {
 	if len(s.RegistryAddr) > 0 {
 		var registryOpt = []registry.Option{registry.WithAddrs(s.RegistryAddr...)}
 		if s.Mode == "debug" {
-			registryOpt = append(registryOpt, registry.WithLease(10000))
+			registryOpt = append(registryOpt, registry.WithLease(10))
 		}
 
 		newRegistry, err := etcd.NewRegistry(registryOpt...)
