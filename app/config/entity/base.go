@@ -12,11 +12,14 @@ func (c ConfMap) ConfMap(dest interface{}) error {
 	return mapstructure.Decode(c, dest)
 }
 
-type BaseConfiger interface {
+type ClubConfiger interface {
 	GetVersion() string
 	GetLogConfig() (*log.Config, bool)
 	GetRegistryConfig() (*Registry, bool)
 	GetRouterCenter() *RouterCenterConf
+}
+type LocalConfiger interface {
+	GetLocalBase() *LocalBase
 }
 
 var DefaultConfig = &Config{
@@ -38,6 +41,10 @@ type LocalBase struct {
 	ListenAddr      string       `mapstructure:"listen_addr" `
 	EnableAutoRoute bool         `json:"enable_auto_route" mapstructure:"enable_auto_route"` // gateway 生效
 	ApiPrefix       string       `json:"api_prefix" mapstructure:"api_prefix"`
+}
+
+func (c *LocalBase) GetLocalBase() *LocalBase {
+	return c
 }
 
 type ConfigCenter struct {

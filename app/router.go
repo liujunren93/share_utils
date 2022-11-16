@@ -30,7 +30,7 @@ import (
 
 func (app *App) getRouterCenter() routerCenter.RouterCenter {
 	var rc routerCenter.RouterCenter
-	routerConfig := app.baseConfig.GetRouterCenter()
+	routerConfig := app.cloudConfig.GetRouterCenter()
 	if routerConfig == nil {
 		return nil
 		// panic("You must set router center config")
@@ -45,7 +45,7 @@ func (app *App) getRouterCenter() routerCenter.RouterCenter {
 		if err != nil {
 			panic("initRouter.redis.NewClient:" + err.Error())
 		}
-		rc = routerRedis.NewRouteCenter(cli, routerConfig.RouterPrefix, app.LocalConf.Namespace)
+		rc = routerRedis.NewRouteCenter(cli, routerConfig.RouterPrefix, app.localConf.GetLocalBase().Namespace)
 
 	}
 	return rc
@@ -112,14 +112,13 @@ func (a *App) AutoRoute(r shareRouter.Router) error {
 	log.Logger.Debug("AutoRoute")
 
 	r.NoRoute(func(ctx *gin.Context) {
-
-		appName, reqPath, method, reqData, err := ParesRequest(ctx, a.LocalConf.ApiPrefix)
+		appName, reqPath, method, reqData, err := ParesRequest(ctx, a.localConf.GetLocalBase().ApiPrefix)
 		if err != nil {
 
 			netHelper.Response(ctx, shErr.NewBadRequest(nil), nil, nil)
 			return
 		}
-		appPrefix := a.baseConfig.GetRouterCenter().AppPrefix
+		appPrefix := a.cloudConfig.GetRouterCenter().AppPrefix
 		if appPrefix == "" {
 			appPrefix = "share_app"
 		}
