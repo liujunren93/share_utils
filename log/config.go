@@ -16,12 +16,19 @@ var levelMap = map[string]logrus.Level{
 	"trace": logrus.TraceLevel,
 }
 
+type Out string
+
+const (
+	OUT_FILE    Out = "file"
+	OUT_CONSOLE Out = "console"
+)
+
 type Config struct {
-	Debug           bool    `json:"debug" yaml:"debug"`
+	Out             Out     `json:"out" yaml:"out"`
 	SetReportCaller bool    `json:"set_report_caller" yaml:"set_report_caller"` //是否打印文件
 	Level           string  `json:"level" yaml:"level"`                         //required
 	Rotate          *Rotate `json:"rotate" yaml:"rotate"`
-	Remote          *Remote `yaml:"remote" json:"remote"`
+	Remote          *Remote `yaml:"remote" json:"remote"` // 输出到远程
 }
 
 type Rotate struct {
@@ -37,7 +44,7 @@ type Remote struct {
 }
 
 var defaultConfig = Config{
-	Debug:           true,
+	Out:             OUT_CONSOLE,
 	SetReportCaller: true,
 	Level:           "debug",
 	Rotate: &Rotate{

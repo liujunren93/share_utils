@@ -25,7 +25,7 @@ type LocalConfiger interface {
 var DefaultConfig = &Config{
 	Version: "v0.0.1",
 	Log: &log.Config{
-		Debug:           false,
+		Out:             log.OUT_FILE,
 		SetReportCaller: true,
 		Level:           "debug",
 	},
