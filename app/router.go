@@ -176,6 +176,16 @@ func (a *App) AutoRoute(r shareRouter.Router) error {
 			}
 			var res interface{}
 			err = a.shareGrpcClient.Invoke(ctx, node.GrpcPath, reqData, &res, cc, grpc.CallContentSubtype(codesJson.Name))
+			if err != nil {
+				log.Logger.Error("grpc.Invoke", err)
+			}
+			log.Logger.Debug(res)
+			if re, ok := res.(netHelper.Responser); ok {
+				if re.GetCode() != 200 {
+					log.Logger.Info(re)
+				}
+			}
+			fmt.Println(res)
 			netHelper.ResponseJson(ctx, res, err, nil)
 		} else {
 			netHelper.Response(ctx, shErr.NewStatusNotFound(""), nil, nil)

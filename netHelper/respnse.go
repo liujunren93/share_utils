@@ -74,8 +74,8 @@ func ResponseJson(ctx *gin.Context, res interface{}, err error, data interface{}
 	ctx.Abort()
 }
 
-//Response
-//Response
+// Response
+// Response
 func Response(ctx *gin.Context, res Responser, err error, data interface{}) {
 	var code int32 = 200
 	var msg = "ok"
@@ -96,8 +96,7 @@ func Response(ctx *gin.Context, res Responser, err error, data interface{}) {
 
 	if err != nil {
 		msg = err.Error()
-		if e, ok := status.FromError(err); ok || code == 0 {
-			fmt.Println("Response", e)
+		if _, ok := status.FromError(err); ok || code == 0 {
 
 			code = int32(errors.StatusInternalServerError)
 			msg = errors.StatusInternalServerError.GetMsg()
@@ -126,7 +125,7 @@ func Response(ctx *gin.Context, res Responser, err error, data interface{}) {
 	ctx.Abort()
 }
 
-////通过反射 设置data rpc response
+// //通过反射 设置data rpc response
 func RpcResponse(res Responser, err errors.Error, data interface{}) error {
 	defer func() {
 		if errr := recover(); errr != nil {
@@ -160,7 +159,7 @@ func RpcResponse(res Responser, err errors.Error, data interface{}) error {
 	return nil
 }
 
-//RpcResponseString res.data string
+// RpcResponseString res.data string
 func RpcResponseString(res Responser, err errors.Error, data interface{}) error {
 	defer func() {
 		if errr := recover(); errr != nil {
