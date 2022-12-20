@@ -2,6 +2,7 @@ package config
 
 import (
 	"encoding/json"
+	"fmt"
 	"reflect"
 
 	"github.com/liujunren93/share_utils/helper"
@@ -55,10 +56,13 @@ func DescConfigAndCallbacks(desc interface{}) config.Callback {
 		if err != nil {
 			return err
 		}
+
 		vf := reflect.ValueOf(desc).Elem()
 		for k, c := range monitorMap[confName+group] {
-			f := vf.FieldByName(c.field)
-			sha, err := helper.Sha1Interface(f.Interface())
+			fmt.Println(vf)
+			// f := vf.FieldByName(c.field)
+
+			sha, err := helper.Sha1Interface(c.field)
 			if err != nil {
 				log.Logger.Error("DescConfigAndCallbacks.Sha1Interface", err, vf.FieldByName(c.field).Interface())
 				continue
