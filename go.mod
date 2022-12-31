@@ -16,7 +16,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/jinzhu/inflection v1.0.0
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
-	github.com/liujunren93/share v0.0.0-20220731181434-ed07d41ca643
+	github.com/liujunren93/share v0.0.0-20221114012851-a49d048df9eb
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/nacos-group/nacos-sdk-go v1.1.1
 	github.com/opentracing/opentracing-go v1.2.0
@@ -87,5 +87,3 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0 // indirect
 )
-
-replace github.com/liujunren93/share => ../share
