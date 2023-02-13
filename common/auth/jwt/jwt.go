@@ -37,7 +37,7 @@ func (j *jwtAuth) GetOptions() auth.TokenOptions {
 	return j.options
 }
 
-//Inspect 验证token
+// Inspect 验证token
 func (j *jwtAuth) Inspect(tokenStr string) (interface{}, int8, error) {
 	tk, err := jwt.ParseWithClaims(tokenStr, &JwtClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(j.options.Secret), nil
@@ -56,7 +56,7 @@ func (j *jwtAuth) Inspect(tokenStr string) (interface{}, int8, error) {
 	return nil, -1, errors.New("token error")
 }
 
-//Token get token, if RefreshToken!="" will refresh token
+// Token get token, if RefreshToken!="" will refresh token
 func (j *jwtAuth) Token(RefreshToken string) (*auth.Token, error) {
 	var token auth.Token
 	if j.options.Secret == "" {
@@ -91,8 +91,8 @@ func (j *jwtAuth) Token(RefreshToken string) (*auth.Token, error) {
 	return &token, nil
 }
 
-//create token
-//tkType token type （token=1，refresh=2）
+// create token
+// tkType token type （token=1，refresh=2）
 func (j *jwtAuth) createToken(tkType int8) (string, error) {
 	expiry := j.options.Expiry
 

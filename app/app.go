@@ -55,11 +55,11 @@ type App struct {
 	ctx        context.Context
 	cancelFunc context.CancelFunc
 	appConfigOption
-	shareGrpcClient  *client.Client // 同意grpc client
+	shareGrpcClient  *client.Client // grpc client
 	monitorsCh       chan *config.Monitor
 	localMonitorOnce *sync.Once
-	appRouter        map[string]*shareRouter.Node
-	rc               routerCenter.RouterCenter
+	appRouter        router                    // 自动路由
+	rc               routerCenter.RouterCenter // 路由中心
 	stopList         []func()
 }
 
@@ -233,7 +233,7 @@ func (a *App) GetGrpcClient(targetUrl string) (*client.Client, error) {
 
 }
 
-func (a *App) RunGw(f func(*gin.Engine) (shareRouter.Router, error)) error {
+func (a *App) RunGw(f func(*gin.Engine) (shareRouter.Router, error), middlewares ...MiddlewareItem) error {
 	eng := gin.Default()
 	localConf := a.localConf.GetLocalBase()
 	eng.Use(middleware.Cors)
@@ -245,7 +245,10 @@ func (a *App) RunGw(f func(*gin.Engine) (shareRouter.Router, error)) error {
 		return err
 	}
 	if a.cloudConfig.GetRouterCenter().Enable {
-		a.AutoRoute(router)
+		for _, v := range middlewares {
+			a.appRouter.middlewares[v.Name] = v.MiddlewareFunc
+		}
+		a.autoRoute(router)
 	}
 
 	go func() {

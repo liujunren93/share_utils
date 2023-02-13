@@ -28,6 +28,17 @@ import (
 	routerRedis "github.com/liujunren93/share_utils/pkg/routerCenter/redis"
 )
 
+type router struct {
+	routes      map[string]*shareRouter.Node
+	middlewares map[string]middlewareFunc
+}
+
+type middlewareFunc func(*gin.Context) error
+type MiddlewareItem struct {
+	Name           string
+	MiddlewareFunc middlewareFunc
+}
+
 func (app *App) getRouterCenter() routerCenter.RouterCenter {
 	var rc routerCenter.RouterCenter
 	routerConfig := app.cloudConfig.GetRouterCenter()
@@ -69,23 +80,23 @@ func (app *App) initRouter() {
 	app.rc = rc
 	ctx, _ := context.WithTimeout(app.ctx, time.Second*3)
 	routerMap := rc.GetAllRouter(ctx)
-	if app.appRouter == nil {
-		app.appRouter = make(map[string]*shareRouter.Node)
+	if app.appRouter.routes == nil {
+		app.appRouter.routes = make(map[string]*shareRouter.Node)
 	}
 	for appName, routers := range routerMap {
 
 		tree := routerMap2Tree(routers)
-		app.appRouter[appName] = tree
+		app.appRouter.routes[appName] = tree
 	}
 	var mu = sync.Mutex{}
 	rc.Watch(app.ctx, func(appName string, routers map[string]*routerCenter.Router, err error) {
 		mu.Lock()
 		defer mu.Unlock()
 		if len(routers) == 0 {
-			delete(app.appRouter, appName)
+			delete(app.appRouter.routes, appName)
 		} else {
 			tree := routerMap2Tree(routers)
-			app.appRouter[appName] = tree
+			app.appRouter.routes[appName] = tree
 		}
 
 	})
@@ -98,14 +109,14 @@ func routerMap2Tree(routerMap map[string]*routerCenter.Router) *shareRouter.Node
 		index := strings.Index(apipath, ":")
 		method := apipath[:index]
 		apipath := apipath[index+1:]
-		tree.Add(apipath, method, router.GrpcMenthod, router.ReqParams)
+		tree.Add(apipath, method, router.GrpcMenthod, router.MiddlewaresWhitelist, router.ReqParams)
 	}
 	return tree
 }
 
 var validate *validator.Validate
 
-func (a *App) AutoRoute(r shareRouter.Router) error {
+func (a *App) autoRoute(r shareRouter.Router) error {
 
 	a.initRouter()
 	validate = validator.New()
@@ -125,10 +136,17 @@ func (a *App) AutoRoute(r shareRouter.Router) error {
 		appName = appPrefix + "_" + appName
 		// 	isRetry := false
 		// retry:
-		p, ok := a.appRouter[appName]
+		p, ok := a.appRouter.routes[appName]
 		if ok {
 			node, param := p.Find(reqPath, method)
-
+			for _, w := range node.MiddlewaresWhitelist {
+				if mid, ok := a.appRouter.middlewares[w]; !ok {
+					err = mid(ctx)
+					if err != nil {
+						return
+					}
+				}
+			}
 			if node == nil {
 				netHelper.Response(ctx, shErr.NewStatusNotFound(""), nil, nil)
 				return
@@ -185,7 +203,6 @@ func (a *App) AutoRoute(r shareRouter.Router) error {
 					log.Logger.Info(re)
 				}
 			}
-			fmt.Println(res)
 			netHelper.ResponseJson(ctx, res, err, nil)
 		} else {
 			netHelper.Response(ctx, shErr.NewStatusNotFound(""), nil, nil)
@@ -231,7 +248,9 @@ func ParesRequest(ctx *gin.Context, urlPrefix string) (appName, reqPath, method 
 		var req = make(map[string]interface{}, len(ctx.Request.URL.Query()))
 		if len(ctx.Request.URL.Query()) != 0 {
 			for k, v := range ctx.Request.URL.Query() {
-				if strings.LastIndex(k, "_str") == len(k)-4 {
+				if strings.LastIndex(k, "_str") >= 0 && strings.LastIndex(k, "_str") == len(k)-4 {
+					// if strings.LastIndex(k, "_str") == len(k)-4 {
+					fmt.Println(k, v)
 					req[k[:len(k)-4]] = v[0]
 				} else if nv, err := strconv.ParseFloat(v[0], 64); err == nil {
 					req[k] = nv

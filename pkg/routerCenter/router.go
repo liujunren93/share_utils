@@ -16,9 +16,10 @@ const (
 )
 
 type Router struct {
-	GrpcMenthod string                 `json:"grpc_method" yaml:"grpc_method"`
-	Codes       Binding                `json:"codes" yaml:"codes"`
-	ReqParams   map[string]interface{} `json:"req_params" yaml:"req_params"`
+	GrpcMenthod          string                 `json:"grpc_method" yaml:"grpc_method"`
+	Codes                Binding                `json:"codes" yaml:"codes"`
+	ReqParams            map[string]interface{} `json:"req_params" yaml:"req_params"`
+	MiddlewaresWhitelist []string               `json:"middl_white_list" yaml:"middl_white_list"`
 }
 
 type WathMethod string
@@ -62,10 +63,11 @@ type RouterCenter interface {
 	Watch(ctx context.Context, callback func(app string, router map[string]*Router, err error))
 }
 
-func BuildRouter(grpcMethod string, req interface{}) *Router {
+func BuildRouter(grpcMethod string, req interface{}, middlWhitelist ...string) *Router {
 	var router = Router{
-		GrpcMenthod: grpcMethod,
-		ReqParams:   map[string]interface{}{},
+		GrpcMenthod:          grpcMethod,
+		MiddlewaresWhitelist: middlWhitelist,
+		ReqParams:            map[string]interface{}{},
 	}
 	var reqParams = make(map[string]interface{})
 	t := reflect.TypeOf(req)

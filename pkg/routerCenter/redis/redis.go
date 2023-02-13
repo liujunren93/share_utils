@@ -3,7 +3,6 @@ package redis
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"time"
 
 	rrdis "github.com/go-redis/redis/v8"
@@ -35,6 +34,7 @@ func (r *RouteCenter) GetSubChannelReg() string {
 func (r *RouteCenter) GetSubChannelDel() string {
 	return r.GetKey("") + "subscribeDel"
 }
+
 func (r *RouteCenter) GetAllRouter(ctx context.Context) map[string]map[string]*router.Router {
 	var resData = make(map[string]map[string]*router.Router)
 	res := r.client.Keys(ctx, r.GetKeys(""))
@@ -81,7 +81,6 @@ func (r *RouteCenter) Registry(ctx context.Context, app string, router map[strin
 			redis.call('HINCRBY',KEYS[1],'life',1)
 		
 		`
-	fmt.Println(r.GetSubChannelReg())
 	res := r.client.Eval(ctx, lua, []string{r.GetKey(app), "router", r.GetSubChannelReg()}, string(data), app)
 	if res.Err() == rrdis.Nil {
 		return nil

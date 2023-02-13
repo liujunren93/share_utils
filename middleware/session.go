@@ -7,7 +7,7 @@ import (
 	"github.com/liujunren93/share_utils/netHelper"
 )
 
-func Session(au auth.Auther, setsession func(authData interface{}) errors.Error) func(ctx *gin.Context) {
+func Session(au auth.Auther, setsession func(ctx *gin.Context, authData interface{}) errors.Error) func(ctx *gin.Context) {
 	return func(ctx *gin.Context) {
 		token := ctx.Request.Header.Get("Authorization")
 		authData, tp, err := au.Inspect(token)
@@ -15,7 +15,7 @@ func Session(au auth.Auther, setsession func(authData interface{}) errors.Error)
 			ctx.Next()
 			return
 		}
-		errs := setsession(authData)
+		errs := setsession(ctx, authData)
 		if errs != nil {
 			netHelper.Response(ctx, nil, errs, nil)
 			return
