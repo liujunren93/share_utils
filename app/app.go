@@ -246,6 +246,9 @@ func (a *App) RunGw(f func(*gin.Engine) (shareRouter.Router, error), middlewares
 	}
 	if a.cloudConfig.GetRouterCenter().Enable {
 		for _, v := range middlewares {
+			if a.appRouter.middlewares == nil {
+				a.appRouter.middlewares = make(map[string]middlewareFunc)
+			}
 			a.appRouter.middlewares[v.Name] = v.MiddlewareFunc
 		}
 		a.autoRoute(router)

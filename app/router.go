@@ -90,6 +90,7 @@ func (app *App) initRouter() {
 	}
 	var mu = sync.Mutex{}
 	rc.Watch(app.ctx, func(appName string, routers map[string]*routerCenter.Router, err error) {
+		fmt.Println(111)
 		mu.Lock()
 		defer mu.Unlock()
 		if len(routers) == 0 {
@@ -197,7 +198,6 @@ func (a *App) autoRoute(r shareRouter.Router) error {
 			if err != nil {
 				log.Logger.Error("grpc.Invoke", err)
 			}
-			log.Logger.Debug(res)
 			if re, ok := res.(netHelper.Responser); ok {
 				if re.GetCode() != 200 {
 					log.Logger.Info(re)

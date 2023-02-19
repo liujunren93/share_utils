@@ -1,6 +1,7 @@
 package router
 
 import (
+	"fmt"
 	"path"
 	"strings"
 
@@ -96,6 +97,7 @@ func (node *Node) find(paths []string, method string) (n *Node, param gin.Param)
 			}
 		}
 	} else {
+		fmt.Println("aaaa")
 		if len(paths) == 1 && string(node.Path[0]) == ":" && node.Method == method {
 			return node, gin.Param{
 				Key:   helper.SubstrRight(node.Path, ":"),
