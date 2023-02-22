@@ -140,6 +140,11 @@ func (a *App) autoRoute(r shareRouter.Router) error {
 		p, ok := a.appRouter.routes[appName]
 		if ok {
 			node, param := p.Find(reqPath, method)
+			if node == nil {
+				netHelper.Response(ctx, shErr.NewStatusNotFound(""), nil, nil)
+				return
+			}
+
 			for _, w := range node.MiddlewaresWhitelist {
 				if mid, ok := a.appRouter.middlewares[w]; !ok {
 					err = mid(ctx)
@@ -148,11 +153,6 @@ func (a *App) autoRoute(r shareRouter.Router) error {
 					}
 				}
 			}
-			if node == nil {
-				netHelper.Response(ctx, shErr.NewStatusNotFound(""), nil, nil)
-				return
-			}
-
 			var req = make(map[string]interface{})
 
 			if len(reqData) > 0 {
