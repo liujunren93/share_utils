@@ -3,8 +3,10 @@ package recover
 import (
 	"context"
 	"fmt"
+	"runtime"
 
 	"github.com/liujunren93/share_utils/errors"
+	"github.com/liujunren93/share_utils/log"
 	"google.golang.org/grpc"
 )
 
@@ -14,7 +16,10 @@ func Recover() grpc.UnaryServerInterceptor {
 			if re := recover(); re != nil {
 				resp = nil
 				err = errors.NewInternalError(re)
-				fmt.Println(resp, err)
+				buf := make([]byte, 1<<16)
+				len := runtime.Stack(buf, true)
+				fmt.Println("recover", string(buf[:len]))
+				log.Logger.Error("wrapper recover", string(buf[:len]))
 			}
 		}()
 		return handler(ctx, req)

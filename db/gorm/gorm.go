@@ -53,7 +53,10 @@ func (m Mysql) String() string {
 func NewMysql(basConf *Mysql, conf *gorm.Config) (*gorm.DB, error) {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Asia%%2FShanghai&timeout=5s", basConf.User, basConf.Password, basConf.Host, basConf.Port, basConf.Database)
 	if conf == nil {
-		conf = &gorm.Config{NamingStrategy: defaultNamingStrategy}
+		conf = &gorm.Config{}
+	}
+	if conf.NamingStrategy == nil {
+		conf.NamingStrategy = defaultNamingStrategy
 	}
 	open, err := gorm.Open(mysql.New(mysql.Config{
 		DSN:                       dsn,   // DSN data source name

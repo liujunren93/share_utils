@@ -3,7 +3,6 @@ package metadata
 import (
 	"context"
 	"errors"
-	"fmt"
 	"strings"
 
 	"google.golang.org/grpc/metadata"
@@ -11,7 +10,7 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-//获取
+// 获取
 func getValue(ctx context.Context, key string) ([]string, bool) {
 	incomingContext, ok := GetAll(ctx)
 	if !ok {
@@ -21,7 +20,7 @@ func getValue(ctx context.Context, key string) ([]string, bool) {
 	return strings, ok
 }
 
-//获取
+// 获取
 func GetAll(ctx context.Context) (metadata.MD, bool) {
 	return metadata.FromIncomingContext(ctx)
 }
@@ -67,7 +66,6 @@ func GetMessage(ctx context.Context, key string, dest proto.Message) (error, boo
 	if err != nil {
 		return err, false
 	}
-	fmt.Println(dest.ProtoReflect().IsValid())
 	return nil, dest == nil || dest.ProtoReflect().IsValid()
 }
 
