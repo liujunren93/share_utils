@@ -28,3 +28,17 @@ func TestTransSleceType(t *testing.T) {
 	u := TransSliceType[int, uint](data)
 	fmt.Println(u)
 }
+
+func TestAesEncrypt(t *testing.T) {
+	str, err := AesEncrypt("gGJk6duYH0ucfxGA1Bi9Ag1aMyFDiAFt9glaDnHFzKpEsMfddLviMQyau6y2ji0g", "liujunrenliujunr")
+	fmt.Println(str, err)
+	str, err = AesDecrypt(str, "liujunrenliujunr")
+	fmt.Println(str, err)
+}
+
+// func TestAesDecrypt(t *testing.T) {
+// 	str := AesEncrypt1("liujunrenliujunr", "liujunrenliujunr")
+// 	fmt.Println(str)
+// 	str = AesDecrypt1(str, "liujunrenliujunr")
+// 	fmt.Println(str)
+// }

@@ -1,8 +1,12 @@
 package helper
 
 import (
+	"bytes"
+	"crypto/aes"
+	"crypto/cipher"
 	"crypto/md5"
 	"crypto/sha1"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"net/url"
@@ -30,7 +34,7 @@ func Sha1Interface(src interface{}) (string, error) {
 	return fmt.Sprintf("%x", hash.Sum(nil)), nil
 }
 
-//Md5Str
+// Md5Str
 func Md5Str(str string) string {
 	hash := md5.New()
 	hash.Write([]byte(str))
@@ -38,7 +42,7 @@ func Md5Str(str string) string {
 	return fmt.Sprintf("%x", hash.Sum(nil))
 }
 
-//GetUuidV3 获得
+// GetUuidV3 获得
 func GetUuidV3(name string, keepLine bool) string {
 	u := uuid.New()
 	uuidv3 := uuid.NewMD5(u, []byte(name))
@@ -82,4 +86,48 @@ func MapEncodeEscape(data map[string]interface{}) string {
 		buf.WriteString(url.QueryEscape(fmt.Sprintf("%v", vs)))
 	}
 	return buf.String()
+}
+
+func AesEncrypt(orig string, key string) (str string, err error) {
+
+	keyByte := []byte(key)
+	block, err := aes.NewCipher(keyByte)
+	if err != nil {
+		return "", err
+	}
+	blsize := block.BlockSize()
+	origByte := PKCS7Padding([]byte(orig), blsize)
+	bm := cipher.NewCBCEncrypter(block, keyByte[:blsize])
+	tmp := make([]byte, len(origByte))
+	bm.CryptBlocks(tmp, []byte(origByte))
+
+	return base64.StdEncoding.EncodeToString(tmp), nil
+}
+
+func AesDecrypt(cryted string, key string) (str string, err error) {
+	crytedByte, _ := base64.StdEncoding.DecodeString(cryted)
+	keyByte := []byte(key)
+	block, err := aes.NewCipher(keyByte)
+	if err != nil {
+		return "", err
+	}
+
+	bm := cipher.NewCBCDecrypter(block, keyByte[:block.BlockSize()])
+	tmp := make([]byte, len(crytedByte))
+	bm.CryptBlocks(tmp, crytedByte)
+	return string(PKCS7UnPadding(tmp)), nil
+}
+
+// 补码
+func PKCS7Padding(ciphertext []byte, blocksize int) []byte {
+	padding := blocksize - len(ciphertext)%blocksize
+	padtext := bytes.Repeat([]byte{byte(padding)}, padding)
+	return append(ciphertext, padtext...)
+}
+
+// 去码
+func PKCS7UnPadding(origData []byte) []byte {
+	length := len(origData)
+	unpadding := int(origData[length-1])
+	return origData[:(length - unpadding)]
 }
