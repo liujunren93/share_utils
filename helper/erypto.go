@@ -8,6 +8,7 @@ import (
 	"crypto/sha1"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/url"
 	"sort"
@@ -115,6 +116,9 @@ func AesDecrypt(cryted string, key string) (str string, err error) {
 	bm := cipher.NewCBCDecrypter(block, keyByte[:block.BlockSize()])
 	tmp := make([]byte, len(crytedByte))
 	bm.CryptBlocks(tmp, crytedByte)
+	if PKCS7UnPadding(tmp) == nil {
+		return "", errors.New("aes decryption failed")
+	}
 	return string(PKCS7UnPadding(tmp)), nil
 }
 
@@ -129,5 +133,8 @@ func PKCS7Padding(ciphertext []byte, blocksize int) []byte {
 func PKCS7UnPadding(origData []byte) []byte {
 	length := len(origData)
 	unpadding := int(origData[length-1])
+	if unpadding > length {
+		return nil
+	}
 	return origData[:(length - unpadding)]
 }
