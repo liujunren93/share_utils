@@ -32,7 +32,7 @@ func TestTransSleceType(t *testing.T) {
 func TestAesEncrypt(t *testing.T) {
 	str, err := AesEncrypt("gGJk6duYH0ucfxGA1Bi9Ag1aMyFDiAFt9glaDnHFzKpEsMfddLviMQyau6y2ji0g", "liujunrenliujun1")
 	fmt.Println(str, err)
-	str, err = AesDecrypt(str, "liujunrenliujun2")
+	str, err = AesDecrypt(str, "liujunrenliujun1")
 	fmt.Println(str, err)
 }
 
