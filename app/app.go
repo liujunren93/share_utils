@@ -156,7 +156,9 @@ func (a *App) initConfig() {
 	err = a.Cloud.GetConfig(ctx, localConf.ConfCenter.ConfName, localConf.ConfCenter.Group, config.DescConfig(a.cloudConfig))
 	if err != nil {
 		fmt.Println("get Config from cloud err:" + err.Error())
-		panic("get Config from cloud err:" + err.Error())
+		// panic("get Config from cloud err:" + err.Error())
+
+		return
 
 	}
 	a.initLogger()

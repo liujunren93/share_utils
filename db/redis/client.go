@@ -146,3 +146,7 @@ func newSentinelClient(conf *SentinelConfig) (*re.Client, error) {
 	return cli, err
 
 }
+
+func GeneralKey(appName, key string) string {
+	return appName + "/" + key
+}
