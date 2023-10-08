@@ -92,8 +92,3 @@ func GetImport(buf []byte) Proto {
 func GetSerName(buf []byte) string {
 	return string(bytes.Trim(bytes.Split(buf, []byte(" "))[1], "{"))
 }
-
-func GetSerFunc(buf []byte) string {
-	//  rpc List(ConfigListReq)returns(proto.DefaultRes);
-	strings.Replace(s string, old string, new string, n int)
-}

@@ -2,7 +2,6 @@ package log
 
 import (
 	"fmt"
-	"path"
 	"strings"
 	"time"
 
@@ -12,11 +11,11 @@ import (
 
 type Fields map[string]interface{}
 
-var Logger *logrus.Logger
+var Logger *shareLog
 var shaLogConfig string
 
 func init() {
-	Logger = logrus.New()
+	Logger = New()
 }
 func Upgrade(conf *Config) {
 	Logger.Debug("upgrade.log", conf)
@@ -31,10 +30,11 @@ func Upgrade(conf *Config) {
 
 func Init(conf *Config) {
 
-	Logger.SetReportCaller(conf.SetReportCaller)
-	Logger.SetLevel(levelMap[strings.ToLower(conf.Level)])
-	Logger.AddHook(new(TestHook))
-	Logger.SetFormatter(&logrus.JSONFormatter{})
+	Logger.core.SetReportCaller(conf.SetReportCaller)
+	Logger.core.SetLevel(levelMap[strings.ToLower(conf.Level)])
+	Logger.core.AddHook(new(TestHook))
+	Logger.core.SetFormatter(&logrus.JSONFormatter{})
+	// Logger.core.SetFormatter(NewShareFormatter(conf.SetReportCaller))
 	fmt.Println(conf.Out)
 	if conf.Out == OUT_FILE {
 		rotatelog, err := rotatelogs.New(
@@ -47,7 +47,7 @@ func Init(conf *Config) {
 		if err != nil {
 			panic("init logrus rotatelogs err" + err.Error())
 		}
-		Logger.SetOutput(rotatelog)
+		Logger.core.SetOutput(rotatelog)
 
 	}
 
@@ -72,13 +72,20 @@ func (hook *TestHook) Levels() []logrus.Level {
 }
 
 type shareFormatter struct {
-	prifix string
+	prifix          string
+	setReportCaller bool
 }
 
-func (s shareFormatter) Format(entry *logrus.Entry) ([]byte, error) {
+func NewShareFormatter(setReportCaller bool) *shareFormatter {
+	return &shareFormatter{setReportCaller: setReportCaller} //
+}
 
-	fileName := path.Base(entry.Caller.File)
+func (s *shareFormatter) Format(entry *logrus.Entry) ([]byte, error) {
 
-	sprintf := fmt.Sprintf("[%s][%s|%s:%d]:%v\n\r", entry.Level, entry.Time.Format("2006-01-02 15:04:05"), fileName, entry.Caller.Line, entry.Message)
-	return []byte(sprintf), nil
+	msg := fmt.Sprintf("[%s,%s,%s]", entry.Level, entry.Time.Format("2006-01-02 15:04:05"), entry.Message)
+	if s.setReportCaller {
+		msg = fmt.Sprintf("%s,file:%s,line:%d\n\r", msg, entry.Caller.File, entry.Caller.Line)
+	}
+
+	return []byte(msg), nil
 }

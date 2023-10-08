@@ -3,6 +3,7 @@ package redis
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	re "github.com/go-redis/redis/v8"
@@ -147,6 +148,7 @@ func newSentinelClient(conf *SentinelConfig) (*re.Client, error) {
 
 }
 
-func GeneralKey(appName, key string) string {
-	return appName + "/" + key
+func GeneralKey(appName string, keys ...string) string {
+
+	return appName + "/" + strings.Join(keys, "/")
 }

@@ -198,7 +198,7 @@ func (a *App) initLogger() {
 	if logConf, ok := a.cloudConfig.GetLogConfig(); ok {
 		log.Init(logConf)
 	}
-	shLog.Logger = log.Logger
+	shLog.Logger = log.Logger.GetLogrus()
 	localConf := a.localConf.GetLocalBase()
 	a.CloudConfigMonitor(localConf.ConfCenter.ConfName, localConf.GetLocalBase().ConfCenter.Group, "Log", func() {
 		if logConf, ok := a.cloudConfig.GetLogConfig(); ok {
