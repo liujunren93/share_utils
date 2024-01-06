@@ -31,9 +31,11 @@ func Upgrade(conf *Config) {
 func Init(conf *Config) {
 
 	Logger.core.SetReportCaller(conf.SetReportCaller)
+
 	Logger.core.SetLevel(levelMap[strings.ToLower(conf.Level)])
 	Logger.core.AddHook(new(TestHook))
-	Logger.core.SetFormatter(&logrus.JSONFormatter{})
+	Logger.core.SetFormatter(&JSONFormatter{})
+	// Logger.core.SetFormatter(&logrus.JSONFormatter{})
 	// Logger.core.SetFormatter(NewShareFormatter(conf.SetReportCaller))
 	fmt.Println(conf.Out)
 	if conf.Out == OUT_FILE {
