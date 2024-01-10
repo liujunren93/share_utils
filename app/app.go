@@ -86,6 +86,7 @@ func NewApp(localConf entity.LocalConfiger, clubConfig entity.ClubConfiger) *App
 	return app
 }
 
+// app 停止
 func (a *App) RegistryStopFunc(f func()) {
 	a.stopList = append(a.stopList, f)
 }
@@ -132,6 +133,7 @@ func (a *App) LocalConfigMonitor(fileType, fileName, fieldName string, dest inte
 	}
 }
 
+// initConfig 初始化配置
 func (a *App) initConfig() {
 	if !flag.Parsed() {
 		flag.Parse()

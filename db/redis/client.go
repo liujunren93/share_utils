@@ -20,7 +20,9 @@ type Configer interface {
 }
 
 type Base struct {
-	Mode int8 `json:"mode" yaml:"mode"` // general:1 cluster:2 sentinel:3
+	Mode     int8   `json:"mode" yaml:"mode"` // general:1 cluster:2 sentinel:3
+	Username string `json:"username" yaml:"username"`
+	Password string `json:"password" yaml:"password"`
 }
 
 func (c *Base) GetMode() int8 {
@@ -32,18 +34,14 @@ func (c *Base) SetMode(mode int8) {
 
 type Config struct {
 	Base
-	Network  string `json:"network" yaml:"network"`
-	Addr     string `json:"addr" yaml:"addr"`
-	Username string `json:"username" yaml:"username"`
-	Password string `json:"password" yaml:"password"`
-	DB       int    `json:"db" yaml:"db"`
+	Network string `json:"network" yaml:"network"`
+	Addr    string `json:"addr" yaml:"addr"`
+	DB      int    `json:"db" yaml:"db"`
 }
 
 type ClusterConfig struct {
 	Base
-	Addrs    []string `json:"addrs" yaml:"addsr"`
-	Username string   `json:"username" yaml:"username"`
-	Password string   `json:"password" yaml:"password"`
+	Addrs []string `json:"addrs" yaml:"addsr"`
 }
 
 type SentinelConfig struct {
@@ -53,8 +51,6 @@ type SentinelConfig struct {
 	Addrs            []string `json:"addrs" yaml:"addsr"`
 	SentinelUsername string   `json:"sentinelUsername" yaml:"sentinelUsername"`
 	SentinelPassword string   `json:"sentinelPassword" yaml:"sentinelPassword"`
-	Username         string   `json:"username" yaml:"username"`
-	Password         string   `json:"password" yaml:"password"`
 }
 
 func NewClient(redisConf map[string]interface{}) (*Client, error) {
@@ -119,7 +115,7 @@ func newGeneralClient(conf *Config) (*re.Client, error) {
 func newClusterClient(conf *ClusterConfig) (*re.ClusterClient, error) {
 
 	opt := re.ClusterOptions{
-		Addrs:    []string{},
+		Addrs:    conf.Addrs,
 		Username: conf.Username,
 		Password: conf.Password,
 	}
