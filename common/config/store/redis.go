@@ -70,5 +70,5 @@ func (r *Redis) DeleteConfig(ctx context.Context, configName, group string) (boo
 }
 
 func (r *Redis) GetKey(configName, group string) (string, string) {
-	return fmt.Sprintf("topic/%s/%s/%s", r.namespace, configName, group), fmt.Sprintf("config/%s/%s/%s", r.namespace, configName, group)
+	return fmt.Sprintf("share_config/topic/%s/%s/%s", r.namespace, configName, group), fmt.Sprintf("share_config/config/%s/%s/%s", r.namespace, configName, group)
 }

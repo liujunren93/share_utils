@@ -6,3 +6,4 @@ go.sum
 .history
 .vscode
 vendor
+configCenterRedis

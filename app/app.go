@@ -268,10 +268,16 @@ func (a *App) RunGw(f func(*gin.Engine) (shareRouter.Router, error), middlewares
 	return nil
 }
 
-func (a *App) RunRpc(registryAddr []string, f func(ser *server.GrpcServer) error) error {
+func (a *App) RunRpc(f func(ser *server.GrpcServer) error) error {
 	localConf := a.localConf.GetLocalBase()
+
 	s := utilsServer.Server{ListenAddr: localConf.ListenAddr, Mode: localConf.RunMode, Namespace: localConf.Namespace, ServerName: localConf.AppName}
-	s.RegistryAddr = registryAddr
+	if reg, ok := a.cloudConfig.GetRegistryConfig(); ok {
+		if reg.Etcd != nil {
+			s.RegistryAddr = reg.Etcd.Endpoints
+		}
+
+	}
 
 	gs, err := s.NewServer(server.WithHdlrWrappers(recover.Recover()))
 	if err != nil {

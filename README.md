@@ -39,7 +39,6 @@ conf_center: // 配置中心 目前仅支持redis
 	},
 	"registry": { // 注册中心
 		"type": "etcd",// etcd k8s 
-		// k8s 只需要设置type 
 		"etcd": {
 			"endpoints": [
 				"etcd0:2379",
