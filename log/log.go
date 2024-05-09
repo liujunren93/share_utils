@@ -19,7 +19,6 @@ func (l *shareLog) GetLogrus() *logrus.Logger {
 }
 
 func (s *shareLog) log(args ...interface{}) (*logrus.Entry, []interface{}) {
-
 	var ctx context.Context
 	var ctxIndex = -1
 	stringIndex := -1
