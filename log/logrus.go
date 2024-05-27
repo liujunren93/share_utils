@@ -22,18 +22,24 @@ func Upgrade(conf *Config) {
 	Init(conf)
 }
 
-// func GetLogger(group string) *logrus.Logger {
-// 	fmt.Println("GetLogger", group)
-// 	Logger.SetFormatter(&JSONFormatter{group, jsonFormatter})
-// 	return Logger
-// }
-
+//	func GetLogger(group string) *logrus.Logger {
+//		fmt.Println("GetLogger", group)
+//		Logger.SetFormatter(&JSONFormatter{group, jsonFormatter})
+//		return Logger
+//	}
+func SetHook(hooks ...logrus.Hook) {
+	if len(hooks) != 0 {
+		for _, h := range hooks {
+			Logger.core.AddHook(h)
+		}
+	}
+}
 func Init(conf *Config) {
 
 	Logger.core.SetReportCaller(conf.SetReportCaller)
 
 	Logger.core.SetLevel(levelMap[strings.ToLower(conf.Level)])
-	Logger.core.AddHook(new(TestHook))
+
 	Logger.core.SetFormatter(&JSONFormatter{})
 	// Logger.core.SetFormatter(&logrus.JSONFormatter{})
 	// Logger.core.SetFormatter(NewShareFormatter(conf.SetReportCaller))
