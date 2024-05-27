@@ -22,11 +22,12 @@ func (l *shareLog) GetLogrus() *logrus.Logger {
 func (s *shareLog) log(args ...interface{}) (*logrus.Entry, []interface{}) {
 	var ctx context.Context
 	var ctxIndex = -1
-
-	for i, v := range args {
-		if str, ok := v.(string); ok {
-			if strings.Index(str, ":") != len(str)-1 {
-				args[i] = str + ": "
+	if len(args) > 1 {
+		for i, v := range args {
+			if str, ok := v.(string); ok && i == 0 {
+				if strings.Index(str, ":") != len(str)-1 {
+					args[i] = str + ": "
+				}
 			}
 		}
 	}
