@@ -40,8 +40,8 @@ func Init(conf *Config) {
 
 	Logger.core.SetLevel(levelMap[strings.ToLower(conf.Level)])
 
-	Logger.core.SetFormatter(&JSONFormatter{})
-	// Logger.core.SetFormatter(&logrus.JSONFormatter{})
+	// Logger.core.SetFormatter(&JSONFormatter{})
+	Logger.core.SetFormatter(&logrus.TextFormatter{})
 	// Logger.core.SetFormatter(NewShareFormatter(conf.SetReportCaller))
 	fmt.Println(conf.Out)
 	if conf.Out == OUT_FILE {

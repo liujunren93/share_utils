@@ -2,6 +2,7 @@ package log
 
 import (
 	"context"
+	"strings"
 
 	"github.com/sirupsen/logrus"
 )
@@ -21,21 +22,13 @@ func (l *shareLog) GetLogrus() *logrus.Logger {
 func (s *shareLog) log(args ...interface{}) (*logrus.Entry, []interface{}) {
 	var ctx context.Context
 	var ctxIndex = -1
-	stringIndex := -1
-	stringLen := 0
+
 	for i, v := range args {
 		if str, ok := v.(string); ok {
-			if str[len(str)-1:] != ":" && stringIndex == -1 {
-				stringIndex = i
+			if strings.Index(str, ":") != len(str)-1 {
+				args[i] = str + ": "
 			}
-			if stringLen > 1 {
-				break
-			}
-			stringLen++
 		}
-	}
-	if stringIndex != -1 && stringLen > 1 {
-		args[stringIndex] = args[stringIndex].(string) + ":"
 	}
 
 	for i, v := range args {
@@ -73,7 +66,10 @@ func (s *shareLog) logf(args ...interface{}) (entry *logrus.Entry, newArgs []int
 	return
 
 }
-
+func (s *shareLog) WithContext(ctx context.Context) *shareLog {
+	s.core.WithContext(ctx)
+	return s
+}
 func (s *shareLog) Trace(args ...interface{}) {
 
 	entry, args := s.log(args...)
